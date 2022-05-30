@@ -3,4 +3,4 @@ A GeoServer REST API client influenced by HTTPX
 
 -----------
 
-`GeoserverX` allows `Sync` as well as `Async` connection to databaases
+`geoserverx` allows `Sync` as well as `Async` Capabilities to talk to your geoserver REST APIs
