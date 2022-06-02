@@ -1,9 +1,21 @@
-from dataclasses import dataclass
-from datetime import datetime
-from typing import Any
+from typing import List
+from pydantic import BaseModel
 
-@dataclass
-class Workspace:
-    name : str
-    default : bool
-    isolated : bool
+
+class WorkspaceInBulk(BaseModel):
+    name: str
+    href: str
+
+
+class Workspaces(BaseModel):
+    workspaces = {"workspaces": List[WorkspaceInBulk]}
+
+
+class Workspace(BaseModel):
+    name: str
+    isolated: bool
+    dateCreated: str
+    dataStores: str
+    coverageStores: str
+    wmsStores: str
+    wmtsStores: str

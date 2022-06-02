@@ -1,7 +1,8 @@
 import pytest,asyncio
-from GeoServerX.src.geoserverx.Utils.auth import GeoServerXAuth
-from GeoServerX.src.geoserverx._Async.gsx import AsyncGeoServerX
-from GeoServerX.src.geoserverx._Sync.gsx import SyncGeoServerX
+from src.geoserverx.Utils.auth import GeoServerXAuth
+from src.geoserverx._Async.gsx import AsyncGeoServerX
+from src.geoserverx._Sync.gsx import SyncGeoServerX
+from zipfile import ZipFile
 
 
 
@@ -13,7 +14,14 @@ def test_get_workspace(url, username, password):
     # print(client.get_raster_stores_in_workspaces('nurc'))
     # print(client.get_store_information('rastsder','cite','nyc'))
     # print(client.get_allstyles())
-    print(client.get_styles('tiger_roads'))
+    # print(client.get_allstyles())
+    # file_name = "jan.zip"
+    # with ZipFile(file_name, 'r') as zip:
+    #files=open('jan.zip','rb' )
+    #print(client.create_shape_store(workspace='jay', store='trsdsdsdusddssdste', file=files.read()))
+    files=open('a.gpkg','rb' )
+    print(client.create_gpkg_store(workspace='jay', store='gpkgretsst', file=files.read()))
+   
     print(f"testing done for - {url}")
     print("-------------end-----------------")
 
