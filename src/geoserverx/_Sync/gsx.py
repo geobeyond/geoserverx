@@ -2,13 +2,13 @@ from dataclasses import dataclass
 import json
 
 
-from ..Utils.Model.style import *
-from ..Utils.Model.workspace import *
-from ..Utils.Model.dataStore import DataStore, DataStores
-from ..Utils.Model.coveragesStore import CoveragesStore, CoveragesStores
-from ..Utils.Services.sync_datastore import ShapeFileService
-from ..Utils.http_client import SyncClient
-from ..Utils.auth import GeoServerXAuth
+from ..models.style import *
+from ..models.workspace import *
+from ..models.data_store import *
+from ..models.coverages_store import *
+from ..utils.services.sync_datastore import ShapeFileService
+from ..utils.http_client import SyncClient
+from ..utils.auth import GeoServerXAuth
 
 @dataclass
 class SyncGeoServerX:
@@ -59,14 +59,14 @@ class SyncGeoServerX:
         return resp
 
     # Get all workspaces
-    def get_all_workspaces(self) -> Workspaces:
+    def get_all_workspaces(self) -> WorkspacesModel:
         with self.http_client as Client:
             responses = Client.get(f"workspaces")
         results = self.response_recognise(responses)
         return results
 
     # Get specific workspaces
-    def get_workspaces(self, workspace: str) -> Workspace:
+    def get_workspaces(self, workspace: str) -> WorkspaceModel:
         with self.http_client as Client:
             responses = Client.get(f"workspaces/{workspace}")
         results = self.response_recognise(responses)
@@ -77,10 +77,10 @@ class SyncGeoServerX:
         self, name: str, default: bool = False, Isolated: bool = False
     ) -> dict:
         try:
-            payload: str = addWorkspace(workspace=addWorkspaceDetails(name=name,isolated=Isolated)).json()
+            payload: NewWorkspace = NewWorkspace(workspace=NewWorkspaceDetails(name=name,isolated=Isolated))
             with self.http_client as Client:
                 responses = Client.post(
-                    f"workspaces?default={default}", data=payload, headers=self.head
+                    f"workspaces?default={default}", data=payload.json(), headers=self.head
                 )
             results = self.response_recognise(responses)
             return results
@@ -95,7 +95,7 @@ class SyncGeoServerX:
         return results
 
     # Get raster stores in specific workspaces
-    def get_raster_stores_in_workspaces(self, workspace: str) -> CoveragesStores:
+    def get_raster_stores_in_workspaces(self, workspace: str) -> CoveragesStoresModel:
         with self.http_client as Client:
             responses = Client.get(f"workspaces/{workspace}/coveragestores")
         results = self.response_recognise(responses)
@@ -110,7 +110,7 @@ class SyncGeoServerX:
         return results
 
     # Get raster  store information in specific workspaces
-    def get_rater_store(self, workspace: str, store: str) -> CoveragesStore:
+    def get_rater_store(self, workspace: str, store: str) -> CoveragesStoreModel:
         url = f"workspaces/{workspace}/coveragestores/{store}.json"
         with self.http_client as Client:
             responses = Client.get(url)

@@ -24,19 +24,19 @@ class DataStore(BaseModel):
     dateModified: str
     featureTypes: str
 
-class datastore_connection_param_dict(BaseModel):
+class DatastoreConnection(BaseModel):
     key : str = Field()
     path : str = Field()
 
 
-class datastore_connection_param(BaseModel):
-    entry : List[datastore_connection_param_dict]
+class EntryItem(BaseModel):
+    entry : List[DatastoreConnection]
 
-class datastoreDetail(BaseModel):
+class DatastoreItem(BaseModel):
     name : str
-    connectionParameters : datastore_connection_param
+    connectionParameters : EntryItem
 
 class newDataStore(BaseModel):
-    dataStore : datastoreDetail = {}
+    dataStore : DatastoreItem = {}
 
 

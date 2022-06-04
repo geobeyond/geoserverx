@@ -10,11 +10,11 @@ class WorkspaceInBulk(BaseModel):
 class workspaceDict(BaseModel):
     workspaces: List[WorkspaceInBulk]
 
-class Workspaces(BaseModel):
+class WorkspacesModel(BaseModel):
     workspaces = workspaceDict
 
 
-class Workspace(BaseModel):
+class WorkspaceModel(BaseModel):
     name: str
     isolated: bool
     dateCreated: str
@@ -24,9 +24,9 @@ class Workspace(BaseModel):
     wmtsStores: str
 
 
-class addWorkspaceDetails(BaseModel):
+class NewWorkspaceDetails(BaseModel):
     name :str
     isolated:bool
 
-class addWorkspace(BaseModel):
-    workspace : addWorkspaceDetails
+class NewWorkspace(BaseModel):
+    workspace : NewWorkspaceDetails
