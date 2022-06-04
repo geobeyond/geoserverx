@@ -17,10 +17,10 @@ def test_get_workspace(url, username, password):
     # print(client.get_allstyles())
     # file_name = "jan.zip"
     # with ZipFile(file_name, 'r') as zip:
-    #files=open('jan.zip','rb' )
-    #print(client.create_shape_store(workspace='jay', store='trsdsdsdusddssdste', file=files.read()))
-    files=open('a.gpkg','rb' )
-    print(client.create_gpkg_store(workspace='jay', store='gpkgretsst', file=files.read()))
+    files=open(r"/Users/krishnaglodha/Documents/geoserverx/argentina.gpkg",'rb' )
+    print(client.create_file_store(workspace='jay', store='ggoldy_gpksg', type='gpkg', file=files.read()))
+    # files=open('a.gpkg','rb' )
+    # print(client.create_gpkg_store(workspace='jay', store='gpkgretsst', file=files.read()))
    
     print(f"testing done for - {url}")
     print("-------------end-----------------")
