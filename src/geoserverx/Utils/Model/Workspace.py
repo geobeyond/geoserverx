@@ -7,8 +7,11 @@ class WorkspaceInBulk(BaseModel):
     href: str
 
 
+class workspaceDict(BaseModel):
+    workspaces: List[WorkspaceInBulk]
+
 class Workspaces(BaseModel):
-    workspaces = {"workspaces": List[WorkspaceInBulk]}
+    workspaces = workspaceDict
 
 
 class Workspace(BaseModel):
@@ -19,3 +22,11 @@ class Workspace(BaseModel):
     coverageStores: str
     wmsStores: str
     wmtsStores: str
+
+
+class addWorkspaceDetails(BaseModel):
+    name :str
+    isolated:bool
+
+class addWorkspace(BaseModel):
+    workspace : addWorkspaceDetails

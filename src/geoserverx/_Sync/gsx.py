@@ -1,13 +1,14 @@
 from dataclasses import dataclass
 import json
-from urllib import response
-from geoserverx.Utils.Model.style import Style
-from geoserverx.Utils.Model.workspace import Workspaces, Workspace
-from geoserverx.Utils.Model.dataStore import DataStore, DataStores
-from geoserverx.Utils.Model.coveragesStore import CoveragesStore, CoveragesStores
-from geoserverx.Utils.Services.sync_datastore import ShapeFileService
-from geoserverx.Utils.http_client import SyncClient
-from geoserverx.Utils.auth import GeoServerXAuth
+
+
+from ..Utils.Model.style import *
+from ..Utils.Model.workspace import *
+from ..Utils.Model.dataStore import DataStore, DataStores
+from ..Utils.Model.coveragesStore import CoveragesStore, CoveragesStores
+from ..Utils.Services.sync_datastore import ShapeFileService
+from ..Utils.http_client import SyncClient
+from ..Utils.auth import GeoServerXAuth
 
 @dataclass
 class SyncGeoServerX:
@@ -76,9 +77,7 @@ class SyncGeoServerX:
         self, name: str, default: bool = False, Isolated: bool = False
     ) -> dict:
         try:
-            payload: str = json.dumps(
-                {"workspace": {"name": name, "isolated": Isolated}}
-            )
+            payload: str = addWorkspace(workspace=addWorkspaceDetails(name=name,isolated=Isolated)).json()
             with self.http_client as Client:
                 responses = Client.post(
                     f"workspaces?default={default}", data=payload, headers=self.head
@@ -119,7 +118,7 @@ class SyncGeoServerX:
         return results
 
     # Get all styles in GS
-    def get_allstyles(self):
+    def get_allstyles(self) -> allStyles:
         with self.http_client as Client:
             responses = Client.get(f"styles")
         results = self.response_recognise(responses)

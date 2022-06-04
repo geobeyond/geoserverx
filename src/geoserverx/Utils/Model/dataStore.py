@@ -1,5 +1,5 @@
 from typing import List
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 
 from .workspace import WorkspaceInBulk
 
@@ -23,3 +23,20 @@ class DataStore(BaseModel):
     dateCreated: str
     dateModified: str
     featureTypes: str
+
+class datastore_connection_param_dict(BaseModel):
+    key : str = Field()
+    path : str = Field()
+
+
+class datastore_connection_param(BaseModel):
+    entry : List[datastore_connection_param_dict]
+
+class datastoreDetail(BaseModel):
+    name : str
+    connectionParameters : datastore_connection_param
+
+class newDataStore(BaseModel):
+    dataStore : datastoreDetail = {}
+
+

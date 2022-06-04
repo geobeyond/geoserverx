@@ -8,3 +8,13 @@ class Style(BaseModel):
     format: str
     languageVersion: dict
     filename: str
+
+class allStyleLise(BaseModel):
+    name : str
+    href : str
+
+class allStyleDict(BaseModel):
+    style : List[allStyleLise]
+
+class allStyles(BaseModel):
+    styles : allStyleDict

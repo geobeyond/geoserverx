@@ -1,7 +1,7 @@
 from typing import List
 from pydantic import BaseModel
 
-from .workspace import WorkspaceInBulk
+# from . import WorkspaceInBulk
 
 
 class CoveragesStoreInBulk(BaseModel):
@@ -15,11 +15,21 @@ class CoveragesStores(BaseModel):
 class CovergesStoreList(BaseModel):
     __root__ : CoveragesStoreInBulk = {}
 
+
+class CoveragesStores(BaseModel):
+    coverageStores:dict = {"coverageStore": List[CoveragesStoreInBulk]}
+
+class CoveragesStoress(BaseModel):
+    coverageStores:CovergesStoreList = {}
+
+# class CovergesStoreList(BaseModel):
+#     coverageStore = List[CoveragesStoreInBulk]
+
 class CoveragesStore(BaseModel):
     name: str
     description: str
     enabled: bool
-    workspace: WorkspaceInBulk
+    # workspace: WorkspaceInBulk
     connectionParameters: dict
     _default: bool
     url: str
