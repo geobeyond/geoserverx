@@ -1,13 +1,11 @@
 from dataclasses import dataclass
 import json
-from urllib import response
-from geoserverx.Utils.Model.style import Style
-from geoserverx.Utils.Model.workspace import Workspaces, Workspace
-from geoserverx.Utils.Model.dataStore import DataStore, DataStores
-from geoserverx.Utils.Model.coveragesStore import CoveragesStore, CoveragesStores
-from geoserverx.Utils.Services.sync_datastore import ShapeFileService
-from geoserverx.Utils.http_client import SyncClient
-from geoserverx.Utils.auth import GeoServerXAuth
+from ..Utils.Model.workspace import Workspaces, Workspace
+from ..Utils.Model.dataStore import DataStore, DataStores
+from ..Utils.Model.coveragesStore import CoveragesStore, CoveragesStores
+from ..Utils.Services.datastore import AddDataStoreProtocol, CreateFileStore, GPKGfileStore, ShapefileStore
+from ..Utils.http_client import SyncClient
+from ..Utils.auth import GeoServerXAuth
 
 @dataclass
 class SyncGeoServerX:
@@ -126,7 +124,7 @@ class SyncGeoServerX:
         return results
 
     # Get specific style in GS
-    def get_style(self, style: str) -> Style:
+    def get_style(self, style: str) :
         with self.http_client as Client:
             responses = Client.get(f"styles/{style}.json")
         results = self.response_recognise(responses)
@@ -195,3 +193,13 @@ class SyncGeoServerX:
         results = responses.status_code
         print(results)
         return results
+
+    def create_file_store(self,workspace:str,store:str,file,type):
+        service : AddDataStoreProtocol = CreateFileStore()
+
+        if type == 'shapefile':
+             service = ShapefileStore(service=service, file=file)
+             
+        elif type == 'gpkg':
+             service = GPKGfileStore(service=service,file=file)
+        service.sync_addFile(self.http_client,workspace,store)
