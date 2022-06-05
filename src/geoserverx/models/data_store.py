@@ -25,9 +25,11 @@ class DataStore(BaseModel):
     featureTypes: str
 
 class DatastoreConnection(BaseModel):
-    key : str = Field()
-    path : str = Field()
+    key : str = Field(alias="@Key")
+    path : str = Field(alias="$")
 
+    class Config:
+        allow_population_by_field_name = True
 
 class EntryItem(BaseModel):
     entry : List[DatastoreConnection]

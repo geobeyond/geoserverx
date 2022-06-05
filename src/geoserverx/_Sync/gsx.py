@@ -77,7 +77,7 @@ class SyncGeoServerX:
         self, name: str, default: bool = False, Isolated: bool = False
     ) -> dict:
         try:
-            payload: NewWorkspace = NewWorkspace(workspace=NewWorkspaceDetails(name=name,isolated=Isolated))
+            payload: NewWorkspace = NewWorkspace(workspace=NewWorkspaceInfo(name=name,isolated=Isolated))
             with self.http_client as Client:
                 responses = Client.post(
                     f"workspaces?default={default}", data=payload.json(), headers=self.head
@@ -133,23 +133,14 @@ class SyncGeoServerX:
 
     # create shapefile store
     def create_shape_store(self, workspace: str, store: str, file):
-        store_payload: str = json.dumps(
-            {
-                "dataStore": {
-                    "name": store,
-                    "connectionParameters": {
-                        "entry": [{"@key": "url", "$": "file:/path/to/nyc.shp"}]
-                    },
-                }
-            }
-        )
-        print(store_payload)
+        
+        store_payload: newDataStore =  newDataStore(dataStore=DatastoreItem(name=store,connectionParameters=EntryItem(entry=[DatastoreConnection(key="url", path="file:/path/to/nyc.shp")])))
         layer_payload = file
-        res = ShapeFileService(self.http_client,file,'jay','asfdsg',)
+        # res = ShapeFileService(self.http_client,file,'jay','asfdsg',)
         # res = ShapeFileService( client=self.http_client,workspace=workspace,store=store,file=file)
         # with self.http_client as Client:
         responses = self.http_client.post(
-            f"workspaces/{workspace}/datastores/", data=store_payload, headers=self.head
+            f"workspaces/{workspace}/datastores/", data=store_payload.json(by_alias=True), headers=self.head
         )
         results = responses.status_code
         print(results)
@@ -165,24 +156,13 @@ class SyncGeoServerX:
 
     # create shapefile store
     def create_gpkg_store(self, workspace: str, store: str, file):
-        store_payload: str = json.dumps(
-            {
-                "dataStore": {
-                    "name": store,
-                    "connectionParameters": {
-                        "entry": [
-                            {"@key": "database", "$": "file:///path/to/nyc.gpkg"},
-                            {"@key": "dbtype", "$": "geopkg"},
-                        ]
-                    },
-                }
-            }
-        )
-        print(store_payload)
+        
+        store_payload: newDataStore =  newDataStore(dataStore=DatastoreItem(name=store,connectionParameters=EntryItem(entry=[DatastoreConnection(key="database", path="file:///path/to/nyc.gpkg"),DatastoreConnection(key="dbtype", path="geopkg")])))
+
         layer_payload = file
 
         responses = self.http_client.post(
-            f"workspaces/{workspace}/datastores/", data=store_payload, headers=self.head
+            f"workspaces/{workspace}/datastores/", data=store_payload.json(by_alias=True), headers=self.head
         )
         results = responses.status_code
         print(results)

@@ -24,9 +24,9 @@ class WorkspaceModel(BaseModel):
     wmtsStores: str
 
 
-class NewWorkspaceDetails(BaseModel):
+class NewWorkspaceInfo(BaseModel):
     name :str
     isolated:bool
 
 class NewWorkspace(BaseModel):
-    workspace : NewWorkspaceDetails
+    workspace : NewWorkspaceInfo
