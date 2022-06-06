@@ -129,52 +129,8 @@ class SyncGeoServerX:
         results = self.response_recognise(responses)
         return results
 
-	# create shapefile store
-	def create_shape_store(self, workspace: str, store: str, file):
-		
-		store_payload: newDataStore =  newDataStore(dataStore=DatastoreItem(name=store,connectionParameters=EntryItem(entry=[DatastoreConnection(key="url", path="file:/path/to/nyc.shp")])))
-		layer_payload = file
-		# res = ShapeFileService(self.http_client,file,'jay','asfdsg',)
-		# res = ShapeFileService( client=self.http_client,workspace=workspace,store=store,file=file)
-		# with self.http_client as Client:
-		responses = self.http_client.post(
-			f"workspaces/{workspace}/datastores/", data=store_payload.json(by_alias=True), headers=self.head
-		)
-		results = responses.status_code
-		print(results)
-		# with self.http_client as Client:
-		responses = self.http_client.put(
-			f"workspaces/{workspace}/datastores/{store}/file.shp",
-			data=layer_payload,
-			headers={"Content-Type": "application/zip"},
-		)
-		results = responses.status_code
-		print(results)
-		return results
-
-	# create shapefile store
-	def create_gpkg_store(self, workspace: str, store: str, file):
-		
-		store_payload: newDataStore =  newDataStore(dataStore=DatastoreItem(name=store,connectionParameters=EntryItem(entry=[DatastoreConnection(key="database", path="file:///path/to/nyc.gpkg"),DatastoreConnection(key="dbtype", path="geopkg")])))
-
-		layer_payload = file
-
-		responses = self.http_client.post(
-			f"workspaces/{workspace}/datastores/", data=store_payload.json(by_alias=True), headers=self.head
-		)
-		results = responses.status_code
-		print(results)
-		responses = self.http_client.put(
-			f"workspaces/{workspace}/datastores/{store}/file.gpkg",
-			data=layer_payload,
-			headers=self.head,
-		)
-		results = responses.status_code
-		print(results)
-		return results
-
-    def create_file_store(self,workspace:str,store:str,file,type):
-        service : AddDataStoreProtocol = CreateFileStore()
+	def create_file_store(self,workspace:str,store:str,file,type):
+		service : AddDataStoreProtocol = CreateFileStore()
 
         if type == 'shapefile':
              service = ShapefileStore(service=service, file=file)
