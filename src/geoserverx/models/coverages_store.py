@@ -1,6 +1,5 @@
-from typing import Dict, List
+from typing import Dict, List,Optional
 from pydantic import BaseModel
-from pyparsing import Optional
 
 from .workspace import WorkspaceInBulk
 # from . import WorkspaceInBulk
@@ -14,14 +13,13 @@ class CoveragesStoresDict(BaseModel):
 	coverageStore: List[CoveragesStoreInBulk]
 
 class CoveragesStoresModel(BaseModel):
-	coverageStores = CoveragesStoresDict
+	coverageStores:CoveragesStoresDict = {}
 
 class CoveragesStoreModel(BaseModel):
 	name: str
 	description: str
 	enabled: bool
 	workspace: WorkspaceInBulk
-	connectionParameters: Optional[Dict] 
 	_default: bool
 	url: str
 	coverages: str

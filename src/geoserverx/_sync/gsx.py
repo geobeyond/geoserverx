@@ -1,8 +1,10 @@
 from dataclasses import dataclass
 import json
 from re import L
-
-from geoserverx.utils.enums import GSResponse
+from geoserverx.models.gs_response import GSResponse
+from typing import Union
+from geoserverx.utils.enums import GSResponse_enum
+from geoserverx.utils.errors import GeoServerXError
 from ..models.style import *
 from ..models.workspace import *
 from ..models.data_store import *
@@ -23,6 +25,14 @@ class SyncGeoServerX:
 	head = {"Content-Type": "application/json"}
 
 	def __post_init__(self):
+		if not self.username and not self.password and not self.url:
+			raise GeoServerXError(0, "Username, Password and URL is missing")
+		elif not self.username or self.username == '' :
+			raise GeoServerXError(0, "Username is missing")
+		elif not self.password or self.password == '':
+			raise GeoServerXError(0, "password is missing")
+		elif not self.url or self.url == '':
+			raise GeoServerXError(0, "URL is missing")
 		self.http_client = SyncClient(
 			base_url=self.url,
 			auth=(self.username, self.password),
@@ -43,40 +53,43 @@ class SyncGeoServerX:
 	) -> "SyncGeoServerX":
 		return SyncGeoServerX(auth.username, auth.password, auth.url)
 
-	def response_recognise(self, r) -> dict:
-		resp = {"code": r.status_code}
-		if r.status_code == 200:
-			resp["result"] = r.json()
-		elif r.status_code == 401:
-			resp= GSResponse._401.value
+	def response_recognise(self, r) -> GSResponse:
+		if r.status_code == 401:
+			resp= GSResponse_enum._401.value
 		elif r.status_code == 500:
-			resp= GSResponse._500.value
+			resp= GSResponse_enum._500.value
 		elif r.status_code == 404:
-			resp= GSResponse._404.value
+			resp= GSResponse_enum._404.value
 		elif r.status_code == 201:
-			resp = GSResponse._201.value
+			resp = GSResponse_enum._201.value
 		elif r.status_code == 409:
-			resp= GSResponse._409.value
-		return resp
+			resp= GSResponse_enum._409.value
+		return GSResponse.parse_obj(resp)
 
 	# Get all workspaces
-	def get_all_workspaces(self) -> WorkspacesModel:
+	def get_all_workspaces(self) -> Union[WorkspacesModel, GSResponse]:
 		with self.http_client as Client:
 			responses = Client.get(f"workspaces")
-		results = self.response_recognise(responses)
-		return results
+		if responses.status_code == 200:
+			return WorkspacesModel.parse_obj(responses.json())
+		else :
+			results = self.response_recognise(responses)
+			return results
 
 	# Get specific workspaces
-	def get_workspaces(self, workspace: str) -> WorkspaceModel:
+	def get_workspace(self, workspace: str) ->Union[WorkspaceModel, GSResponse]:
 		with self.http_client as Client:
 			responses = Client.get(f"workspaces/{workspace}")
-		results = self.response_recognise(responses)
-		return results
+		if responses.status_code == 200:
+			return WorkspaceModel.parse_obj(responses.json())
+		else :
+			results = self.response_recognise(responses)
+			return results
 
 	# Create workspace
 	def create_workspace(
 		self, name: str, default: bool = False, Isolated: bool = False
-	) -> dict:
+	) -> GSResponse:
 		try:
 			payload: NewWorkspace = NewWorkspace(workspace=NewWorkspaceInfo(name=name,isolated=Isolated))
 			with self.http_client as Client:
@@ -86,7 +99,7 @@ class SyncGeoServerX:
 			results = self.response_recognise(responses)
 			return results
 		except Exception as e:
-			return {"reload error": str(e)}
+			return GSResponse(code=500,response='Error in sending request')
 
 	# Get vector stores in specific workspaces
 	def get_vector_stores_in_workspaces(self, workspace: str) -> DataStores:
@@ -140,4 +153,4 @@ class SyncGeoServerX:
 		elif type== 'gpkg':
 			service = GPKGfileStore(service=service,file=file)
 		service.addFile(self.http_client,workspace,store)
-        
+		
