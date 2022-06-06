@@ -110,7 +110,7 @@ class SyncGeoServerX:
         return results
 
     # Get raster  store information in specific workspaces
-    def get_rater_store(self, workspace: str, store: str) -> CoveragesStoreModel:
+    def get_raster_store(self, workspace: str, store: str) -> CoveragesStoreModel:
         url = f"workspaces/{workspace}/coveragestores/{store}.json"
         with self.http_client as Client:
             responses = Client.get(url)
