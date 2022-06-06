@@ -1,11 +1,14 @@
 from dataclasses import dataclass
 import json
-from ..Utils.Model.workspace import Workspaces, Workspace
-from ..Utils.Model.dataStore import DataStore, DataStores
-from ..Utils.Model.coveragesStore import CoveragesStore, CoveragesStores
-from ..Utils.Services.datastore import AddDataStoreProtocol, CreateFileStore, GPKGfileStore, ShapefileStore
-from ..Utils.http_client import SyncClient
-from ..Utils.auth import GeoServerXAuth
+
+
+from ..models.style import *
+from ..models.workspace import *
+from ..models.data_store import *
+from ..models.coverages_store import *
+from ..utils.services.datastore import *
+from ..utils.http_client import SyncClient
+from ..utils.auth import GeoServerXAuth
 
 @dataclass
 class SyncGeoServerX:
@@ -56,14 +59,14 @@ class SyncGeoServerX:
         return resp
 
     # Get all workspaces
-    def get_all_workspaces(self) -> Workspaces:
+    def get_all_workspaces(self) -> WorkspacesModel:
         with self.http_client as Client:
             responses = Client.get(f"workspaces")
         results = self.response_recognise(responses)
         return results
 
     # Get specific workspaces
-    def get_workspaces(self, workspace: str) -> Workspace:
+    def get_workspaces(self, workspace: str) -> WorkspaceModel:
         with self.http_client as Client:
             responses = Client.get(f"workspaces/{workspace}")
         results = self.response_recognise(responses)
@@ -74,12 +77,10 @@ class SyncGeoServerX:
         self, name: str, default: bool = False, Isolated: bool = False
     ) -> dict:
         try:
-            payload: str = json.dumps(
-                {"workspace": {"name": name, "isolated": Isolated}}
-            )
+            payload: NewWorkspace = NewWorkspace(workspace=NewWorkspaceInfo(name=name,isolated=Isolated))
             with self.http_client as Client:
                 responses = Client.post(
-                    f"workspaces?default={default}", data=payload, headers=self.head
+                    f"workspaces?default={default}", data=payload.json(), headers=self.head
                 )
             results = self.response_recognise(responses)
             return results
@@ -94,7 +95,7 @@ class SyncGeoServerX:
         return results
 
     # Get raster stores in specific workspaces
-    def get_raster_stores_in_workspaces(self, workspace: str) -> CoveragesStores:
+    def get_raster_stores_in_workspaces(self, workspace: str) -> CoveragesStoresModel:
         with self.http_client as Client:
             responses = Client.get(f"workspaces/{workspace}/coveragestores")
         results = self.response_recognise(responses)
@@ -109,7 +110,7 @@ class SyncGeoServerX:
         return results
 
     # Get raster  store information in specific workspaces
-    def get_rater_store(self, workspace: str, store: str) -> CoveragesStore:
+    def get_raster_store(self, workspace: str, store: str) -> CoveragesStoreModel:
         url = f"workspaces/{workspace}/coveragestores/{store}.json"
         with self.http_client as Client:
             responses = Client.get(url)
@@ -117,7 +118,7 @@ class SyncGeoServerX:
         return results
 
     # Get all styles in GS
-    def get_allstyles(self):
+    def get_allstyles(self) -> allStyles:
         with self.http_client as Client:
             responses = Client.get(f"styles")
         results = self.response_recognise(responses)
@@ -132,23 +133,14 @@ class SyncGeoServerX:
 
     # create shapefile store
     def create_shape_store(self, workspace: str, store: str, file):
-        store_payload: str = json.dumps(
-            {
-                "dataStore": {
-                    "name": store,
-                    "connectionParameters": {
-                        "entry": [{"@key": "url", "$": "file:/path/to/nyc.shp"}]
-                    },
-                }
-            }
-        )
-        print(store_payload)
+        
+        store_payload: newDataStore =  newDataStore(dataStore=DatastoreItem(name=store,connectionParameters=EntryItem(entry=[DatastoreConnection(key="url", path="file:/path/to/nyc.shp")])))
         layer_payload = file
-        res = ShapeFileService(self.http_client,file,'jay','asfdsg',)
+        # res = ShapeFileService(self.http_client,file,'jay','asfdsg',)
         # res = ShapeFileService( client=self.http_client,workspace=workspace,store=store,file=file)
         # with self.http_client as Client:
         responses = self.http_client.post(
-            f"workspaces/{workspace}/datastores/", data=store_payload, headers=self.head
+            f"workspaces/{workspace}/datastores/", data=store_payload.json(by_alias=True), headers=self.head
         )
         results = responses.status_code
         print(results)
@@ -164,24 +156,13 @@ class SyncGeoServerX:
 
     # create shapefile store
     def create_gpkg_store(self, workspace: str, store: str, file):
-        store_payload: str = json.dumps(
-            {
-                "dataStore": {
-                    "name": store,
-                    "connectionParameters": {
-                        "entry": [
-                            {"@key": "database", "$": "file:///path/to/nyc.gpkg"},
-                            {"@key": "dbtype", "$": "geopkg"},
-                        ]
-                    },
-                }
-            }
-        )
-        print(store_payload)
+        
+        store_payload: newDataStore =  newDataStore(dataStore=DatastoreItem(name=store,connectionParameters=EntryItem(entry=[DatastoreConnection(key="database", path="file:///path/to/nyc.gpkg"),DatastoreConnection(key="dbtype", path="geopkg")])))
+
         layer_payload = file
 
         responses = self.http_client.post(
-            f"workspaces/{workspace}/datastores/", data=store_payload, headers=self.head
+            f"workspaces/{workspace}/datastores/", data=store_payload.json(by_alias=True), headers=self.head
         )
         results = responses.status_code
         print(results)
