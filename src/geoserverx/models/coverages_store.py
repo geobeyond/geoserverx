@@ -1,4 +1,4 @@
-from typing import Dict, List
+from typing import Dict, List,Optional
 from pydantic import BaseModel
 from typing import Optional
 
@@ -15,7 +15,7 @@ class CoveragesStoresDict(BaseModel):
 
 
 class CoveragesStoresModel(BaseModel):
-	coverageStores = CoveragesStoresDict
+	coverageStores:CoveragesStoresDict = {}
 
 
 class CoveragesStoreModel(BaseModel):
