@@ -1,5 +1,8 @@
 from dataclasses import dataclass
 import json
+from re import L
+
+from geoserverx.utils.enums import GSResponse
 from ..models.style import *
 from ..models.workspace import *
 from ..models.data_store import *
@@ -45,15 +48,15 @@ class SyncGeoServerX:
 		if r.status_code == 200:
 			resp["result"] = r.json()
 		elif r.status_code == 401:
-			resp["error"] = "Unauthorized request"
+			resp= GSResponse._401.value
 		elif r.status_code == 500:
-			resp["error"] = "Internal Server error"
+			resp= GSResponse._500.value
 		elif r.status_code == 404:
-			resp["error"] = "Result not found"
+			resp= GSResponse._404.value
 		elif r.status_code == 201:
-			resp["result"] = "Data added successfully"
+			resp = GSResponse._201.value
 		elif r.status_code == 409:
-			resp["error"] = "Same data found"
+			resp= GSResponse._409.value
 		return resp
 
 	# Get all workspaces
