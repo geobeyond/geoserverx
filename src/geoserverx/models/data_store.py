@@ -1,4 +1,4 @@
-from typing import List
+from typing import List, Optional, Union
 from pydantic import BaseModel, Field
 
 from .workspace import WorkspaceInBulk
@@ -8,12 +8,14 @@ class DataStoreInBulk(BaseModel):
     name: str
     href: str
 
+class DataStoreDict(BaseModel):
+    dataStore: List[DataStoreInBulk]
 
-class DataStores(BaseModel):
-    dataStores = {"dataStore": List[DataStoreInBulk]}
+class DataStoresModel(BaseModel):
+    dataStores: Union[DataStoreDict, str] = ''
 
 
-class DataStore(BaseModel):
+class DataStoreModel(BaseModel):
     name: str
     description: str
     enabled: bool

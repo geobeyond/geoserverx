@@ -1,4 +1,4 @@
-from typing import Dict, List,Optional
+from typing import Dict, List,Optional, Union
 from pydantic import BaseModel
 
 from .workspace import WorkspaceInBulk
@@ -13,7 +13,7 @@ class CoveragesStoresDict(BaseModel):
 	coverageStore: List[CoveragesStoreInBulk]
 
 class CoveragesStoresModel(BaseModel):
-	coverageStores:CoveragesStoresDict = {}
+	coverageStores: Union[CoveragesStoresDict, str] = ''
 
 class CoveragesStoreModel(BaseModel):
 	name: str

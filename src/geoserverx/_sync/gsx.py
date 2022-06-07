@@ -103,48 +103,66 @@ class SyncGeoServerX:
 			return GSResponse.parse_obj(resp)
 
 	# Get vector stores in specific workspaces
-	def get_vector_stores_in_workspaces(self, workspace: str) -> DataStores:
+	def get_vector_stores_in_workspaces(self, workspace: str) -> DataStoresModel:
 		with self.http_client as Client:
 			responses = Client.get(f"workspaces/{workspace}/datastores")
-		results = self.response_recognise(responses)
-		return results
+		if responses.status_code == 200:
+			return DataStoresModel.parse_obj(responses.json())
+		else :
+			results = self.response_recognise(responses)
+			return results
 
 	# Get raster stores in specific workspaces
 	def get_raster_stores_in_workspaces(self, workspace: str) -> CoveragesStoresModel:
 		with self.http_client as Client:
 			responses = Client.get(f"workspaces/{workspace}/coveragestores")
-		results = self.response_recognise(responses)
-		return results
+		if responses.status_code == 200:
+			return CoveragesStoresModel.parse_obj(responses.json())
+		else :
+			results = self.response_recognise(responses)
+			return results
 
 	# Get vecor store information in specific workspaces
-	def get_vector_store(self, workspace: str, store: str) -> DataStore:
+	def get_vector_store(self, workspace: str, store: str) -> DataStoreModel:
 		url = f"workspaces/{workspace}/datastores/{store}.json"
 		with self.http_client as Client:
 			responses = Client.get(url)
-		results = self.response_recognise(responses)
-		return results
+		if responses.status_code == 200:
+			return DataStoreModel.parse_obj(responses.json())
+		else :
+			results = self.response_recognise(responses)
+			return results
 
 	# Get raster  store information in specific workspaces
 	def get_raster_store(self, workspace: str, store: str) -> CoveragesStoreModel:
 		url = f"workspaces/{workspace}/coveragestores/{store}.json"
 		with self.http_client as Client:
 			responses = Client.get(url)
-		results = self.response_recognise(responses)
-		return results
+		if responses.status_code == 200:
+			return CoveragesStoreModel.parse_obj(responses.json())
+		else :
+			results = self.response_recognise(responses)
+			return results
 
 	# Get all styles in GS
-	def get_allstyles(self) -> allStyles:
+	def get_allstyles(self) -> AllStylesModel:
 		with self.http_client as Client:
 			responses = Client.get(f"styles")
-		results = self.response_recognise(responses)
-		return results
+		if responses.status_code == 200:
+			return AllStylesModel.parse_obj(responses.json())
+		else :
+			results = self.response_recognise(responses)
+			return results
 
 	# Get specific style in GS
-	def get_style(self, style: str) :
+	def get_style(self, style: str) -> StyleModel :
 		with self.http_client as Client:
 			responses = Client.get(f"styles/{style}.json")
-		results = self.response_recognise(responses)
-		return results
+		if responses.status_code == 200:
+			return StyleModel.parse_obj(responses.json())
+		else :
+			results = self.response_recognise(responses)
+			return results
 
 	def create_file_store(self,workspace:str,store:str,file,type):
 		service : AddDataStoreProtocol = CreateFileStore()
