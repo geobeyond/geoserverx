@@ -95,7 +95,8 @@ class SyncGeoServerX:
 			results = self.response_recognise(responses)
 			return results
 		except Exception as e:
-			return GSResponse(code=500,response='Error in sending request')
+			resp = {"code":500,"response":"Error in sending request"}
+			return GSResponse.parse_obj(resp)
 
 	# Get vector stores in specific workspaces
 	def get_vector_stores_in_workspaces(self, workspace: str) -> DataStores:
