@@ -69,24 +69,37 @@ def bad_DatastoreItem_connection() -> dict :
 
 @pytest.fixture
 def good_DataStoreModel_connection() -> dict :
-    item = {"name":"just", 
-    "connectionParameters":{
-        "entry": [
-            {"key":"just", "path":"https://www.linkedin.com/notifications/"},
-            {"key":"just", "path":"https://www.linkedin.com/notifications/"}
-        ]
-    },
-    "enabled": True,
-    "workspace": {"name":"just", "href":"https://www.linkedin.com/notifications/"},
-    "_default": False,
-    "dateCreated": "2022-06-01 14:13:07.984 UTC",
-    "dataModified":"2022-06-01 14:13:07.984 UTC",
-    "featureTypes":"http://localhost:8080/geoserver/rest/workspaces/jaam/datastores/jumper/featuretypes.json"
+    item = {
+    "dataStore": {
+        "name": "jumper",
+        "type": "Shapefile",
+        "enabled": True,
+        "workspace": {
+            "name": "jaam",
+            "href": "http://localhost:8080/geoserver/rest/workspaces/jaam.json"
+        },
+        "connectionParameters": {
+            "entry": [
+                {
+                    "key": "namespace",
+                    "path": "http://jaam"
+                },
+                {
+                    "key": "url",
+                    "path": "file:/usr/local/geoserver/bin/../data_dir/data/jaam/jumper/"
+                }
+            ]
+        },
+        "_default": False,
+        "dateCreated": "2022-06-01 14:13:07.984 UTC",
+        "dateModified": "2022-06-01 14:28:30.705 UTC",
+        "featureTypes": "http://localhost:8080/geoserver/rest/workspaces/jaam/datastores/jumper/featuretypes.json"
     }
+}
     
     return item
 
 @pytest.fixture
 def bad_DataStoreModel_connection() -> dict :
-    item = {"name":''}
+    item = {"dataStore":''}
     return item
