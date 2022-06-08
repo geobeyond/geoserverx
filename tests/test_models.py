@@ -1,7 +1,7 @@
 import pytest
 from pydantic import ValidationError
 from geoserverx import SyncGeoServerX, GeoServerXAuth,GeoServerXError
-from geoserverx.models.data_store import DataStoreInBulk,DataStoreDict,DatastoreConnection,EntryItem,DatastoreItem,newDataStore,DataStoreModel
+from geoserverx.models.data_store import DataStoreInBulk,DataStoreDict,DatastoreConnection,EntryItem,DatastoreItem,DataStoreModel,DataStoreModelDetails
 
 
 # Testing DataStoreInBulk
@@ -54,7 +54,7 @@ def test_DatastoreItem_failure(bad_DatastoreItem_connection):
 # Testing DataStoreModel
 def test_DataStoreModel_connection(good_DataStoreModel_connection):
     ds_connection = DataStoreModel(**good_DataStoreModel_connection)
-    assert ds_connection.name == "just"
+    assert ds_connection.dataStore.name == "jumper"
 
 def test_DataStoreModel_failure(bad_DataStoreModel_connection):
     with pytest.raises(ValidationError):

@@ -122,7 +122,7 @@ class SyncGeoServerX:
 			results = self.response_recognise(responses)
 			return results
 
-	# Get vecor store information in specific workspaces
+	# Get vector store information in specific workspaces
 	def get_vector_store(self, workspace: str, store: str) -> DataStoreModel:
 		url = f"workspaces/{workspace}/datastores/{store}.json"
 		with self.http_client as Client:

@@ -30,12 +30,8 @@ class DatastoreItem(BaseModel):
     name : str
     connectionParameters : EntryItem
 
-class newDataStore(BaseModel):
-    dataStore : DatastoreItem = {}
 
-
-
-class DataStoreModel(BaseModel):
+class DataStoreModelDetails(BaseModel):
     name: str = ...
     description: str = None
     enabled: bool = ...
@@ -45,3 +41,8 @@ class DataStoreModel(BaseModel):
     dateCreated: str
     dateModified: str
     featureTypes: str
+
+
+class DataStoreModel(BaseModel):
+    dataStore : DataStoreModelDetails = {}
+
