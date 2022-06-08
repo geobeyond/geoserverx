@@ -28,8 +28,8 @@ class WorkspaceModel(BaseModel):
 
 
 class NewWorkspaceInfo(BaseModel):
-    name :str
-    isolated:bool
+    name :str = ...
+    isolated:bool = None
 
 class NewWorkspace(BaseModel):
     workspace : NewWorkspaceInfo
