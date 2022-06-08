@@ -9,10 +9,10 @@ class DataStoreInBulk(BaseModel):
     href: str = ...
 
 class DataStoreDict(BaseModel):
-    dataStore: List[DataStoreInBulk]
+    dataStore: List[DataStoreInBulk] 
 
 class DataStoresModel(BaseModel):
-    dataStores: Union[DataStoreDict, str] = ''
+    dataStores: DataStoreDict = ''
 
 
 
