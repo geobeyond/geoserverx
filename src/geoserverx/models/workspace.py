@@ -3,28 +3,28 @@ from pydantic import BaseModel
 
 
 class WorkspaceInBulk(BaseModel):
-    name: str
-    href: str
+    name: str = ...
+    href: str = ...
 
 
 class workspaceDict(BaseModel):
     workspace: List[WorkspaceInBulk]
 
 class WorkspacesModel(BaseModel):
-    workspaces:workspaceDict =  {}
+    workspaces:workspaceDict =  ''
 
 
 class SingleWorkspace(BaseModel):
-    name: str
-    isolated: bool
-    dateCreated: str
-    dataStores: str
-    coverageStores: str
-    wmsStores: str
-    wmtsStores: str
+    name: str = ...
+    isolated: bool = ...
+    dateCreated: str = ...
+    dataStores: str = ...
+    coverageStores: str = ...
+    wmsStores: str = ...
+    wmtsStores: str = ...
 
 class WorkspaceModel(BaseModel):
-    workspace:SingleWorkspace
+    workspace:SingleWorkspace = ...
 
 
 class NewWorkspaceInfo(BaseModel):
@@ -32,4 +32,4 @@ class NewWorkspaceInfo(BaseModel):
     isolated:bool = None
 
 class NewWorkspace(BaseModel):
-    workspace : NewWorkspaceInfo
+    workspace : NewWorkspaceInfo = ...
