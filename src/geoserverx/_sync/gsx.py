@@ -5,11 +5,11 @@ from geoserverx.models.gs_response import GSResponse
 from typing import Union
 from geoserverx.utils.enums import GSResponse_enum
 from geoserverx.utils.errors import GeoServerXError
-from ..models.style import *
-from ..models.workspace import *
-from ..models.data_store import *
-from ..models.coverages_store import *
-from ..utils.services.datastore import *
+from ..models.style import StyleModel,AllStylesModel
+from ..models.workspace import WorkspaceModel,WorkspacesModel,NewWorkspace
+from ..models.data_store import DataStoreModel,DataStoresModel
+from ..models.coverages_store import CoveragesStoreModel,CoveragesStoresModel
+from ..utils.services.datastore import AddDataStoreProtocol
 from ..utils.http_client import SyncClient
 from ..utils.auth import GeoServerXAuth
 
