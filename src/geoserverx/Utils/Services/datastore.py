@@ -15,7 +15,7 @@ class AddDataStoreProtocol(Protocol):
 
 class CreateFileStore:
     def addFile(self, client,  workspace, store, method, store_payload,layer_payload, store_header,layer_header):
-         with client as Client:
+        with client as Client:
             store_responses = Client.post(
                 f"workspaces/{workspace}/datastores/", data=store_payload, headers=store_header
             )
@@ -26,8 +26,6 @@ class CreateFileStore:
             )
             results = layer_responses.status_code
             return results
-        
-
 
 
 class ShapefileStore:
@@ -52,7 +50,6 @@ class ShapefileStore:
             client,  workspace, store, "shp", store_payload,layer_payload, {"Content-Type": "application/json"}, {"Content-Type": "application/zip"}
         )
         return result
-
 
 
 class GPKGfileStore:

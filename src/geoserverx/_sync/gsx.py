@@ -1,17 +1,21 @@
 from dataclasses import dataclass
-import json
-from re import L
 from geoserverx.models.gs_response import GSResponse
 from typing import Union
 from geoserverx.utils.enums import GSResponse_enum
 from geoserverx.utils.errors import GeoServerXError
-from ..models.style import StyleModel,AllStylesModel
-from ..models.workspace import WorkspaceModel,WorkspacesModel,NewWorkspace
-from ..models.data_store import DataStoreModel,DataStoresModel
-from ..models.coverages_store import CoveragesStoreModel,CoveragesStoresModel
-from ..utils.services.datastore import AddDataStoreProtocol
-from ..utils.http_client import SyncClient
-from ..utils.auth import GeoServerXAuth
+from geoserverx.models.style import StyleModel, AllStylesModel
+from geoserverx.models.workspace import (
+	WorkspaceModel, WorkspacesModel,
+	NewWorkspace, NewWorkspaceInfo)
+from geoserverx.models.data_store import DataStoreModel, DataStoresModel
+from geoserverx.models.coverages_store import (
+    CoveragesStoreModel, CoveragesStoresModel)
+from geoserverx.utils.services.datastore import (
+    AddDataStoreProtocol, CreateFileStore,
+    ShapefileStore, GPKGfileStore
+)
+from geoserverx.utils.http_client import SyncClient
+from geoserverx.utils.auth import GeoServerXAuth
 
 @dataclass
 class SyncGeoServerX:
@@ -77,7 +81,7 @@ class SyncGeoServerX:
 			return results
 
 	# Get specific workspaces
-	def get_workspace(self, workspace: str) ->Union[WorkspaceModel, GSResponse]:
+	def get_workspace(self, workspace: str) -> Union[WorkspaceModel, GSResponse]:
 		with self.http_client as Client:
 			responses = Client.get(f"workspaces/{workspace}")
 		if responses.status_code == 200:
@@ -91,7 +95,11 @@ class SyncGeoServerX:
 		self, name: str, default: bool = False, Isolated: bool = False
 	) -> GSResponse:
 		try:
-			payload: NewWorkspace = NewWorkspace(workspace=NewWorkspaceInfo(name=name,isolated=Isolated))
+			payload: NewWorkspace = NewWorkspace(
+				workspace=NewWorkspaceInfo(
+					name=name, isolated=Isolated
+				)
+			)
 			with self.http_client as Client:
 				responses = Client.post(
 					f"workspaces?default={default}", data=payload.json(), headers=self.head
@@ -155,7 +163,7 @@ class SyncGeoServerX:
 			return results
 
 	# Get specific style in GS
-	def get_style(self, style: str) -> StyleModel :
+	def get_style(self, style: str) -> StyleModel:
 		with self.http_client as Client:
 			responses = Client.get(f"styles/{style}.json")
 		if responses.status_code == 200:
@@ -164,12 +172,12 @@ class SyncGeoServerX:
 			results = self.response_recognise(responses)
 			return results
 
-	def create_file_store(self,workspace:str,store:str,file,type):
+	def create_file_store(self, workspace:str, store:str, file, type):
 		service : AddDataStoreProtocol = CreateFileStore()
 
 		if type == 'shapefile':
 			service = ShapefileStore(service=service, file=file)	 
 		elif type== 'gpkg':
-			service = GPKGfileStore(service=service,file=file)
-		service.addFile(self.http_client,workspace,store)
+			service = GPKGfileStore(service=service, file=file)
+		service.addFile(self.http_client, workspace, store)
 		
