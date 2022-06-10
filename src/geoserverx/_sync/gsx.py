@@ -73,7 +73,7 @@ class SyncGeoServerX:
 			return results
 
 	# Get specific workspaces
-	def get_workspace(self, workspace: str) ->Union[WorkspaceModel, GSResponse]:
+	def get_workspace(self, workspace: str) -> Union[WorkspaceModel, GSResponse]:
 		with self.http_client as Client:
 			responses = Client.get(f"workspaces/{workspace}")
 		if responses.status_code == 200:
@@ -87,7 +87,11 @@ class SyncGeoServerX:
 		self, name: str, default: bool = False, Isolated: bool = False
 	) -> GSResponse:
 		try:
-			payload: NewWorkspace = NewWorkspace(workspace=NewWorkspaceInfo(name=name,isolated=Isolated))
+			payload: NewWorkspace = NewWorkspace(
+				workspace=NewWorkspaceInfo(
+					name=name, isolated=Isolated
+				)
+			)
 			with self.http_client as Client:
 				responses = Client.post(
 					f"workspaces?default={default}", data=payload.json(), headers=self.head
@@ -151,7 +155,7 @@ class SyncGeoServerX:
 			return results
 
 	# Get specific style in GS
-	def get_style(self, style: str) -> StyleModel :
+	def get_style(self, style: str) -> StyleModel:
 		with self.http_client as Client:
 			responses = Client.get(f"styles/{style}.json")
 		if responses.status_code == 200:
