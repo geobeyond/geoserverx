@@ -1,12 +1,13 @@
 from dataclasses import dataclass
-import json
-from ..models.style import *
-from ..models.workspace import *
-from ..models.data_store import *
-from ..models.coverages_store import *
-from ..utils.services.datastore import *
-from ..utils.http_client import SyncClient
-from ..utils.auth import GeoServerXAuth
+from geoserverx.utils.logger import std_out_logger
+from geoserverx.models.style import *
+from geoserverx.models.workspace import *
+from geoserverx.models.data_store import *
+from geoserverx.models.coverages_store import *
+from geoserverx.utils.services.datastore import *
+from geoserverx.utils.http_client import SyncClient
+from geoserverx.utils.auth import GeoServerXAuth
+
 
 @dataclass
 class SyncGeoServerX:
@@ -122,19 +123,28 @@ class SyncGeoServerX:
 		results = self.response_recognise(responses)
 		return results
 
-    # Get specific style in GS
-    def get_style(self, style: str) :
-        with self.http_client as Client:
-            responses = Client.get(f"styles/{style}.json")
-        results = self.response_recognise(responses)
-        return results
+	# Get specific style in GS
+	def get_style(self, style: str):
+		with self.http_client as Client:
+			responses = Client.get(f"styles/{style}.json")
+		results = self.response_recognise(responses)
+		return results
 
-	def create_file_store(self,workspace:str,store:str,file,type):
+	def create_file_store(
+		self,
+		workspace:str,
+		store:str,
+		file,
+		service_type
+	):
 		service : AddDataStoreProtocol = CreateFileStore()
 
-        if type == 'shapefile':
-             service = ShapefileStore(service=service, file=file)
-             
-        elif type == 'gpkg':
-             service = GPKGfileStore(service=service,file=file)
-        service.sync_addFile(self.http_client,workspace,store)
+		if service_type == 'shapefile':
+			service = ShapefileStore(
+				service=service, logger=std_out_logger("Shapefile"), file=file)
+		elif service_type == 'gpkg':
+			service = GPKGfileStore(
+				service=service, logger=std_out_logger("GeoPackage"), file=file)
+		else:
+			raise ValueError(f"Service type {service_type} not supported")
+		service.sync_addFile(self.http_client, workspace, store)
