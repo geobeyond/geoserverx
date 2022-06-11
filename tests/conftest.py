@@ -1,5 +1,28 @@
 import pytest
 
+
+@pytest.fixture
+def good_Workspaces_connection() -> dict :
+    item = {
+    "workspaces": {
+        "workspace": [
+            {
+                "name": "pydad",
+                "href": "http://localhost:8080/geoserver/rest/workspaces/pydad.json"
+            },
+            {
+                "name": "jkzch",
+                "href": "http://localhost:8080/geoserver/rest/workspaces/jkzch.json"
+            },
+            {
+                "name": "Pcqrv",
+                "href": "http://localhost:8080/geoserver/rest/workspaces/Pcqrv.json"
+            },
+        ]
+    }
+}
+    return item
+
 @pytest.fixture
 def good_DataStoreInBulk_connection() -> dict :
     item = {"name":"just", "href":"https://www.linkedin.com/notifications/"}
