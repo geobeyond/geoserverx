@@ -1,6 +1,5 @@
 from typing import Dict, List,Optional, Union,Literal
 from pydantic import BaseModel
-from typing import Optional
 
 from geoserverx.models.workspace import WorkspaceInBulk
 
