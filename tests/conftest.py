@@ -50,7 +50,7 @@ def good_DataStoresModel_connection() -> dict :
 
 @pytest.fixture
 def bad_DataStoresModel_connection() -> dict :
-    item = {"dataStores":''}
+    item = {"dataStores":'sd'}
     return item
 
 
