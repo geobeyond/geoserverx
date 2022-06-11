@@ -1,7 +1,8 @@
 from enum import Enum
 from geoserverx.models.gs_response import GSResponse
 
-class GSResponse_enum(Enum):
+
+class GSResponseEnum(Enum):
     _404 = GSResponse(code=404, response="Result not found")
     _401 = GSResponse(code=401, response="Unauthorized request")
     _500 = GSResponse(code=500, response="Internal Server error")

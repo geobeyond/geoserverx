@@ -1,11 +1,11 @@
 import pytest
 from pydantic import ValidationError
-from geoserverx import SyncGeoServerX, GeoServerXAuth,GeoServerXError
 from geoserverx.models.data_store import DataStoreInBulk,DataStoreDict,DatastoreConnection,EntryItem,DatastoreItem,DataStoreModel,DataStoresModel
 from geoserverx.models.coverages_store import CoveragesStoreInBulk,CoveragesStoreModel,CoveragesStoresDict,CoveragesStoresModel
 from geoserverx.models.style import SingleStyleDict,StyleModel,allStyleList,allStyleDict,AllStylesModel
 from geoserverx.models.workspace import WorkspaceInBulk,workspaceDict,WorkspaceModel,WorkspacesModel,NewWorkspace,NewWorkspaceInfo,SingleWorkspace
-''' ------ DataStore testing ------ '''
+
+
 # Testing DataStoreInBulk
 def test_DataStoreInBulk_connection(good_DataStoreInBulk_connection):
     ds_connection = DataStoreInBulk(**good_DataStoreInBulk_connection)

@@ -1,10 +1,22 @@
 from dataclasses import dataclass
+from typing import Union
 from geoserverx.utils.logger import std_out_logger
-from geoserverx.models.style import *
-from geoserverx.models.workspace import *
-from geoserverx.models.data_store import *
-from geoserverx.models.coverages_store import *
-from geoserverx.utils.services.datastore import *
+from geoserverx.utils.errors import GeoServerXError
+from geoserverx.utils.enums import GSResponseEnum
+from geoserverx.models.style import StyleModel, AllStylesModel
+from geoserverx.models.workspace import (
+    NewWorkspace, NewWorkspaceInfo,
+    WorkspaceModel, WorkspacesModel
+)
+from geoserverx.models.data_store import DataStoreModel, DataStoresModel
+from geoserverx.models.coverages_store import (
+    CoveragesStoreModel, CoveragesStoresModel
+)
+from geoserverx.models.gs_response import GSResponse
+from geoserverx.utils.services.datastore import (
+	AddDataStoreProtocol, CreateFileStore,
+	ShapefileStore, GPKGfileStore
+)
 from geoserverx.utils.http_client import SyncClient
 from geoserverx.utils.auth import GeoServerXAuth
 
@@ -51,15 +63,15 @@ class SyncGeoServerX:
 
 	def response_recognise(self, r) -> GSResponse:
 		if r.status_code == 401:
-			resp= GSResponse_enum._401.value
+			resp= GSResponseEnum._401.value
 		elif r.status_code == 500:
-			resp= GSResponse_enum._500.value
+			resp= GSResponseEnum._500.value
 		elif r.status_code == 404:
-			resp= GSResponse_enum._404.value
+			resp= GSResponseEnum._404.value
 		elif r.status_code == 201:
-			resp = GSResponse_enum._201.value
+			resp = GSResponseEnum._201.value
 		elif r.status_code == 409:
-			resp= GSResponse_enum._409.value
+			resp= GSResponseEnum._409.value
 		return GSResponse.parse_obj(resp)
 
 	# Get all workspaces

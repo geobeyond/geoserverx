@@ -151,7 +151,7 @@ def good_DataStoreModel_connection() -> dict :
         "featureTypes": "http://localhost:8080/geoserver/rest/workspaces/jaam/datastores/jumper/featuretypes.json"
     }
 }
-    
+
     return item
 
 @pytest.fixture

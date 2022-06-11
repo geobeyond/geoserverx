@@ -1,13 +1,9 @@
-from pytest_httpx import HTTPXMock, httpx_mock
-from geoserverx import SyncGeoServerX, GeoServerXAuth,GeoServerXError
-
 from pytest import fixture, mark as pytest_mark
-import random
-import string
-from geoserverx.models.data_store import DataStoreInBulk
-
+from pytest_httpx import HTTPXMock
 from geoserverx.models.workspace import WorkspaceInBulk
-
+from geoserverx._sync.gsx import (
+    SyncGeoServerX, GeoServerXAuth, GeoServerXError
+)
 
 
 @fixture(name="client")
