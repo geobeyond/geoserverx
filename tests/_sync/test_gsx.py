@@ -69,7 +69,7 @@ def test_create_workspace_duplicate_fail(client:SyncGeoServerX):
 def test_create_workspace_success(client:SyncGeoServerX):
     letters = string.ascii_letters
     x = "".join(random.sample(letters,5))   
-    worksp = client.create_workspace()
+    worksp = client.create_workspace(x)
     assert worksp.code == 201
 
 

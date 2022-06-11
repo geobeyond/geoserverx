@@ -1,4 +1,4 @@
-from typing import List, Optional, Union
+from typing import List, Literal, Optional, Union
 from pydantic import BaseModel, Field
 
 from .workspace import WorkspaceInBulk
@@ -12,7 +12,7 @@ class DataStoreDict(BaseModel):
     dataStore: List[DataStoreInBulk] 
 
 class DataStoresModel(BaseModel):
-    dataStores: DataStoreDict = ''
+    dataStores: Union[DataStoreDict, Literal['']] = ''
 
 
 
