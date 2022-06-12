@@ -23,6 +23,31 @@ def good_Workspaces_connection() -> dict :
 }
     return item
 
+
+@pytest.fixture
+def good_Workspace_connection() -> dict :
+    item = {
+    "workspace": {
+        "name": "pydad",
+        "isolated": True,
+        "dateCreated": "2022-06-04 07:55:31.903 UTC",
+        "dataStores": "http://localhost:8080/geoserver/rest/workspaces/pydad/datastores.json",
+        "coverageStores": "http://localhost:8080/geoserver/rest/workspaces/pydad/coveragestores.json",
+        "wmsStores": "http://localhost:8080/geoserver/rest/workspaces/pydad/wmsstores.json",
+        "wmtsStores": "http://localhost:8080/geoserver/rest/workspaces/pydad/wmtsstores.json"
+    }
+}
+    return item
+
+    
+@pytest.fixture
+def bad_Workspace_connection() -> dict :
+    item = {
+    "code": 404,
+    "response":"Result not found"
+}
+    return item
+
 @pytest.fixture
 def good_DataStoreInBulk_connection() -> dict :
     item = {"name":"just", "href":"https://www.linkedin.com/notifications/"}
