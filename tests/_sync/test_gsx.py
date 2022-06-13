@@ -1,4 +1,6 @@
+from pydantic import ValidationError
 from pytest import fixture, mark as pytest_mark
+import pytest
 from pytest_httpx import HTTPXMock
 from geoserverx.models.workspace import WorkspaceInBulk
 from geoserverx._sync.gsx import (
@@ -37,44 +39,17 @@ def test_workspace_success(client:SyncGeoServerX,httpx_mock: HTTPXMock,good_Work
     worksp = client.get_workspace('pydad')
     assert worksp.workspace.name == 'pydad'
 
-# @pytest_mark.anyio
-# def test_workspace_fail(client:SyncGeoServerX,httpx_mock: HTTPXMock,bad_Workspace_connection):
-#     httpx_mock.add_response(json=bad_Workspace_connection)
-#     worksp = client.get_workspace('sfsf')
-#     assert worksp.code == 404
+@pytest_mark.anyio
+def test_workspace_fail(client:SyncGeoServerX,httpx_mock: HTTPXMock,bad_Workspace_connection):
+    httpx_mock.add_response(json=bad_Workspace_connection)
+    with pytest.raises(ValidationError):
+        worksp = client.get_workspace('sfsf')
 
-# # @pytest_mark.anyio
-# # def test_create_workspace_fail(client:SyncGeoServerX):
-# #     try :
-# #         worksp = client.create_workspace()
-# #         assert False
-# #     except : 
-# #         assert True
-
-
-# @pytest_mark.anyio
-# def test_create_workspace_duplicate_fail(client:SyncGeoServerX):
-#     worksp = client.create_workspace('ad')
-#     assert worksp.code == 409
-
-# @pytest_mark.anyio
-# def test_create_workspace_success(client:SyncGeoServerX):
-#     letters = string.ascii_letters
-#     x = "".join(random.sample(letters,5))   
-#     worksp = client.create_workspace(x)
-#     assert worksp.code == 201
-
-
-# @pytest_mark.anyio
-# def test_get_vector_stores_in_workspaces_no_ws_fail(client:SyncGeoServerX):
-#     store = client.get_vector_stores_in_workspaces('cisfte')
-#     assert store.code == 404
-
-
-# @pytest_mark.anyio
-# def test_get_vector_stores_in_workspaces_no_store_fail(client:SyncGeoServerX):
-#     store = client.get_vector_stores_in_workspaces('cite')
-#     assert store.dataStores == ""
+@pytest_mark.anyio
+def test_get_vector_stores_in_workspaces_no_ws_fail(client:SyncGeoServerX,httpx_mock: HTTPXMock,bad_DatastoreItem_connection):
+    httpx_mock.add_response(json=bad_DatastoreItem_connection)
+    with pytest.raises(ValidationError):
+        store = client.get_vector_stores_in_workspaces('cisfte')
 
 @pytest_mark.anyio
 def test_get_vector_stores_in_workspaces_success(client:SyncGeoServerX,httpx_mock: HTTPXMock,good_DataStoresModel_connection):
@@ -83,16 +58,11 @@ def test_get_vector_stores_in_workspaces_success(client:SyncGeoServerX,httpx_moc
     assert isinstance(store.dataStores.dataStore, list) 
 
 
-
-# @pytest_mark.anyio
-# def test_get_raster_stores_in_workspaces_no_ws_fail(client:SyncGeoServerX):
-#     store = client.get_raster_stores_in_workspaces('cisfte')
-#     assert store.code == 404
-
-# @pytest_mark.anyio
-# def test_get_raster_stores_in_workspaces_no_store_fail(client:SyncGeoServerX):
-#     store = client.get_raster_stores_in_workspaces('jay')
-#     assert store.coverageStores == ""
+@pytest_mark.anyio
+def test_get_raster_stores_in_workspaces_no_store_fail(client:SyncGeoServerX,httpx_mock: HTTPXMock,bad_CoveragesStoresModel_connection):
+    httpx_mock.add_response(json=bad_CoveragesStoresModel_connection)
+    with pytest.raises(ValidationError):
+        store = client.get_raster_stores_in_workspaces('jay')
 
 @pytest_mark.anyio
 def test_get_raster_stores_in_workspaces_success(client:SyncGeoServerX,httpx_mock: HTTPXMock,good_CoveragesStoresModel_connection):
@@ -108,6 +78,12 @@ def test_allstyles_success(client:SyncGeoServerX,httpx_mock: HTTPXMock,good_AllS
     assert isinstance(allstyles.styles.style, list) 
 
 @pytest_mark.anyio
+def test_allstyles_fail(client:SyncGeoServerX,httpx_mock: HTTPXMock,bad_AllStylesModel_connection):
+    httpx_mock.add_response(json=bad_AllStylesModel_connection)
+    with pytest.raises(ValidationError):
+        style = client.get_allstyles()
+
+@pytest_mark.anyio
 def test_style_success(client:SyncGeoServerX,httpx_mock: HTTPXMock,good_StyleModel_connection):
     httpx_mock.add_response(json=good_StyleModel_connection)
     style = client.get_style('burg')
@@ -116,5 +92,5 @@ def test_style_success(client:SyncGeoServerX,httpx_mock: HTTPXMock,good_StyleMod
 @pytest_mark.anyio
 def test_style_fail(client:SyncGeoServerX,httpx_mock: HTTPXMock,bad_StyleModel_connection):
     httpx_mock.add_response(json=bad_StyleModel_connection)
-    style = client.get_style('dssdgsg')
-    assert style.code == 404
+    with pytest.raises(ValidationError):
+        style = client.get_style('dssdgsg')

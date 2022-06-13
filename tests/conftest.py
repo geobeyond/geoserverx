@@ -43,8 +43,7 @@ def good_Workspace_connection() -> dict :
 @pytest.fixture
 def bad_Workspace_connection() -> dict :
     item = {
-    "code": 404,
-    "response":"Result not found"
+    "workspace":""
 }
     return item
 
@@ -144,7 +143,7 @@ def good_DatastoreItem_connection() -> dict :
 
 @pytest.fixture
 def bad_DatastoreItem_connection() -> dict :
-    item = {"name":''}
+    item = {"dataStores":'abs'}
     return item
 
 @pytest.fixture
