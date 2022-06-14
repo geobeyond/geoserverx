@@ -2,7 +2,7 @@ import pytest
 
 
 @pytest.fixture
-def good_Workspaces_connection() -> dict :
+def good_workspaces_connection() -> dict:
     item = {
     "workspaces": {
         "workspace": [
@@ -25,7 +25,7 @@ def good_Workspaces_connection() -> dict :
 
 
 @pytest.fixture
-def good_Workspace_connection() -> dict :
+def good_workspace_connection() -> dict:
     item = {
     "workspace": {
         "name": "pydad",
@@ -41,36 +41,36 @@ def good_Workspace_connection() -> dict :
 
     
 @pytest.fixture
-def bad_Workspace_connection() -> dict :
+def bad_workspace_connection() -> dict:
     item = {
     "workspace":""
 }
     return item
 
 @pytest.fixture
-def good_DataStoreInBulk_connection() -> dict :
+def good_datastore_in_bulk_connection() -> dict:
     item = {"name":"just", "href":"https://www.linkedin.com/notifications/"}
     return item
 
 @pytest.fixture
-def bad_DataStoreInBulk_connection() -> dict :
+def bad_datastore_in_bulk_connection() -> dict:
     item = {"name":"just"}
     return item
 
 @pytest.fixture
-def good_DataStoreDict_connection() -> dict :
+def good_datastore_dict_connection() -> dict:
     item = {"dataStore": [
         {"name":"just", "href":"https://www.linkedin.com/notifications/"}
     ]}
     return item
 
 @pytest.fixture
-def bad_DataStoreDict_connection() -> dict :
+def bad_datastore_dict_connection() -> dict:
     item = {"dataStore":''}
     return item
 
 @pytest.fixture
-def good_DataStoresModel_connection() -> dict :
+def good_datastores_model_connection() -> dict:
     item = {
     "dataStores": {
         "dataStore": [
@@ -96,25 +96,25 @@ def good_DataStoresModel_connection() -> dict :
     return item
 
 @pytest.fixture
-def bad_DataStoresModel_connection() -> dict :
-    item = {"dataStores":'sd'}
+def bad_datastores_model_connection() -> dict:
+    item = {"dataStores": "sd"}
     return item
 
 
 @pytest.fixture
-def good_DatastoreConnection_connection() -> dict :
+def good_datastore_connection_connection() -> dict:
     item = {"key":"just", "path":"https://www.linkedin.com/notifications/"}
     
     return item
 
 @pytest.fixture
-def bad_DatastoreConnection_connection() -> dict :
-    item = {"key":''}
+def bad_datastore_connection_connection() -> dict:
+    item = {"key": ""}
     return item
 
 
 @pytest.fixture
-def good_EntryItem_connection() -> dict :
+def good_entry_item_connection() -> dict:
     item = {
         "entry": [
             {"key":"just", "path":"https://www.linkedin.com/notifications/"},
@@ -124,14 +124,15 @@ def good_EntryItem_connection() -> dict :
     
     return item
 
+
 @pytest.fixture
-def bad_EntryItem_connection() -> dict :
-    item = {"name":''}
+def bad_entry_item_connection() -> dict:
+    item = {"name": ""}
     return item
 
 
 @pytest.fixture
-def good_DatastoreItem_connection() -> dict :
+def good_datastore_item_connection() -> dict:
     item = {"name":"just", "connectionParameters":{
         "entry": [
             {"key":"just", "path":"https://www.linkedin.com/notifications/"},
@@ -141,13 +142,14 @@ def good_DatastoreItem_connection() -> dict :
     
     return item
 
+
 @pytest.fixture
-def bad_DatastoreItem_connection() -> dict :
-    item = {"dataStores":'abs'}
+def bad_datastore_item_connection() -> dict:
+    item = {"dataStores": "abs"}
     return item
 
 @pytest.fixture
-def good_DataStoreModel_connection() -> dict :
+def good_datastore_model_connection() -> dict:
     item = {
     "dataStore": {
         "name": "jumper",
@@ -178,35 +180,41 @@ def good_DataStoreModel_connection() -> dict :
 
     return item
 
-@pytest.fixture
-def bad_DataStoreModel_connection() -> dict :
-    item = {"dataStore":''}
-    return item
 
 @pytest.fixture
-def good_CoveragesStoreInBulk_connection() -> dict :
-    item = {"name":"just", "href":"https://www.linkedin.com/notifications/"}
+def bad_datastore_model_connection() -> dict:
+    item = {"dataStore": ""}
     return item
 
-@pytest.fixture
-def bad_CoveragesStoreInBulk_connection() -> dict :
-    item = {"name":"just"}
-    return item
 
 @pytest.fixture
-def good_CoveragesStoresDict_connection() -> dict :
+def good_coverages_store_in_bulk_connection() -> dict:
+    item = {"name": "just", "href": "https://www.linkedin.com/notifications/"}
+    return item
+
+
+@pytest.fixture
+def bad_coverages_store_in_bulk_connection() -> dict:
+    item = {"name": "just"}
+    return item
+
+
+@pytest.fixture
+def good_coverages_stores_dict_connection() -> dict:
     item = {"coverageStore":[
         {"name":"just", "href":"https://www.linkedin.com/notifications/"}
         ]}
     return item
 
+
 @pytest.fixture
-def bad_CoveragesStoresDict_connection() -> dict :
+def bad_coverages_stores_dict_connection() -> dict:
     item = {"coverageStore":"just"}
     return item
 
+
 @pytest.fixture
-def good_CoveragesStoresModel_connection() -> dict :
+def good_coverages_stores_model_connection() -> dict:
     item ={
     "coverageStores": {
         "coverageStore": [
@@ -227,14 +235,15 @@ def good_CoveragesStoresModel_connection() -> dict :
 }
     return item
 
+
 @pytest.fixture
-def bad_CoveragesStoresModel_connection() -> dict :
-    item = {"coverageStores":"just"}
+def bad_coverages_stores_model_connection() -> dict:
+    item = {"coverageStores": "just"}
     return item
 
 
 @pytest.fixture
-def good_CoveragesStoreModel_connection() -> dict :
+def good_coverages_store_model_connection() -> dict:
     item ={
     "coverageStore": {
         "name": "RGB_125",
@@ -261,15 +270,15 @@ def good_CoveragesStoreModel_connection() -> dict :
 }
     return item
 
+
 @pytest.fixture
-def bad_CoveragesStoreModel_connection() -> dict :
-    item = {"coverageStores":"just"}
+def bad_coverages_store_model_connection() -> dict:
+    item = {"coverageStores": "just"}
     return item
 
 
-
 @pytest.fixture
-def good_SingleStyleDict_connection() -> dict :
+def good_single_style_dict_connection() -> dict:
     item = {
         "name": "burg",
         "format": "sld",
@@ -280,13 +289,14 @@ def good_SingleStyleDict_connection() -> dict :
     }
     return item
 
+
 @pytest.fixture
-def bad_SingleStyleDict_connection() -> dict :
-    item = {"name":""}
+def bad_single_style_dict_connection() -> dict:
+    item = {"name": ""}
     return item
 
 @pytest.fixture
-def good_StyleModel_connection() -> dict :
+def good_style_model_connection() -> dict:
     item = {
     "style": {
         "name": "burg",
@@ -300,29 +310,30 @@ def good_StyleModel_connection() -> dict :
     return item
 
 @pytest.fixture
-def bad_StyleModel_connection() -> dict :
+def bad_style_model_connection() -> dict:
     item = {"style":""}
     return item
 
 
 @pytest.fixture
-def good_allStyleList_connection() -> dict :
-    item =  {
-                "name": "CUSD 2020 Census Blocks",
-                "href": "http://localhost:8080/geoserver/rest/styles/CUSD+2020+Census+Blocks.json"
-            }
-    return item
-
-@pytest.fixture
-def bad_allStyleList_connection() -> dict :
-    item = {"name":""}
+def good_all_style_list_connection() -> dict:
+    item = {
+            "name": "CUSD 2020 Census Blocks",
+            "href": "http://localhost:8080/geoserver/rest/styles/CUSD+2020+Census+Blocks.json"
+        }
     return item
 
 
+@pytest.fixture
+def bad_all_style_list_connection() -> dict:
+    item = {"name": ""}
+    return item
+
 
 @pytest.fixture
-def good_allStyleDict_connection() -> dict :
-    item = {"style": [
+def good_all_style_dict_connection() -> dict:
+    item = {
+        "style": [
             {
                 "name": "CUSD 2020 Census Blocks",
                 "href": "http://localhost:8080/geoserver/rest/styles/CUSD+2020+Census+Blocks.json"
@@ -335,106 +346,121 @@ def good_allStyleDict_connection() -> dict :
     }
     return item
 
+
 @pytest.fixture
-def bad_allStyleDict_connection() -> dict :
-    item = {"style":""}
+def bad_all_style_dict_connection() -> dict:
+    item = {"style": ""}
     return item
 
 
 @pytest.fixture
-def good_AllStylesModel_connection() -> dict :
-    item = {"styles":{"style": [
-            {
-                "name": "CUSD 2020 Census Blocks",
-                "href": "http://localhost:8080/geoserver/rest/styles/CUSD+2020+Census+Blocks.json"
-            },
-            {
-                "name": "Default Styler",
-                "href": "http://localhost:8080/geoserver/rest/styles/Default+Styler.json"
-            }
-        ]
-    }}
-    return item
-
-@pytest.fixture
-def bad_AllStylesModel_connection() -> dict :
-    item = {"styles":""}
-    return item
-
-
-@pytest.fixture
-def good_WorkspaceInBulk_connection() -> dict :
+def good_all_styles_model_connection() -> dict:
     item = {
-                "name": "pydad",
-                "href": "http://localhost:8080/geoserver/rest/workspaces/pydad.json"
-            }
-    return item
-
-@pytest.fixture
-def bad_WorkspaceInBulk_connection() -> dict :
-    item = {"name":""}
-    return item
-
-
-@pytest.fixture
-def good_workspaceDict_connection() -> dict :
-    item = {"workspace": [
-            {
-                "name": "pydad",
-                "href": "http://localhost:8080/geoserver/rest/workspaces/pydad.json"
-            },
-            {
-                "name": "jkzch",
-                "href": "http://localhost:8080/geoserver/rest/workspaces/jkzch.json"
-            }]}
-    return item
-
-@pytest.fixture
-def bad_workspaceDict_connection() -> dict :
-    item = {"workspace":""}
-    return item
-
-@pytest.fixture
-def good_WorkspacesModel_connection() -> dict :
-    item = {"workspaces":{"workspace": [
-            {
-                "name": "pydad",
-                "href": "http://localhost:8080/geoserver/rest/workspaces/pydad.json"
-            },
-            {
-                "name": "jkzch",
-                "href": "http://localhost:8080/geoserver/rest/workspaces/jkzch.json"
-            }]}}
-    return item
-
-@pytest.fixture
-def bad_WorkspacesModel_connection() -> dict :
-    item = {"workspaces":""}
+        "styles": {
+            "style": [
+                {
+                    "name": "CUSD 2020 Census Blocks",
+                    "href": "http://localhost:8080/geoserver/rest/styles/CUSD+2020+Census+Blocks.json"
+                },
+                {
+                    "name": "Default Styler",
+                    "href": "http://localhost:8080/geoserver/rest/styles/Default+Styler.json"
+                }
+            ]
+        }
+    }
     return item
 
 
 @pytest.fixture
-def good_WorkspaceModel_connection() -> dict :
+def bad_all_styles_model_connection() -> dict:
+    item = {"styles": ""}
+    return item
+
+
+@pytest.fixture
+def good_workspace_in_bulk_connection() -> dict:
     item = {
-    "workspace": {
         "name": "pydad",
-        "isolated": True,
-        "dateCreated": "2022-06-04 07:55:31.903 UTC",
-        "dataStores": "http://localhost:8080/geoserver/rest/workspaces/pydad/datastores.json",
-        "coverageStores": "http://localhost:8080/geoserver/rest/workspaces/pydad/coveragestores.json",
-        "wmsStores": "http://localhost:8080/geoserver/rest/workspaces/pydad/wmsstores.json",
-        "wmtsStores": "http://localhost:8080/geoserver/rest/workspaces/pydad/wmtsstores.json"
+        "href": "http://localhost:8080/geoserver/rest/workspaces/pydad.json"
     }
-}
+    return item
+
+
+@pytest.fixture
+def bad_workspace_in_bulk_connection() -> dict:
+    item = {"name": ""}
+    return item
+
+
+@pytest.fixture
+def good_workspace_dict_connection() -> dict:
+    item = {
+        "workspace": [
+            {
+                "name": "pydad",
+                "href": "http://localhost:8080/geoserver/rest/workspaces/pydad.json"
+            },
+            {
+                "name": "jkzch",
+                "href": "http://localhost:8080/geoserver/rest/workspaces/jkzch.json"
+            }
+        ]
+    }
     return item
 
 @pytest.fixture
-def bad_WorkspaceModel_connection() -> dict :
+def bad_workspace_dict_connection() -> dict:
     item = {"workspace":""}
     return item
 
 @pytest.fixture
-def good_NewWorkspace_connection() -> dict :
+def good_workspaces_model_connection() -> dict:
+    item = {
+        "workspaces": {
+            "workspace": [
+                {
+                    "name": "pydad",
+                    "href": "http://localhost:8080/geoserver/rest/workspaces/pydad.json"
+                },
+                {
+                    "name": "jkzch",
+                    "href": "http://localhost:8080/geoserver/rest/workspaces/jkzch.json"
+                }
+            ]
+        }
+    }
+    return item
+
+
+@pytest.fixture
+def bad_workspaces_model_connection() -> dict:
+    item = {"workspaces": ""}
+    return item
+
+
+@pytest.fixture
+def good_workspace_model_connection() -> dict:
+    item = {
+        "workspace": {
+            "name": "pydad",
+            "isolated": True,
+            "dateCreated": "2022-06-04 07:55:31.903 UTC",
+            "dataStores": "http://localhost:8080/geoserver/rest/workspaces/pydad/datastores.json",
+            "coverageStores": "http://localhost:8080/geoserver/rest/workspaces/pydad/coveragestores.json",
+            "wmsStores": "http://localhost:8080/geoserver/rest/workspaces/pydad/wmsstores.json",
+            "wmtsStores": "http://localhost:8080/geoserver/rest/workspaces/pydad/wmtsstores.json"
+        }
+    }
+    return item
+
+@pytest.fixture
+def bad_workspace_model_connection() -> dict:
+    item = {"workspace": ""}
+    return item
+
+@pytest.fixture
+def good_new_workspace_connection() -> dict:
     item = {
     "workspace": {
         "name": "pydad",
@@ -444,6 +470,6 @@ def good_NewWorkspace_connection() -> dict :
     return item
 
 @pytest.fixture
-def bad_NewWorkspace_connection() -> dict :
-    item = {"workspace":""}
+def bad_new_workspace_connection() -> dict:
+    item = {"workspace": ""}
     return item
