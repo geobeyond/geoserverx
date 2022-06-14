@@ -1,9 +1,8 @@
 from dataclasses import dataclass
 import json
-from urllib import response
 
-from ..utils.http_client import AsyncClient
-from ..utils.auth import GeoServerXAuth
+from geoserverx.utils.http_client import AsyncClient
+from geoserverx.utils.auth import GeoServerXAuth
 
 
 @dataclass

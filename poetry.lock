@@ -91,7 +91,7 @@ pycparser = "*"
 name = "click"
 version = "8.1.3"
 description = "Composable command line interface toolkit"
-category = "dev"
+category = "main"
 optional = false
 python-versions = ">=3.7"
 
@@ -102,7 +102,7 @@ colorama = {version = "*", markers = "platform_system == \"Windows\""}
 name = "colorama"
 version = "0.4.4"
 description = "Cross-platform colored terminal text."
-category = "dev"
+category = "main"
 optional = false
 python-versions = ">=2.7, !=3.0.*, !=3.1.*, !=3.2.*, !=3.3.*, !=3.4.*"
 
@@ -282,7 +282,7 @@ python-versions = ">=2.7, !=3.0.*, !=3.1.*, !=3.2.*, !=3.3.*"
 name = "pydantic"
 version = "1.9.1"
 description = "Data validation and settings management using python type hints"
-category = "dev"
+category = "main"
 optional = false
 python-versions = ">=3.6.1"
 
@@ -380,7 +380,7 @@ python-versions = ">=3.7"
 
 [[package]]
 name = "trio"
-version = "0.20.0"
+version = "0.21.0"
 description = "A friendly Python library for async concurrency and I/O"
 category = "dev"
 optional = false
@@ -399,7 +399,7 @@ sortedcontainers = "*"
 name = "typer"
 version = "0.4.1"
 description = "Typer, build great CLIs. Easy to code. Based on Python type hints."
-category = "dev"
+category = "main"
 optional = false
 python-versions = ">=3.6"
 
@@ -416,14 +416,14 @@ test = ["shellingham (>=1.3.0,<2.0.0)", "pytest (>=4.4.0,<5.4.0)", "pytest-cov (
 name = "typing-extensions"
 version = "4.2.0"
 description = "Backported and Experimental Type Hints for Python 3.7+"
-category = "dev"
+category = "main"
 optional = false
 python-versions = ">=3.7"
 
 [metadata]
 lock-version = "1.1"
 python-versions = "^3.9"
-content-hash = "02650fa9a04eb64ecd225ea45fecc4d8263134fa265eb211c6d01e5e0e6240ed"
+content-hash = "712dbe11fdf12caf1d90890d20bbd228b6cb44c4ed98cf4e33ea99ccfec56abd"
 
 [metadata.files]
 anyio = [
@@ -678,8 +678,8 @@ tomli = [
     {file = "tomli-2.0.1.tar.gz", hash = "sha256:de526c12914f0c550d15924c62d72abc48d6fe7364aa87328337a31007fe8a4f"},
 ]
 trio = [
-    {file = "trio-0.20.0-py3-none-any.whl", hash = "sha256:fb2d48e4eab0dfb786a472cd514aaadc71e3445b203bc300bad93daa75d77c1a"},
-    {file = "trio-0.20.0.tar.gz", hash = "sha256:670a52d3115d0e879e1ac838a4eb999af32f858163e3a704fe4839de2a676070"},
+    {file = "trio-0.21.0-py3-none-any.whl", hash = "sha256:4dc0bf9d5cc78767fc4516325b6d80cc0968705a31d0eec2ecd7cdda466265b0"},
+    {file = "trio-0.21.0.tar.gz", hash = "sha256:523f39b7b69eef73501cebfe1aafd400a9aad5b03543a0eded52952488ff1c13"},
 ]
 typer = [
     {file = "typer-0.4.1-py3-none-any.whl", hash = "sha256:e8467f0ebac0c81366c2168d6ad9f888efdfb6d4e1d3d5b4a004f46fa444b5c3"},
