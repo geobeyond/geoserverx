@@ -17,7 +17,7 @@ from geoserverx.models.coverages_store import (
     CoveragesStoreModel, CoveragesStoresModel
 )
 from geoserverx.models.gs_response import GSResponse
-from geoserverx.utils.services.datastore import (
+from geoserverx.utils.services.async_datastore import (
 	AddDataStoreProtocol, CreateFileStore,
 	ShapefileStore, GPKGfileStore
 )
@@ -188,12 +188,12 @@ class AsyncGeoServerX:
 		service : AddDataStoreProtocol = CreateFileStore()
 
 		if service_type == 'shapefile':
-			service = ShapefileStore(
+			service = ShapefileStore(client=self.http_client,
 				service=service, logger=std_out_logger("Shapefile"), file=file)
 		elif service_type == 'gpkg':
 			service = GPKGfileStore(
 				service=service, logger=std_out_logger("GeoPackage"), file=file)
 		else:
 			raise ValueError(f"Service type {service_type} not supported")
-		service.sync_addFile(self.http_client, workspace, store)
+		await service.addFile(self.http_client, workspace, store)
 
