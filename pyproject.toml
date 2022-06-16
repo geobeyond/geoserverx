@@ -4,6 +4,9 @@ version = "0.1.0"
 description = ""
 authors = ["krishnaglodha <krishnaglodha@gmail.com>"]
 
+[tool.poetry.scripts]
+gsx = "geoserverx.cli.cli:app"
+
 [tool.poetry.dependencies]
 python = "^3.9"
 httpx = "^0.23.0"
