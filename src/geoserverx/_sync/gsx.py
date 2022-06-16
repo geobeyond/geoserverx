@@ -50,15 +50,13 @@ class SyncGeoServerX:
 			with self.http_client as Client:
 				responses = Client.get("")
 		except httpx.ConnectTimeout as exc:
-			
-			print(f"Request timed out {exc.request.url!r} ")
+			std_out_logger("ConnectTimeout").debug(f"Request timed out {exc.request.url!r}")
 		except httpx.RequestError as exc:
-			print(HttpxError(HTTPXErrorEnum.requesterr.value))
+			std_out_logger("RequestError").debug(f"Request timed out {exc.request.url!r}")
 		except httpx.HTTPStatusError as exc:
-			print(f"Error response {exc.response.status_code} while requesting {exc.request.url!r}.")
+			std_out_logger(f"HTTPStatusError").debug(f"Error response {exc.response.status_code} while requesting {exc.request.url!r}.")
 
 	def __enter__(self) -> "SyncGeoServerX":
-
 		return self
 
 	def __exit__(self, exc_t, exc_v, exc_tb) -> None:
