@@ -1,8 +1,9 @@
 from dataclasses import dataclass
 from typing import Union
+import httpx
 from geoserverx.utils.logger import std_out_logger
 from geoserverx.utils.errors import GeoServerXError
-from geoserverx.utils.enums import GSResponseEnum
+from geoserverx.utils.enums import GSResponseEnum, HTTPXErrorEnum
 from geoserverx.models.style import StyleModel, AllStylesModel
 from geoserverx.models.workspace import (
     NewWorkspace, NewWorkspaceInfo,
@@ -12,7 +13,7 @@ from geoserverx.models.data_store import DataStoreModel, DataStoresModel
 from geoserverx.models.coverages_store import (
     CoveragesStoreModel, CoveragesStoresModel
 )
-from geoserverx.models.gs_response import GSResponse
+from geoserverx.models.gs_response import GSResponse, HttpxError
 from geoserverx.utils.services.datastore import (
 	AddDataStoreProtocol, CreateFileStore,
 	ShapefileStore, GPKGfileStore
@@ -45,8 +46,19 @@ class SyncGeoServerX:
 			base_url=self.url,
 			auth=(self.username, self.password),
 		)
+		try: 
+			with self.http_client as Client:
+				responses = Client.get("")
+		except httpx.ConnectTimeout as exc:
+			
+			print(f"Request timed out {exc.request.url!r} ")
+		except httpx.RequestError as exc:
+			print(HttpxError(HTTPXErrorEnum.requesterr.value))
+		except httpx.HTTPStatusError as exc:
+			print(f"Error response {exc.response.status_code} while requesting {exc.request.url!r}.")
 
 	def __enter__(self) -> "SyncGeoServerX":
+
 		return self
 
 	def __exit__(self, exc_t, exc_v, exc_tb) -> None:
@@ -76,13 +88,16 @@ class SyncGeoServerX:
 
 	# Get all workspaces
 	def get_all_workspaces(self) -> Union[WorkspacesModel, GSResponse]:
-		with self.http_client as Client:
-			responses = Client.get(f"workspaces")
-		if responses.status_code == 200:
-			return WorkspacesModel.parse_obj(responses.json())
-		else :
-			results = self.response_recognise(responses)
-			return results
+		try:
+			with self.http_client as Client:
+				responses = Client.get(f"workspaces")
+			if responses.status_code == 200:
+				return WorkspacesModel.parse_obj(responses.json())
+			else :
+				results = self.response_recognise(responses)
+				return results
+		except RuntimeError as e :
+			print(HttpxError.parse_obj(HTTPXErrorEnum.requesterr.value))
 
 	# Get specific workspaces
 	def get_workspace(self, workspace: str) -> Union[WorkspaceModel, GSResponse]:
