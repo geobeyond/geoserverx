@@ -2,7 +2,7 @@ from dataclasses import dataclass
 from typing import Union
 from geoserverx.utils.logger import std_out_logger
 from geoserverx.utils.errors import GeoServerXError
-from geoserverx.utils.enums import GSResponseEnum
+from geoserverx.utils.enums import GSResponseEnum,HTTPXErrorEnum
 from geoserverx.models.style import StyleModel, AllStylesModel
 from geoserverx.models.workspace import (
     NewWorkspace, NewWorkspaceInfo,
@@ -12,13 +12,14 @@ from geoserverx.models.data_store import DataStoreModel, DataStoresModel
 from geoserverx.models.coverages_store import (
     CoveragesStoreModel, CoveragesStoresModel
 )
-from geoserverx.models.gs_response import GSResponse
+from geoserverx.models.gs_response import GSResponse, HttpxError
 from geoserverx.utils.services.datastore import (
 	AddDataStoreProtocol, CreateFileStore,
 	ShapefileStore, GPKGfileStore
 )
 from geoserverx.utils.http_client import SyncClient
 from geoserverx.utils.auth import GeoServerXAuth
+import httpx
 
 
 @dataclass
@@ -45,6 +46,15 @@ class SyncGeoServerX:
 			base_url=self.url,
 			auth=(self.username, self.password),
 		)
+		try: 
+			with self.http_client as Client:
+				responses = Client.get("")
+		except httpx.ConnectTimeout as exc:
+			std_out_logger("ConnectTimeout").debug(f"Connect timed out {exc.request.url!r}")
+		except httpx.RequestError as exc:
+			std_out_logger("RequestTimeout").debug(f"Request timed out {exc.request.url!r}")
+		except httpx.HTTPStatusError as exc:
+			std_out_logger(f"HTTPStatusError").debug(f"Error response {exc.response.status_code} while requesting {exc.request.url!r}.")
 
 	def __enter__(self) -> "SyncGeoServerX":
 		return self
