@@ -23,6 +23,12 @@ def good_workspaces_connection() -> dict:
 }
     return item
 
+@pytest.fixture
+def bad_workspaces_connection() -> dict:
+    item = {
+    "code": 502
+    }
+    return item
 
 @pytest.fixture
 def good_workspace_connection() -> dict:
@@ -44,6 +50,14 @@ def good_workspace_connection() -> dict:
 def bad_workspace_connection() -> dict:
     item = {
     "workspace":""
+}
+    return item
+
+@pytest.fixture
+def networkbad_workspace_connection() -> dict:
+    item = {
+    "code":503,
+    "response":'Geoserver unavailable'
 }
     return item
 
