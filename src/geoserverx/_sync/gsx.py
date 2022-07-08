@@ -86,9 +86,10 @@ class SyncGeoServerX:
 			try:
 				return func(*args, **kwargs)
 			except httpx.ConnectError as exc:
-				logging.error('Error in connecting to Geoserver')
+				
+				return GSResponse(response='Error in connecting to Geoserver')
 			except httpx.TimeoutException as exc:
-				logging.error('Timeout Error in connection')
+				return  GSResponse(response='Timeout Error in connection')
 		return inner_function
 
 	# Get all workspaces

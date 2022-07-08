@@ -60,9 +60,10 @@ def test_get_workspace_success(client:SyncGeoServerX,good_workspace_connection,r
     assert response.workspace.name == 'pydad'
 
 def test_get_workspace_NetworkError(client: SyncGeoServerX,respx_mock):
-    respx_mock.get(f"{baseUrl}workspaces/pydad").mock(side_effect=httpx.NetworkError)
-    with pytest.raises(httpx.NetworkError):
-        client.get_workspace('pydad')
+    respx_mock.get(f"{baseUrl}workspaces/pydad").mock(side_effect=httpx.ConnectError)
+    response =  client.get_workspace('pydad')
+    assert response.response == 'Error in connecting to Geoserver'
+
 
 
 # @pytest_mark.anyio

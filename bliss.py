@@ -27,7 +27,7 @@ def test_get_workspace(url, username, password):
     print(f"testing done for - {url}")
     print("-------------end-----------------")
 
-test_get_workspace(url='http://localhost:8080/geoserver/rest/',username='admin', password='geoserver')
+test_get_workspace(url='http://localhost:80180/geoserver/rest/',username='admin', password='geoserver')
 
 # def test_get_workspace(url, username, password):
 #     print("-------------start-----------------")
