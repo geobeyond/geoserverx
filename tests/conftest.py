@@ -49,7 +49,9 @@ def good_workspace_connection() -> dict:
 @pytest.fixture
 def bad_workspace_connection() -> dict:
     item = {
-    "workspace":""
+    "code":404,
+    "response":'Result not found'
+
 }
     return item
 

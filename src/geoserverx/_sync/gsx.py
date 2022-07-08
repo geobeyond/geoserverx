@@ -1,6 +1,8 @@
 from dataclasses import dataclass
 from typing import Union
 from geoserverx.utils.logger import std_out_logger
+import logging
+
 from geoserverx.utils.errors import GeoServerXError
 from geoserverx.utils.enums import GSResponseEnum,HTTPXErrorEnum
 from geoserverx.models.style import StyleModel, AllStylesModel
@@ -20,6 +22,7 @@ from geoserverx.utils.services.datastore import (
 from geoserverx.utils.http_client import SyncClient
 from geoserverx.utils.auth import GeoServerXAuth
 import httpx
+logging.basicConfig(format='%(levelname)s - %(message)s')
 
 
 @dataclass
@@ -28,9 +31,9 @@ class SyncGeoServerX:
 	Sync Geoserver client
 	"""
 
-	username: str
-	password: str
-	url: str
+	username: str = 'admin'
+	password: str = 'geoserver'
+	url: str = 'http://127.0.0.1:8080/geoserver/rest/'
 	head = {"Content-Type": "application/json"}
 
 	def __post_init__(self):
@@ -70,55 +73,47 @@ class SyncGeoServerX:
 			resp= GSResponseEnum._503.value
 		elif r.status_code == 404:
 			resp= GSResponseEnum._404.value
+		elif r.status_code == 403:
+			resp= GSResponseEnum._403.value
 		elif r.status_code == 201:
 			resp = GSResponseEnum._201.value
 		elif r.status_code == 409:
 			resp= GSResponseEnum._409.value
 		return GSResponse.parse_obj(resp)
 
-
+	def exception_handler(func):
+		def inner_function(*args, **kwargs):
+			try:
+				return func(*args, **kwargs)
+			except httpx.ConnectError as exc:
+				logging.error('Error in connecting to Geoserver')
+			except httpx.TimeoutException as exc:
+				logging.error('Timeout Error in connection')
+		return inner_function
 
 	# Get all workspaces
+	@exception_handler
 	def get_all_workspaces(self) -> Union[WorkspacesModel, GSResponse]:
-		try:
-			with self.http_client as Client:
-				responses = Client.get(f"workspaces")
-			if responses.status_code == 200:
-				return WorkspacesModel.parse_obj(responses.json())
-			else :
-				results = self.response_recognise(responses)
-				return results
-		except httpx.TimeoutException as exc:
-			res = {}
-			res['code'] = 504
-			res['response'] = "Timeout Error"
-			return GSResponse.parse_obj(res)
-		except httpx.NetworkError as exc:
-			res = {}
-			res['code'] = 503
-			res['response'] = "Geoserver unavailable"
-			return GSResponse.parse_obj(res)
+		with self.http_client as Client:
+			responses = Client.get(f"workspaces")
+		if responses.status_code == 200:
+			return WorkspacesModel.parse_obj(responses.json())
+		else :
+			results = self.response_recognise(responses)
+			return results
+		
 
 	# Get specific workspaces
+	@exception_handler
 	def get_workspace(self, workspace: str) -> Union[WorkspaceModel, GSResponse]:
-		try:
-			Client = self.http_client
-			responses = Client.get(f"workspaces/{workspace}")
-			if responses.status_code == 200:
-				return WorkspaceModel.parse_obj(responses.json())
-			else :
-				results = self.response_recognise(responses)
-				return results
-		except httpx.TimeoutException as exc:
-			res = {}
-			res['code'] = 504
-			res['response'] = "Timeout Error"
-			return GSResponse.parse_obj(res)
-		except httpx.NetworkError as exc:
-			res = {}
-			res['code'] = 503
-			res['response'] = "Geoserver unavailable"
-			return GSResponse.parse_obj(res)
+		Client = self.http_client
+		responses = Client.get(f"workspaces/{workspace}")
+		if responses.status_code == 200:
+			return WorkspaceModel.parse_obj(responses.json())
+		else :
+			results = self.response_recognise(responses)
+			return results
+		
 	# Create workspace
 	def create_workspace(
 		self, name: str, default: bool = False, Isolated: bool = False
@@ -151,139 +146,77 @@ class SyncGeoServerX:
 			return GSResponse.parse_obj(resp)
 
 	# Get vector stores in specific workspaces
+	@exception_handler
 	def get_vector_stores_in_workspaces(self, workspace: str) -> DataStoresModel:
-		try:
-			with self.http_client as Client:
-				responses = Client.get(f"workspaces/{workspace}/datastores")
-			if responses.status_code == 200:
-				return DataStoresModel.parse_obj(responses.json())
-			else :
-				results = self.response_recognise(responses)
-				return results
-		except httpx.TimeoutException as exc:
-			res = {}
-			res['code'] = 504
-			res['response'] = "Timeout Error"
-			return GSResponse.parse_obj(res)
-		except httpx.NetworkError as exc:
-			res = {}
-			res['code'] = 503
-			res['response'] = "Geoserver unavailable"
-			return GSResponse.parse_obj(res)
-
+		Client = self.http_client
+		responses = Client.get(f"workspaces/{workspace}/datastores")
+		if responses.status_code == 200:
+			return DataStoresModel.parse_obj(responses.json())
+		else :
+			results = self.response_recognise(responses)
+			return results
+	
 
 	# Get raster stores in specific workspaces
+	@exception_handler
 	def get_raster_stores_in_workspaces(self, workspace: str) -> CoveragesStoresModel:
-		try:
-			with self.http_client as Client:
-				responses = Client.get(f"workspaces/{workspace}/coveragestores")
-			if responses.status_code == 200:
-				return CoveragesStoresModel.parse_obj(responses.json())
-			else :
-				results = self.response_recognise(responses)
-				return results
-		except httpx.TimeoutException as exc:
-			res = {}
-			res['code'] = 504
-			res['response'] = "Timeout Error"
-			return GSResponse.parse_obj(res)
-		except httpx.NetworkError as exc:
-			res = {}
-			res['code'] = 503
-			res['response'] = "Geoserver unavailable"
-			return GSResponse.parse_obj(res)
-
+		with self.http_client as Client:
+			responses = Client.get(f"workspaces/{workspace}/coveragestores")
+		if responses.status_code == 200:
+			return CoveragesStoresModel.parse_obj(responses.json())
+		else :
+			results = self.response_recognise(responses)
+			return results
+		
 
 
 	# Get vector store information in specific workspaces
+	@exception_handler
 	def get_vector_store(self, workspace: str, store: str) -> DataStoreModel:
-		try:
-			url = f"workspaces/{workspace}/datastores/{store}.json"
-			with self.http_client as Client:
-				responses = Client.get(url)
-			if responses.status_code == 200:
-				return DataStoreModel.parse_obj(responses.json())
-			else :
-				results = self.response_recognise(responses)
-				return results
-		except httpx.TimeoutException as exc:
-			res = {}
-			res['code'] = 504
-			res['response'] = "Timeout Error"
-			return GSResponse.parse_obj(res)
-		except httpx.NetworkError as exc:
-			res = {}
-			res['code'] = 503
-			res['response'] = "Geoserver unavailable"
-			return GSResponse.parse_obj(res)
-
+		url = f"workspaces/{workspace}/datastores/{store}.json"
+		with self.http_client as Client:
+			responses = Client.get(url)
+		if responses.status_code == 200:
+			return DataStoreModel.parse_obj(responses.json())
+		else :
+			results = self.response_recognise(responses)
+			return results
+	
 
 	# Get raster  store information in specific workspaces
+	@exception_handler
 	def get_raster_store(self, workspace: str, store: str) -> CoveragesStoreModel:
-		try:
-			url = f"workspaces/{workspace}/coveragestores/{store}.json"
-			with self.http_client as Client:
-				responses = Client.get(url)
-			if responses.status_code == 200:
-				return CoveragesStoreModel.parse_obj(responses.json())
-			else :
-				results = self.response_recognise(responses)
-				return results
-		except httpx.TimeoutException as exc:
-			res = {}
-			res['code'] = 504
-			res['response'] = "Timeout Error"
-			return GSResponse.parse_obj(res)
-		except httpx.NetworkError as exc:
-			res = {}
-			res['code'] = 503
-			res['response'] = "Geoserver unavailable"
-			return GSResponse.parse_obj(res)
-
-
+		url = f"workspaces/{workspace}/coveragestores/{store}.json"
+		with self.http_client as Client:
+			responses = Client.get(url)
+		if responses.status_code == 200:
+			return CoveragesStoreModel.parse_obj(responses.json())
+		else :
+			results = self.response_recognise(responses)
+			return results
+	
 	# Get all styles in GS
+	@exception_handler
 	def get_allstyles(self) -> AllStylesModel:
-		try:
-			with self.http_client as Client:
-				responses = Client.get(f"styles")
-			if responses.status_code == 200:
-				return AllStylesModel.parse_obj(responses.json())
-			else :
-				results = self.response_recognise(responses)
-				return results
-		except httpx.TimeoutException as exc:
-			res = {}
-			res['code'] = 504
-			res['response'] = "Timeout Error"
-			return GSResponse.parse_obj(res)
-		except httpx.NetworkError as exc:
-			res = {}
-			res['code'] = 503
-			res['response'] = "Geoserver unavailable"
-			return GSResponse.parse_obj(res)
-
-
+		with self.http_client as Client:
+			responses = Client.get(f"styles")
+		if responses.status_code == 200:
+			return AllStylesModel.parse_obj(responses.json())
+		else :
+			results = self.response_recognise(responses)
+			return results
+	
 	# Get specific style in GS
+	@exception_handler
 	def get_style(self, style: str) -> StyleModel:
-		try:
-			with self.http_client as Client:
-				responses = Client.get(f"styles/{style}.json")
-			if responses.status_code == 200:
-				return StyleModel.parse_obj(responses.json())
-			else :
-				results = self.response_recognise(responses)
-				return results
-		except httpx.TimeoutException as exc:
-			res = {}
-			res['code'] = 504
-			res['response'] = "Timeout Error"
-			return GSResponse.parse_obj(res)
-		except httpx.NetworkError as exc:
-			res = {}
-			res['code'] = 503
-			res['response'] = "Geoserver unavailable"
-			return GSResponse.parse_obj(res)
-
+		with self.http_client as Client:
+			responses = Client.get(f"styles/{style}.json")
+		if responses.status_code == 200:
+			return StyleModel.parse_obj(responses.json())
+		else :
+			results = self.response_recognise(responses)
+			return results
+	
 
 	def create_file_store(
 		self,

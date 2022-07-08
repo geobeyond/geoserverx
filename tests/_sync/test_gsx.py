@@ -2,7 +2,6 @@ import httpx
 from pydantic import ValidationError
 from pytest import fixture, mark as pytest_mark
 import pytest
-from pytest_httpx import HTTPXMock
 from geoserverx.models.workspace import WorkspaceInBulk
 from geoserverx._sync.gsx import (
     SyncGeoServerX, GeoServerXAuth, GeoServerXError
@@ -10,7 +9,9 @@ from geoserverx._sync.gsx import (
 import httpcore
 
 import respx
+from httpx import  Response
 
+baseUrl  = "http://127.0.0.1:8080/geoserver/rest/"
 
 @fixture(name="client")
 def create_client():
@@ -29,67 +30,39 @@ def test_error():
 
 
 
-# @respx.mock
-# def test_connection_error(client: SyncGeoServerX):
-#     respx.get(f"{client.url}/workspaces").mock(side_effect=httpx.ConnectError)
+# Test - get_all_workspaces
+def test_get_all_workspaces_validation(client:SyncGeoServerX,bad_workspaces_connection,respx_mock):
+    respx_mock.get(f"{baseUrl}workspaces").mock(return_value=httpx.Response(404, json= bad_workspaces_connection))
+    response =  client.get_all_workspaces()
+    print('this should fail!')
+    assert response.code == 404
 
-#     with pytest.raises(httpx.ConnectError):
-#         client.get_all_workspaces()
+def test_get_all_workspaces_success(client:SyncGeoServerX,good_workspaces_connection,respx_mock):
+    respx_mock.get(f"{baseUrl}workspaces").mock(return_value=httpx.Response(200, json= good_workspaces_connection))
+    response =  client.get_all_workspaces()
+    assert response.workspaces.workspace[0].name == 'pydad'
 
-@pytest_mark.anyio
-def test_all_workspaces(
-    client: SyncGeoServerX,
-    httpx_mock: HTTPXMock,
-    good_workspaces_connection
-):
-    httpx_mock.add_response(json=good_workspaces_connection)
-    allwork = client.get_all_workspaces()
-    if len(allwork.workspaces.workspace) > 0:
-        assert isinstance(allwork.workspaces.workspace[0], WorkspaceInBulk)
-    else :
-        assert isinstance(allwork.workspaces.workspace, list) 
-
-
-
-@pytest_mark.anyio
-def test_workspace_success(
-    client: SyncGeoServerX,
-    httpx_mock: HTTPXMock,
-    good_workspace_connection
-):
-    httpx_mock.add_response(json=good_workspace_connection)
-    worksp = client.get_workspace('pydad')
-    assert worksp.workspace.name == 'pydad'
-
-@pytest_mark.anyio
-def test_workspace_fail(
-    client: SyncGeoServerX,
-    httpx_mock: HTTPXMock,
-    bad_workspace_connection
-):
-    httpx_mock.add_response(json=bad_workspace_connection)
-    with pytest.raises(ValidationError):
-        worksp = client.get_workspace('sfsf')
-
-# @pytest_mark.anyio
-# def test_workspace_fail(
-#     client: SyncGeoServerX,
-#     httpx_mock: HTTPXMock,
-#     networkbad_workspace_connection
-# ):
-#     httpx_mock.add_response(json=networkbad_workspace_connection)
-#     # with pytest.raises(ValidationError):
-#     worksp = client.get_workspace('dvdsfgdsf')
-#     assert worksp.code == 503
-
-
-@pytest.mark.respx(base_url="http://127.0.0.1:8080/geoserver/rest/")
-def test_connection_error(client: SyncGeoServerX,respx_mock):
-    respx_mock.get(f"workspaces/dvdsfgdsf").mock(side_effect=httpx.NetworkError)
-
+def test_get_all_workspaces_NetworkError(client: SyncGeoServerX,respx_mock):
+    respx_mock.get(f"{baseUrl}workspaces").mock(side_effect=httpx.NetworkError)
     with pytest.raises(httpx.NetworkError):
-        client.get_workspace('dvdsfgdsf')
+        client.get_all_workspaces()
 
+
+# Test - get_workspace
+def test_get_workspace_validation(client:SyncGeoServerX,bad_workspace_connection,respx_mock):
+    respx_mock.get(f"{baseUrl}workspaces/sfsf").mock(return_value=httpx.Response(404, json= bad_workspace_connection))
+    response =  client.get_workspace('sfsf')
+    assert response.response == 'Result not found'
+
+def test_get_workspace_success(client:SyncGeoServerX,good_workspace_connection,respx_mock):
+    respx_mock.get(f"{baseUrl}workspaces/pydad").mock(return_value=httpx.Response(200, json= good_workspace_connection))
+    response =  client.get_workspace('pydad')
+    assert response.workspace.name == 'pydad'
+
+def test_get_workspace_NetworkError(client: SyncGeoServerX,respx_mock):
+    respx_mock.get(f"{baseUrl}workspaces/pydad").mock(side_effect=httpx.NetworkError)
+    with pytest.raises(httpx.NetworkError):
+        client.get_workspace('pydad')
 
 
 # @pytest_mark.anyio

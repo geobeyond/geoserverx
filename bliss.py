@@ -10,7 +10,7 @@ def test_get_workspace(url, username, password):
     print(f"testing start for - {url}")
     client = SyncGeoServerX(username, password,url)
     # print(client.get_workspace('afa3'))
-    print(client.get_workspace('dvdsfgdsf'))
+    print(client.get_workspace('ad'))
     # print(client.get_all_workspaces())
     # print(client.create_workspace(name='pydad',default=True,Isolated=True))
     # print(client.get_raster_stores_in_workspaces('nurc'))
@@ -27,7 +27,7 @@ def test_get_workspace(url, username, password):
     print(f"testing done for - {url}")
     print("-------------end-----------------")
 
-test_get_workspace(url='http://localhost:80280/geoserver/rest/',username='admin', password='geoserver')
+test_get_workspace(url='http://localhost:8080/geoserver/rest/',username='admin', password='geoserver')
 
 # def test_get_workspace(url, username, password):
 #     print("-------------start-----------------")

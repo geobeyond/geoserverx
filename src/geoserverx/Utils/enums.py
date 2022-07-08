@@ -4,6 +4,7 @@ from geoserverx.models.gs_response import GSResponse
 
 class GSResponseEnum(Enum):
     _404 = GSResponse(code=404, response="Result not found")
+    _403 = GSResponse(code=403, response="Forbidden Request")
     _401 = GSResponse(code=401, response="Unauthorized request")
     _500 = GSResponse(code=500, response="Internal Server error")
     _201 = GSResponse(code=201, response="Data added successfully")
