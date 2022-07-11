@@ -3,23 +3,28 @@ from pydantic import BaseModel
 
 
 class langVersion(BaseModel):
-    version:str = ...
+    version: str = ...
+
+
 class SingleStyleDict(BaseModel):
     name: str = ...
     format: str = ...
     languageVersion: langVersion = ...
     filename: str = ...
 
+
 class StyleModel(BaseModel):
-    style:SingleStyleDict
+    style: SingleStyleDict
 
 
 class allStyleList(BaseModel):
-    name : str
-    href : str
+    name: str
+    href: str
+
 
 class allStyleDict(BaseModel):
-    style : List[allStyleList]
+    style: List[allStyleList]
+
 
 class AllStylesModel(BaseModel):
-    styles : allStyleDict
+    styles: allStyleDict

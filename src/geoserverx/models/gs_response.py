@@ -4,7 +4,8 @@ from pydantic import BaseModel
 
 class GSResponse(BaseModel):
     code: Optional[int]
-    response : str = ...
+    response: str = ...
+
 
 class HttpxError(BaseModel):
-    response : str
+    response: str
