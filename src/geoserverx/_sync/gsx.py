@@ -31,8 +31,8 @@ logging.basicConfig(format="%(levelname)s - %(message)s")
 @dataclass
 class SyncGeoServerX:
     """
-	Sync Geoserver client
-	"""
+    Sync Geoserver client
+    """
 
     username: str = "admin"
     password: str = "geoserver"
@@ -49,7 +49,8 @@ class SyncGeoServerX:
         elif not self.url or self.url == "":
             raise GeoServerXError(0, "URL is missing")
         self.http_client = SyncClient(
-            base_url=self.url, auth=(self.username, self.password),
+            base_url=self.url,
+            auth=(self.username, self.password),
         )
 
     def __enter__(self) -> "SyncGeoServerX":
@@ -62,7 +63,9 @@ class SyncGeoServerX:
         self.http_client.aclose()
 
     @staticmethod
-    def from_auth(auth: GeoServerXAuth,) -> "SyncGeoServerX":
+    def from_auth(
+        auth: GeoServerXAuth,
+    ) -> "SyncGeoServerX":
         return SyncGeoServerX(auth.username, auth.password, auth.url)
 
     def response_recognise(self, r) -> GSResponse:
@@ -116,35 +119,21 @@ class SyncGeoServerX:
             return results
 
     # Create workspace
+    @exception_handler
     def create_workspace(
         self, name: str, default: bool = False, Isolated: bool = False
     ) -> GSResponse:
-        try:
-            payload: NewWorkspace = NewWorkspace(
-                workspace=NewWorkspaceInfo(name=name, isolated=Isolated)
-            )
-            try:
-                with self.http_client as Client:
-                    responses = Client.post(
-                        f"workspaces?default={default}",
-                        data=payload.json(),
-                        headers=self.head,
-                    )
-                results = self.response_recognise(responses)
-                return results
-            except httpx.TimeoutException as exc:
-                res = {}
-                res["code"] = 504
-                res["response"] = "Timeout Error"
-                return GSResponse.parse_obj(res)
-            except httpx.NetworkError as exc:
-                res = {}
-                res["code"] = 503
-                res["response"] = "Geoserver unavailable"
-                return GSResponse.parse_obj(res)
-        except Exception as e:
-            resp = {"code": 500, "response": "Error in sending request"}
-            return GSResponse.parse_obj(resp)
+        payload: NewWorkspace = NewWorkspace(
+            workspace=NewWorkspaceInfo(name=name, isolated=Isolated)
+        )
+        Client = self.http_client
+        responses = Client.post(
+            f"workspaces?default={default}",
+            data=payload.json(),
+            headers=self.head,
+        )
+        results = self.response_recognise(responses)
+        return results
 
     # Get vector stores in specific workspaces
     @exception_handler
@@ -160,8 +149,8 @@ class SyncGeoServerX:
     # Get raster stores in specific workspaces
     @exception_handler
     def get_raster_stores_in_workspaces(self, workspace: str) -> CoveragesStoresModel:
-        with self.http_client as Client:
-            responses = Client.get(f"workspaces/{workspace}/coveragestores")
+        Client = self.http_client
+        responses = Client.get(f"workspaces/{workspace}/coveragestores")
         if responses.status_code == 200:
             return CoveragesStoresModel.parse_obj(responses.json())
         else:
@@ -172,8 +161,8 @@ class SyncGeoServerX:
     @exception_handler
     def get_vector_store(self, workspace: str, store: str) -> DataStoreModel:
         url = f"workspaces/{workspace}/datastores/{store}.json"
-        with self.http_client as Client:
-            responses = Client.get(url)
+        Client = self.http_client
+        responses = Client.get(url)
         if responses.status_code == 200:
             return DataStoreModel.parse_obj(responses.json())
         else:
@@ -184,8 +173,8 @@ class SyncGeoServerX:
     @exception_handler
     def get_raster_store(self, workspace: str, store: str) -> CoveragesStoreModel:
         url = f"workspaces/{workspace}/coveragestores/{store}.json"
-        with self.http_client as Client:
-            responses = Client.get(url)
+        Client = self.http_client
+        responses = Client.get(url)
         if responses.status_code == 200:
             return CoveragesStoreModel.parse_obj(responses.json())
         else:
@@ -195,8 +184,8 @@ class SyncGeoServerX:
     # Get all styles in GS
     @exception_handler
     def get_allstyles(self) -> AllStylesModel:
-        with self.http_client as Client:
-            responses = Client.get(f"styles")
+        Client = self.http_client
+        responses = Client.get(f"styles")
         if responses.status_code == 200:
             return AllStylesModel.parse_obj(responses.json())
         else:
@@ -206,14 +195,15 @@ class SyncGeoServerX:
     # Get specific style in GS
     @exception_handler
     def get_style(self, style: str) -> StyleModel:
-        with self.http_client as Client:
-            responses = Client.get(f"styles/{style}.json")
+        Client = self.http_client
+        responses = Client.get(f"styles/{style}.json")
         if responses.status_code == 200:
             return StyleModel.parse_obj(responses.json())
         else:
             results = self.response_recognise(responses)
             return results
 
+    @exception_handler
     def create_file_store(self, workspace: str, store: str, file, service_type):
         service: AddDataStoreProtocol = CreateFileStore()
 

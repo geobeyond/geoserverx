@@ -18,7 +18,8 @@ class AsyncGeoServerX:
 
     def __post_init__(self):
         self.http_client = AsyncClient(
-            base_url=self.url, auth=(self.username, self.password),
+            base_url=self.url,
+            auth=(self.username, self.password),
         )
 
     async def __enter__(self) -> "AsyncGeoServerX":
@@ -31,7 +32,9 @@ class AsyncGeoServerX:
         await self.http_client.aclose()
 
     @staticmethod
-    def from_auth(auth: GeoServerXAuth,) -> "AsyncGeoServerX":
+    def from_auth(
+        auth: GeoServerXAuth,
+    ) -> "AsyncGeoServerX":
         return AsyncGeoServerX(auth.username, auth.password, auth.url)
 
     def response_recognise(self, r):

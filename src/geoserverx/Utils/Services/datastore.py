@@ -9,8 +9,8 @@ import httpx
 
 class AddDataStoreProtocol(Protocol):
     """
-	Represents functionality of sending a file to the server.
-	"""
+    Represents functionality of sending a file to the server.
+    """
 
     def addFile(
         self,
@@ -39,19 +39,18 @@ class CreateFileStore:
         layer_header,
     ):
 
-        with client as Client:
-            store_responses = Client.post(
-                f"workspaces/{workspace}/datastores/",
-                data=store_payload,
-                headers=store_header,
-            )
-            layer_responses = Client.put(
-                f"workspaces/{workspace}/datastores/{store}/file.{method}",
-                data=layer_payload,
-                headers=layer_header,
-            )
-            results = layer_responses.status_code
-            return results
+        store_responses = client.post(
+            f"workspaces/{workspace}/datastores/",
+            data=store_payload,
+            headers=store_header,
+        )
+        layer_responses = client.put(
+            f"workspaces/{workspace}/datastores/{store}/file.{method}",
+            data=layer_payload,
+            headers=layer_header,
+        )
+        results = layer_responses.status_code
+        return results
 
 
 class ShapefileStore:

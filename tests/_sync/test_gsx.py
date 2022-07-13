@@ -74,88 +74,210 @@ def test_get_workspace_success(
     assert response.workspace.name == "pydad"
 
 
-def test_get_workspace_NetworkError(client: SyncGeoServerX, respx_mock):
+def test_get_workspace_ConnectError(client: SyncGeoServerX, respx_mock):
     respx_mock.get(f"{baseUrl}workspaces/pydad").mock(side_effect=httpx.ConnectError)
     response = client.get_workspace("pydad")
     assert response.response == "Error in connecting to Geoserver"
 
 
-# @pytest_mark.anyio
-# def test_get_vector_stores_in_workspaces_no_ws_fail(
-#     client: SyncGeoServerX,
-#     httpx_mock: HTTPXMock,
-#     bad_datastore_item_connection
-# ):
-#     httpx_mock.add_response(json=bad_datastore_item_connection)
-#     with pytest.raises(ValidationError):
-#         store = client.get_vector_stores_in_workspaces('cisfte')
+# Test - get_vector_stores_in_workspaces
+def test_get_vector_stores_in_workspaces_validation(
+    client: SyncGeoServerX, invalid_datastores_model_connection, respx_mock
+):
+    respx_mock.get(f"{baseUrl}workspaces/sfsf/datastores").mock(
+        return_value=httpx.Response(404, json=invalid_datastores_model_connection)
+    )
+    response = client.get_vector_stores_in_workspaces("sfsf")
+    assert response.response == "Result not found"
 
-# @pytest_mark.anyio
-# def test_get_vector_stores_in_workspaces_success(
-#     client: SyncGeoServerX,
-#     httpx_mock: HTTPXMock,
-#     good_datastores_model_connection
-# ):
-#     httpx_mock.add_response(json=good_datastores_model_connection)
-#     store = client.get_vector_stores_in_workspaces('jn')
-#     assert isinstance(store.dataStores.dataStore, list)
 
-# @pytest_mark.anyio
-# def test_get_raster_stores_in_workspaces_no_store_fail(
-#     client: SyncGeoServerX,
-#     httpx_mock: HTTPXMock,
-#     bad_coverages_stores_model_connection
-# ):
-#     httpx_mock.add_response(json=bad_coverages_stores_model_connection)
-#     with pytest.raises(ValidationError):
-#         store = client.get_raster_stores_in_workspaces('jay')
+def test_get_vector_stores_in_workspaces_success(
+    client: SyncGeoServerX, good_datastores_model_connection, respx_mock
+):
+    respx_mock.get(f"{baseUrl}workspaces/sfsf/datastores").mock(
+        return_value=httpx.Response(200, json=good_datastores_model_connection)
+    )
+    response = client.get_vector_stores_in_workspaces("sfsf")
+    assert response.dataStores.dataStore[0].name == "jumper"
 
-# @pytest_mark.anyio
-# def test_get_raster_stores_in_workspaces_success(
-#     client:SyncGeoServerX,
-#     httpx_mock: HTTPXMock,
-#     good_coverages_stores_model_connection
-# ):
-#     httpx_mock.add_response(json=good_coverages_stores_model_connection)
-#     store = client.get_raster_stores_in_workspaces('cite')
-#     assert isinstance(store.coverageStores.coverageStore, list)
 
-# @pytest_mark.anyio
-# def test_allstyles_success(
-#     client:SyncGeoServerX,
-#     httpx_mock: HTTPXMock,
-#     good_all_styles_model_connection
-# ):
-#     httpx_mock.add_response(json=good_all_styles_model_connection)
-#     allstyles = client.get_allstyles()
-#     assert isinstance(allstyles.styles.style, list)
+def test_get_vector_stores_in_workspaces_ConnectError(
+    client: SyncGeoServerX, respx_mock
+):
+    respx_mock.get(f"{baseUrl}workspaces/sfsf/datastores").mock(
+        side_effect=httpx.ConnectError
+    )
+    response = client.get_vector_stores_in_workspaces("sfsf")
+    assert response.response == "Error in connecting to Geoserver"
 
-# @pytest_mark.anyio
-# def test_allstyles_fail(
-#     client:SyncGeoServerX,
-#     httpx_mock: HTTPXMock,
-#     bad_all_styles_model_connection
-# ):
-#     httpx_mock.add_response(json=bad_all_styles_model_connection)
-#     with pytest.raises(ValidationError):
-#         style = client.get_allstyles()
 
-# @pytest_mark.anyio
-# def test_style_success(
-#     client:SyncGeoServerX,
-#     httpx_mock: HTTPXMock,
-#     good_style_model_connection
-# ):
-#     httpx_mock.add_response(json=good_style_model_connection)
-#     style = client.get_style('burg')
-#     assert style.style.name == 'burg'
+# Test - get_raster_stores_in_workspaces
+def test_get_raster_stores_in_workspaces_validation(
+    client: SyncGeoServerX, invalid_coverages_stores_model_connection, respx_mock
+):
+    respx_mock.get(f"{baseUrl}workspaces/sfsf/coveragestores").mock(
+        return_value=httpx.Response(404, json=invalid_coverages_stores_model_connection)
+    )
+    response = client.get_raster_stores_in_workspaces("sfsf")
+    assert response.response == "Result not found"
 
-# @pytest_mark.anyio
-# def test_style_fail(
-#     client:SyncGeoServerX,
-#     httpx_mock: HTTPXMock,
-#     bad_style_model_connection
-# ):
-#     httpx_mock.add_response(json=bad_style_model_connection)
-#     with pytest.raises(ValidationError):
-#         style = client.get_style('dssdgsg')
+
+def test_get_raster_stores_in_workspaces_success(
+    client: SyncGeoServerX, good_coverages_stores_model_connection, respx_mock
+):
+    respx_mock.get(f"{baseUrl}workspaces/sfsf/coveragestores").mock(
+        return_value=httpx.Response(200, json=good_coverages_stores_model_connection)
+    )
+    response = client.get_raster_stores_in_workspaces("sfsf")
+    assert response.coverageStores.coverageStore[0].name == "RGB_125"
+
+
+def test_get_raster_stores_in_workspaces_ConnectError(
+    client: SyncGeoServerX, respx_mock
+):
+    respx_mock.get(f"{baseUrl}workspaces/sfsf/coveragestores").mock(
+        side_effect=httpx.ConnectError
+    )
+    response = client.get_raster_stores_in_workspaces("sfsf")
+    assert response.response == "Error in connecting to Geoserver"
+
+
+# Test - get_vector_store
+def test_get_vector_store_validation(
+    client: SyncGeoServerX, invalid_datastore_model_connection, respx_mock
+):
+    respx_mock.get(f"{baseUrl}workspaces/sfsf/datastores/jumper.json").mock(
+        return_value=httpx.Response(404, json=invalid_datastore_model_connection)
+    )
+    response = client.get_vector_store("sfsf", "jumper")
+    assert response.response == "Result not found"
+
+
+def test_get_vector_store_success(
+    client: SyncGeoServerX, good_datastore_model_connection, respx_mock
+):
+    respx_mock.get(f"{baseUrl}workspaces/sfsf/datastores/jumper.json").mock(
+        return_value=httpx.Response(200, json=good_datastore_model_connection)
+    )
+    response = client.get_vector_store("sfsf", "jumper")
+    assert response.dataStore.name == "jumper"
+
+
+def test_get_vector_store_ConnectError(client: SyncGeoServerX, respx_mock):
+    respx_mock.get(f"{baseUrl}workspaces/sfsf/datastores/jumper.json").mock(
+        side_effect=httpx.ConnectError
+    )
+    response = client.get_vector_store("sfsf", "jumper")
+    assert response.response == "Error in connecting to Geoserver"
+
+
+# Test - get_raster_store
+def test_get_raster_store_validation(
+    client: SyncGeoServerX, invalid_coverages_store_model_connection, respx_mock
+):
+    respx_mock.get(f"{baseUrl}workspaces/cite/coveragestores/RGB_125.json").mock(
+        return_value=httpx.Response(404, json=invalid_coverages_store_model_connection)
+    )
+    response = client.get_raster_store("cite", "RGB_125")
+    assert response.response == "Result not found"
+
+
+def test_get_raster_store_success(
+    client: SyncGeoServerX, good_coverages_store_model_connection, respx_mock
+):
+    respx_mock.get(f"{baseUrl}workspaces/cite/coveragestores/RGB_125.json").mock(
+        return_value=httpx.Response(200, json=good_coverages_store_model_connection)
+    )
+    response = client.get_raster_store("cite", "RGB_125")
+    assert response.coverageStore.name == "RGB_125"
+
+
+def test_get_raster_store_ConnectError(client: SyncGeoServerX, respx_mock):
+    respx_mock.get(f"{baseUrl}workspaces/cite/coveragestores/RGB_125.json").mock(
+        side_effect=httpx.ConnectError
+    )
+    response = client.get_raster_store("cite", "RGB_125")
+    assert response.response == "Error in connecting to Geoserver"
+
+
+# Test - get_allstyles
+def test_get_allstyles_validation(
+    client: SyncGeoServerX, invalid_all_styles_model_connection, respx_mock
+):
+    respx_mock.get(f"{baseUrl}styles").mock(
+        return_value=httpx.Response(404, json=invalid_all_styles_model_connection)
+    )
+    response = client.get_allstyles()
+    assert response.response == "Result not found"
+
+
+def test_get_allstyles_success(
+    client: SyncGeoServerX, good_all_styles_model_connection, respx_mock
+):
+    respx_mock.get(f"{baseUrl}styles").mock(
+        return_value=httpx.Response(200, json=good_all_styles_model_connection)
+    )
+    response = client.get_allstyles()
+    assert response.styles.style[0].name == "CUSD 2020 Census Blocks"
+
+
+def test_get_allstyles_ConnectError(client: SyncGeoServerX, respx_mock):
+    respx_mock.get(f"{baseUrl}styles").mock(side_effect=httpx.ConnectError)
+    response = client.get_allstyles()
+    assert response.response == "Error in connecting to Geoserver"
+
+
+# Test - get_style
+def test_get_style_validation(
+    client: SyncGeoServerX, invalid_style_model_connection, respx_mock
+):
+    respx_mock.get(f"{baseUrl}styles/burg.json").mock(
+        return_value=httpx.Response(404, json=invalid_style_model_connection)
+    )
+    response = client.get_style("burg")
+    assert response.response == "Result not found"
+
+
+def test_get_style_success(
+    client: SyncGeoServerX, good_style_model_connection, respx_mock
+):
+    respx_mock.get(f"{baseUrl}styles/burg.json").mock(
+        return_value=httpx.Response(200, json=good_style_model_connection)
+    )
+    response = client.get_style("burg")
+    assert response.style.name == "burg"
+
+
+def test_get_style_ConnectError(client: SyncGeoServerX, respx_mock):
+    respx_mock.get(f"{baseUrl}styles/burg.json").mock(side_effect=httpx.ConnectError)
+    response = client.get_style("burg")
+    assert response.response == "Error in connecting to Geoserver"
+
+
+# Test - create_workspace
+def test_create_workspace_validation(
+    client: SyncGeoServerX, invalid_new_workspace_connection, respx_mock
+):
+    respx_mock.post(f"{baseUrl}workspaces?default=False").mock(
+        return_value=httpx.Response(404, json=invalid_new_workspace_connection)
+    )
+    response = client.create_workspace("pydad", False, True)
+    assert response.response == "Result not found"
+
+
+def test_create_workspace_success(
+    client: SyncGeoServerX, good_new_workspace_connection, respx_mock
+):
+    respx_mock.post(f"{baseUrl}workspaces?default=False").mock(
+        return_value=httpx.Response(201, json=good_new_workspace_connection)
+    )
+    response = client.create_workspace("pydad", False, True)
+    assert response.response == "Data added successfully"
+
+
+def test_create_workspace_ConnectError(client: SyncGeoServerX, respx_mock):
+    respx_mock.post(f"{baseUrl}workspaces?default=False").mock(
+        side_effect=httpx.ConnectError
+    )
+    response = client.create_workspace("pydad", False, True)
+    assert response.response == "Error in connecting to Geoserver"

@@ -120,6 +120,12 @@ def bad_datastores_model_connection() -> dict:
 
 
 @pytest.fixture
+def invalid_datastores_model_connection() -> dict:
+    item = {"code": 404, "response": "Result not found"}
+    return item
+
+
+@pytest.fixture
 def good_datastore_connection_connection() -> dict:
     item = {"key": "just", "path": "https://www.linkedin.com/notifications/"}
 
@@ -208,6 +214,12 @@ def bad_datastore_model_connection() -> dict:
 
 
 @pytest.fixture
+def invalid_datastore_model_connection() -> dict:
+    item = {"code": 404, "response": "Result not found"}
+    return item
+
+
+@pytest.fixture
 def good_coverages_store_in_bulk_connection() -> dict:
     item = {"name": "just", "href": "https://www.linkedin.com/notifications/"}
     return item
@@ -265,6 +277,12 @@ def bad_coverages_stores_model_connection() -> dict:
 
 
 @pytest.fixture
+def invalid_coverages_stores_model_connection() -> dict:
+    item = {"code": 404, "response": "Result not found"}
+    return item
+
+
+@pytest.fixture
 def good_coverages_store_model_connection() -> dict:
     item = {
         "coverageStore": {
@@ -296,6 +314,12 @@ def good_coverages_store_model_connection() -> dict:
 @pytest.fixture
 def bad_coverages_store_model_connection() -> dict:
     item = {"coverageStores": "just"}
+    return item
+
+
+@pytest.fixture
+def invalid_coverages_store_model_connection() -> dict:
+    item = {"code": 404, "response": "Result not found"}
     return item
 
 
@@ -332,6 +356,12 @@ def good_style_model_connection() -> dict:
 @pytest.fixture
 def bad_style_model_connection() -> dict:
     item = {"style": ""}
+    return item
+
+
+@pytest.fixture
+def invalid_style_model_connection() -> dict:
+    item = {"code": 404, "response": "Result not found"}
     return item
 
 
@@ -395,6 +425,12 @@ def good_all_styles_model_connection() -> dict:
 @pytest.fixture
 def bad_all_styles_model_connection() -> dict:
     item = {"styles": ""}
+    return item
+
+
+@pytest.fixture
+def invalid_all_styles_model_connection() -> dict:
+    item = {"code": 404, "response": "Result not found"}
     return item
 
 
@@ -492,4 +528,10 @@ def good_new_workspace_connection() -> dict:
 @pytest.fixture
 def bad_new_workspace_connection() -> dict:
     item = {"workspace": ""}
+    return item
+
+
+@pytest.fixture
+def invalid_new_workspace_connection() -> dict:
+    item = {"code": 404, "response": "Result not found"}
     return item
