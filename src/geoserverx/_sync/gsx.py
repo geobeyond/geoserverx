@@ -5,6 +5,7 @@ import logging
 
 from geoserverx.utils.errors import GeoServerXError
 from geoserverx.utils.enums import GSResponseEnum, HTTPXErrorEnum
+
 from geoserverx.models.style import StyleModel, AllStylesModel
 from geoserverx.models.workspace import (
     NewWorkspace,
@@ -14,6 +15,7 @@ from geoserverx.models.workspace import (
 )
 from geoserverx.models.data_store import DataStoreModel, DataStoresModel
 from geoserverx.models.coverages_store import CoveragesStoreModel, CoveragesStoresModel
+
 from geoserverx.models.gs_response import GSResponse, HttpxError
 from geoserverx.utils.services.datastore import (
     AddDataStoreProtocol,
@@ -25,7 +27,6 @@ from geoserverx.utils.http_client import SyncClient
 from geoserverx.utils.auth import GeoServerXAuth
 import httpx
 
-logging.basicConfig(format="%(levelname)s - %(message)s")
 
 
 @dataclass
@@ -213,3 +214,4 @@ class SyncGeoServerX:
         else:
             raise ValueError(f"Service type {service_type} not supported")
         service.addFile(self.http_client, workspace, store)
+
