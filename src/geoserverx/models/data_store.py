@@ -8,27 +8,30 @@ class DataStoreInBulk(BaseModel):
     name: str = ...
     href: str = ...
 
+
 class DataStoreDict(BaseModel):
-    dataStore: List[DataStoreInBulk] 
+    dataStore: List[DataStoreInBulk]
+
 
 class DataStoresModel(BaseModel):
-    dataStores: Union[DataStoreDict, Literal['']] = ''
-
+    dataStores: Union[DataStoreDict, Literal[""]] = ""
 
 
 class DatastoreConnection(BaseModel):
-    key : str = Field(...,alias="@Key")
-    path : str = Field(...,alias="$")
+    key: str = Field(..., alias="@Key")
+    path: str = Field(..., alias="$")
 
     class Config:
         allow_population_by_field_name = True
 
+
 class EntryItem(BaseModel):
-    entry : List[DatastoreConnection]
+    entry: List[DatastoreConnection]
+
 
 class DatastoreItem(BaseModel):
-    name : str
-    connectionParameters : EntryItem
+    name: str
+    connectionParameters: EntryItem
 
 
 class DataStoreModelDetails(BaseModel):
@@ -44,5 +47,4 @@ class DataStoreModelDetails(BaseModel):
 
 
 class DataStoreModel(BaseModel):
-    dataStore : DataStoreModelDetails = {}
-
+    dataStore: DataStoreModelDetails = {}

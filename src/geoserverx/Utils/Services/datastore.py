@@ -1,46 +1,58 @@
 import json
 from logging import Logger
 from typing import Protocol
+from geoserverx.models.gs_response import GSResponse
+import httpx
 
 
 class AddDataStoreProtocol(Protocol):
     """
     Represents functionality of sending a file to the server.
     """
+
     def addFile(
-        self, client, workspace, store, method,
-        store_payload, layer_payload, store_header,
-        layer_header
+        self,
+        client,
+        workspace,
+        store,
+        method,
+        store_payload,
+        layer_payload,
+        store_header,
+        layer_header,
     ):
         ...
 
 
 class CreateFileStore:
     def addFile(
-        self, client, workspace, store, method,
-        store_payload, layer_payload, store_header,
-        layer_header
+        self,
+        client,
+        workspace,
+        store,
+        method,
+        store_payload,
+        layer_payload,
+        store_header,
+        layer_header,
     ):
-        with client as Client:
-            store_responses = Client.post(
-                f"workspaces/{workspace}/datastores/", data=store_payload, headers=store_header
-            )
-            layer_responses = Client.put(
-                f"workspaces/{workspace}/datastores/{store}/file.{method}",
-                data=layer_payload,
-                headers=layer_header,
-            )
-            results = layer_responses.status_code
-            return results
+
+        store_responses = client.post(
+            f"workspaces/{workspace}/datastores/",
+            data=store_payload,
+            headers=store_header,
+        )
+        layer_responses = client.put(
+            f"workspaces/{workspace}/datastores/{store}/file.{method}",
+            data=layer_payload,
+            headers=layer_header,
+        )
+        results = layer_responses.status_code
+        return results
 
 
 class ShapefileStore:
-    def __init__(
-        self,
-        service: AddDataStoreProtocol,
-        logger: Logger,
-        file
-    ) -> None:
+    def __init__(self, service: AddDataStoreProtocol, logger: Logger, file) -> None:
         self.inner = service
         self.logger = logger
         self.file = file
@@ -59,21 +71,20 @@ class ShapefileStore:
         self.logger.debug(f"Shapefile store payload: {store_payload}")
         layer_payload = self.file
         result = self.inner.addFile(
-            client, workspace, store, "shp",
-            store_payload, layer_payload,
+            client,
+            workspace,
+            store,
+            "shp",
+            store_payload,
+            layer_payload,
             {"Content-Type": "application/json"},
-            {"Content-Type": "application/zip"}
+            {"Content-Type": "application/zip"},
         )
         return result
 
 
 class GPKGfileStore:
-    def __init__(
-        self,
-        service: AddDataStoreProtocol,
-        logger: Logger,
-        file
-    ) -> None:
+    def __init__(self, service: AddDataStoreProtocol, logger: Logger, file) -> None:
         self.inner = service
         self.logger = logger
         self.file = file
@@ -84,7 +95,7 @@ class GPKGfileStore:
                 "dataStore": {
                     "name": store,
                     "connectionParameters": {
-                        "entry":  [
+                        "entry": [
                             {"@key": "database", "$": "file:///path/to/nyc.gpkg"},
                             {"@key": "dbtype", "$": "geopkg"},
                         ]
@@ -95,9 +106,13 @@ class GPKGfileStore:
         self.logger.debug(f"GeoPackage store payload: {store_payload}")
         layer_payload = self.file
         result = self.inner.addFile(
-            client, workspace, store, "gpkg",
-            store_payload, layer_payload,
+            client,
+            workspace,
+            store,
+            "gpkg",
+            store_payload,
+            layer_payload,
             {"Content-Type": "application/json"},
-            {"Content-Type": "application/json"}
+            {"Content-Type": "application/json"},
         )
         return result

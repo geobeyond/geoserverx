@@ -1,9 +1,11 @@
+from typing import Optional
 from pydantic import BaseModel
 
 
 class GSResponse(BaseModel):
-    code: int
-    response : str
+    code: Optional[int]
+    response: str = ...
+
 
 class HttpxError(BaseModel):
-    response : str
+    response: str
