@@ -49,8 +49,7 @@ class SyncGeoServerX:
         elif not self.url or self.url == "":
             raise GeoServerXError(0, "URL is missing")
         self.http_client = SyncClient(
-            base_url=self.url,
-            auth=(self.username, self.password),
+            base_url=self.url, auth=(self.username, self.password),
         )
 
     def __enter__(self) -> "SyncGeoServerX":
@@ -63,9 +62,7 @@ class SyncGeoServerX:
         self.http_client.aclose()
 
     @staticmethod
-    def from_auth(
-        auth: GeoServerXAuth,
-    ) -> "SyncGeoServerX":
+    def from_auth(auth: GeoServerXAuth,) -> "SyncGeoServerX":
         return SyncGeoServerX(auth.username, auth.password, auth.url)
 
     def response_recognise(self, r) -> GSResponse:
@@ -128,9 +125,7 @@ class SyncGeoServerX:
         )
         Client = self.http_client
         responses = Client.post(
-            f"workspaces?default={default}",
-            data=payload.json(),
-            headers=self.head,
+            f"workspaces?default={default}", data=payload.json(), headers=self.head,
         )
         results = self.response_recognise(responses)
         return results
