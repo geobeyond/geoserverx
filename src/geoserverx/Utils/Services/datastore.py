@@ -1,9 +1,7 @@
 import json
 from logging import Logger
 from typing import Protocol
-
 from geoserverx.models.gs_response import GSResponse
-import httpx
 import httpx
 
 
