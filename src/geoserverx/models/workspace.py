@@ -10,8 +10,9 @@ class WorkspaceInBulk(BaseModel):
 class workspaceDict(BaseModel):
     workspace: List[WorkspaceInBulk]
 
+
 class WorkspacesModel(BaseModel):
-    workspaces: workspaceDict =  ''
+    workspaces: workspaceDict = ""
 
 
 class SingleWorkspace(BaseModel):
@@ -23,6 +24,7 @@ class SingleWorkspace(BaseModel):
     wmsStores: str = ...
     wmtsStores: str = ...
 
+
 class WorkspaceModel(BaseModel):
     workspace: SingleWorkspace = ...
 
@@ -30,6 +32,7 @@ class WorkspaceModel(BaseModel):
 class NewWorkspaceInfo(BaseModel):
     name: str = ...
     isolated: bool = None
+
 
 class NewWorkspace(BaseModel):
     workspace: NewWorkspaceInfo = ...

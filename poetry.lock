@@ -341,6 +341,17 @@ pytest = ">=6,<8"
 testing = ["pytest-asyncio (>=0.17.0,<0.18.0)", "pytest-cov (>=3.0.0,<4.0.0)"]
 
 [[package]]
+name = "respx"
+version = "0.19.2"
+description = "A utility for mocking out the Python HTTPX and HTTP Core libraries."
+category = "dev"
+optional = false
+python-versions = ">=3.6"
+
+[package.dependencies]
+httpx = ">=0.21.0"
+
+[[package]]
 name = "rfc3986"
 version = "1.5.0"
 description = "Validating URI References per RFC 3986"
@@ -423,7 +434,7 @@ python-versions = ">=3.7"
 [metadata]
 lock-version = "1.1"
 python-versions = "^3.9"
-content-hash = "712dbe11fdf12caf1d90890d20bbd228b6cb44c4ed98cf4e33ea99ccfec56abd"
+content-hash = "6972b77815e627f4a79ed05bc491f57d04ae0cda62576c386cbba18eb17cb7e6"
 
 [metadata.files]
 anyio = [
@@ -671,6 +682,10 @@ pytest = [
 pytest-httpx = [
     {file = "pytest_httpx-0.21.0-py3-none-any.whl", hash = "sha256:b7633af7c79d61471db1b17fd020664759305f370b07ed55009e91d014590e27"},
     {file = "pytest_httpx-0.21.0.tar.gz", hash = "sha256:00a007bd9c0928b30259a046a0ba21316ab5f444842a5bfc4f277c47f88b452f"},
+]
+respx = [
+    {file = "respx-0.19.2-py2.py3-none-any.whl", hash = "sha256:417f986fec599b9cc6531e93e494b7a75d1cb7bccff9dde5b53edc51f7954494"},
+    {file = "respx-0.19.2.tar.gz", hash = "sha256:f3d210bb4de0ccc4c5afabeb87c3c1b03b3765a9c1a73eb042a07bb18ac33705"},
 ]
 rfc3986 = [
     {file = "rfc3986-1.5.0-py2.py3-none-any.whl", hash = "sha256:a86d6e1f5b1dc238b218b012df0aa79409667bb209e58da56d0b94704e712a97"},
