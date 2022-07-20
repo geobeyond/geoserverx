@@ -1,5 +1,4 @@
 import httpx
-from pydantic import ValidationError
 from pytest import fixture, mark as pytest_mark
 import pytest
 from geoserverx.models.workspace import WorkspaceInBulk
@@ -48,9 +47,9 @@ def test_get_all_workspaces_success(
 
 
 def test_get_all_workspaces_NetworkError(client: SyncGeoServerX, respx_mock):
-    respx_mock.get(f"{baseUrl}workspaces").mock(side_effect=httpx.NetworkError)
-    with pytest.raises(httpx.NetworkError):
-        client.get_all_workspaces()
+    respx_mock.get(f"{baseUrl}workspaces").mock(side_effect=httpx.ConnectError)
+    response = client.get_all_workspaces()
+    assert response.response == "Error in connecting to Geoserver"
 
 
 # Test - get_workspace

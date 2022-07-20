@@ -99,8 +99,8 @@ class SyncGeoServerX:
     # Get all workspaces
     @exception_handler
     def get_all_workspaces(self) -> Union[WorkspacesModel, GSResponse]:
-        with self.http_client as Client:
-            responses = Client.get(f"workspaces")
+        Client = self.http_client
+        responses = Client.get(f"workspaces")
         if responses.status_code == 200:
             return WorkspacesModel.parse_obj(responses.json())
         else:

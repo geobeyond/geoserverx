@@ -33,7 +33,7 @@ class vectorFileEnum(str, Enum):
 def workspaces(
     request: requestEnum = requestEnum._sync,
     url: str = typer.Option(
-        "http://127.0.0.1:80801/geoserver/rest/", help="Geoserver REST URL"
+        "http://127.0.0.1:8080/geoserver/rest/", help="Geoserver REST URL"
     ),
     password: str = typer.Option("geoserver", help="Geoserver Password"),
     username: str = typer.Option("admin", help="Geoserver username"),
