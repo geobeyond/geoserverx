@@ -28,7 +28,6 @@ from geoserverx.utils.auth import GeoServerXAuth
 import httpx
 
 
-
 @dataclass
 class SyncGeoServerX:
     """
@@ -50,7 +49,8 @@ class SyncGeoServerX:
         elif not self.url or self.url == "":
             raise GeoServerXError(0, "URL is missing")
         self.http_client = SyncClient(
-            base_url=self.url, auth=(self.username, self.password),
+            base_url=self.url,
+            auth=(self.username, self.password),
         )
 
     def __enter__(self) -> "SyncGeoServerX":
@@ -63,23 +63,25 @@ class SyncGeoServerX:
         self.http_client.aclose()
 
     @staticmethod
-    def from_auth(auth: GeoServerXAuth,) -> "SyncGeoServerX":
+    def from_auth(
+        auth: GeoServerXAuth,
+    ) -> "SyncGeoServerX":
         return SyncGeoServerX(auth.username, auth.password, auth.url)
 
     def response_recognise(self, r) -> GSResponse:
-        if r.status_code == 401:
+        if r == 401:
             resp = GSResponseEnum._401.value
-        elif r.status_code == 500:
+        elif r == 500:
             resp = GSResponseEnum._500.value
-        elif r.status_code == 503:
+        elif r == 503:
             resp = GSResponseEnum._503.value
-        elif r.status_code == 404:
+        elif r == 404:
             resp = GSResponseEnum._404.value
-        elif r.status_code == 403:
+        elif r == 403:
             resp = GSResponseEnum._403.value
-        elif r.status_code == 201:
+        elif r == 201:
             resp = GSResponseEnum._201.value
-        elif r.status_code == 409:
+        elif r == 409:
             resp = GSResponseEnum._409.value
         return GSResponse.parse_obj(resp)
 
@@ -90,7 +92,7 @@ class SyncGeoServerX:
             except httpx.ConnectError as exc:
                 return GSResponse(code=503, response="Error in connecting to Geoserver")
             except httpx.TimeoutException as exc:
-                return GSResponse(code=504,response="Timeout Error in connection")
+                return GSResponse(code=504, response="Timeout Error in connection")
 
         return inner_function
 
@@ -102,7 +104,7 @@ class SyncGeoServerX:
         if responses.status_code == 200:
             return WorkspacesModel.parse_obj(responses.json())
         else:
-            results = self.response_recognise(responses)
+            results = self.response_recognise(responses.status_code)
             return results
 
     # Get specific workspaces
@@ -113,7 +115,7 @@ class SyncGeoServerX:
         if responses.status_code == 200:
             return WorkspaceModel.parse_obj(responses.json())
         else:
-            results = self.response_recognise(responses)
+            results = self.response_recognise(responses.status_code)
             return results
 
     # Create workspace
@@ -126,9 +128,11 @@ class SyncGeoServerX:
         )
         Client = self.http_client
         responses = Client.post(
-            f"workspaces?default={default}", data=payload.json(), headers=self.head,
+            f"workspaces?default={default}",
+            data=payload.json(),
+            headers=self.head,
         )
-        results = self.response_recognise(responses)
+        results = self.response_recognise(responses.status_code)
         return results
 
     # Get vector stores in specific workspaces
@@ -139,7 +143,7 @@ class SyncGeoServerX:
         if responses.status_code == 200:
             return DataStoresModel.parse_obj(responses.json())
         else:
-            results = self.response_recognise(responses)
+            results = self.response_recognise(responses.status_code)
             return results
 
     # Get raster stores in specific workspaces
@@ -150,7 +154,7 @@ class SyncGeoServerX:
         if responses.status_code == 200:
             return CoveragesStoresModel.parse_obj(responses.json())
         else:
-            results = self.response_recognise(responses)
+            results = self.response_recognise(responses.status_code)
             return results
 
     # Get vector store information in specific workspaces
@@ -162,7 +166,7 @@ class SyncGeoServerX:
         if responses.status_code == 200:
             return DataStoreModel.parse_obj(responses.json())
         else:
-            results = self.response_recognise(responses)
+            results = self.response_recognise(responses.status_code)
             return results
 
     # Get raster  store information in specific workspaces
@@ -174,7 +178,7 @@ class SyncGeoServerX:
         if responses.status_code == 200:
             return CoveragesStoreModel.parse_obj(responses.json())
         else:
-            results = self.response_recognise(responses)
+            results = self.response_recognise(responses.status_code)
             return results
 
     # Get all styles in GS
@@ -185,7 +189,7 @@ class SyncGeoServerX:
         if responses.status_code == 200:
             return AllStylesModel.parse_obj(responses.json())
         else:
-            results = self.response_recognise(responses)
+            results = self.response_recognise(responses.status_code)
             return results
 
     # Get specific style in GS
@@ -196,7 +200,7 @@ class SyncGeoServerX:
         if responses.status_code == 200:
             return StyleModel.parse_obj(responses.json())
         else:
-            results = self.response_recognise(responses)
+            results = self.response_recognise(responses.status_code)
             return results
 
     @exception_handler
@@ -213,5 +217,6 @@ class SyncGeoServerX:
             )
         else:
             raise ValueError(f"Service type {service_type} not supported")
-        service.addFile(self.http_client, workspace, store)
-
+        responses = service.addFile(self.http_client, workspace, store)
+        results = self.response_recognise(responses)
+        return results

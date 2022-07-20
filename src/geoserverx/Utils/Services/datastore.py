@@ -10,6 +10,8 @@ class AddDataStoreProtocol(Protocol):
     Represents functionality of sending a file to the server.
     """
 
+    result: int
+
     def addFile(
         self,
         client,
@@ -25,6 +27,9 @@ class AddDataStoreProtocol(Protocol):
 
 
 class CreateFileStore:
+    def __init__(self) -> None:
+        self.result: int = 0
+
     def addFile(
         self,
         client,
@@ -36,7 +41,6 @@ class CreateFileStore:
         store_header,
         layer_header,
     ):
-
         store_responses = client.post(
             f"workspaces/{workspace}/datastores/",
             data=store_payload,
@@ -47,8 +51,8 @@ class CreateFileStore:
             data=layer_payload,
             headers=layer_header,
         )
-        results = layer_responses.status_code
-        return results
+        result = store_responses.status_code
+        return result
 
 
 class ShapefileStore:
@@ -56,6 +60,7 @@ class ShapefileStore:
         self.inner = service
         self.logger = logger
         self.file = file
+        self.result = None
 
     def addFile(self, client, workspace, store):
         store_payload: str = json.dumps(
@@ -68,9 +73,9 @@ class ShapefileStore:
                 }
             }
         )
-        self.logger.debug(f"Shapefile store payload: {store_payload}")
+        # self.logger.debug(f"Shapefile store payload: {store_payload}")
         layer_payload = self.file
-        result = self.inner.addFile(
+        response = self.inner.addFile(
             client,
             workspace,
             store,
@@ -80,7 +85,8 @@ class ShapefileStore:
             {"Content-Type": "application/json"},
             {"Content-Type": "application/zip"},
         )
-        return result
+        self.result = response
+        return self.result
 
 
 class GPKGfileStore:
@@ -88,6 +94,7 @@ class GPKGfileStore:
         self.inner = service
         self.logger = logger
         self.file = file
+        self.result = None
 
     def addFile(self, client, workspace, store):
         store_payload: str = json.dumps(
@@ -103,9 +110,9 @@ class GPKGfileStore:
                 }
             }
         )
-        self.logger.debug(f"GeoPackage store payload: {store_payload}")
+        # self.logger.debug(f"GeoPackage store payload: {store_payload}")
         layer_payload = self.file
-        result = self.inner.addFile(
+        response = self.inner.addFile(
             client,
             workspace,
             store,
@@ -115,4 +122,5 @@ class GPKGfileStore:
             {"Content-Type": "application/json"},
             {"Content-Type": "application/json"},
         )
-        return result
+        self.result = response
+        return self.result
