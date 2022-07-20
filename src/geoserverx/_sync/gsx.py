@@ -88,9 +88,9 @@ class SyncGeoServerX:
             try:
                 return func(*args, **kwargs)
             except httpx.ConnectError as exc:
-                return GSResponse(response="Error in connecting to Geoserver")
+                return GSResponse(code=503, response="Error in connecting to Geoserver")
             except httpx.TimeoutException as exc:
-                return GSResponse(response="Timeout Error in connection")
+                return GSResponse(code=504,response="Timeout Error in connection")
 
         return inner_function
 
