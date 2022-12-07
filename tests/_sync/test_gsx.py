@@ -32,7 +32,6 @@ def test_get_all_workspaces_validation(
         return_value=httpx.Response(404, json=bad_workspaces_connection)
     )
     response = client.get_all_workspaces()
-    print("this should fail!")
     assert response.code == 404
 
 
