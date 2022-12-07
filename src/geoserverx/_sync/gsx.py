@@ -218,5 +218,7 @@ class SyncGeoServerX:
         else:
             raise ValueError(f"Service type {service_type} not supported")
         responses = service.addFile(self.http_client, workspace, store)
+        print("------")
+        print(responses)
         results = self.response_recognise(responses)
         return results

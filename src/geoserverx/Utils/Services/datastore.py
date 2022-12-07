@@ -1,6 +1,6 @@
 import json
 from logging import Logger
-from typing import Protocol
+from typing import Protocol, Literal
 from geoserverx.models.gs_response import GSResponse
 import httpx
 
@@ -9,8 +9,6 @@ class AddDataStoreProtocol(Protocol):
     """
     Represents functionality of sending a file to the server.
     """
-
-    result: int
 
     def addFile(
         self,
@@ -27,9 +25,6 @@ class AddDataStoreProtocol(Protocol):
 
 
 class CreateFileStore:
-    def __init__(self) -> None:
-        self.result: int = 0
-
     def addFile(
         self,
         client,
