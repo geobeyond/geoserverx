@@ -1,80 +1,199 @@
 from dataclasses import dataclass
-import json
+from typing import Union
+from geoserverx.utils.logger import std_out_logger
+from geoserverx.utils.enums import GSResponseEnum
+from geoserverx.models.gs_response import GSResponse
+from geoserverx.utils.errors import GeoServerXError
+from geoserverx.models.style import StyleModel, AllStylesModel
 
 from geoserverx.utils.http_client import AsyncClient
 from geoserverx.utils.auth import GeoServerXAuth
-
-
+from geoserverx.models.workspace import (
+    NewWorkspace, NewWorkspaceInfo,
+    WorkspaceModel, WorkspacesModel
+)
+from geoserverx.models.data_store import DataStoreModel, DataStoresModel
+from geoserverx.models.coverages_store import (
+    CoveragesStoreModel, CoveragesStoresModel
+)
+from geoserverx.models.gs_response import GSResponse
+from geoserverx.utils.services.async_datastore import (
+	AddDataStoreProtocol, CreateFileStore,
+	ShapefileStore, GPKGfileStore
+)
 @dataclass
 class AsyncGeoServerX:
-    """
-    Async Geoserver client
-    """
+	"""
+	Async Geoserver client
+	"""
 
-    username: str
-    password: str
-    url: str
-    head = {"Content-Type": "application/json"}
+	username: str
+	password: str
+	url: str
+	head = {"Content-Type": "application/json"}
 
-    def __post_init__(self):
-        self.http_client = AsyncClient(
-            base_url=self.url, auth=(self.username, self.password),
-        )
+	def __post_init__(self):
+		if not self.username and not self.password and not self.url:
+			raise GeoServerXError(0, "Username, Password and URL is missing")
+		elif not self.username or self.username == '' :
+			raise GeoServerXError(0, "Username is missing")
+		elif not self.password or self.password == '':
+			raise GeoServerXError(0, "password is missing")
+		elif not self.url or self.url == '':
+			raise GeoServerXError(0, "URL is missing")
+		self.http_client = AsyncClient(
+			base_url=self.url,
+			auth=(self.username, self.password),
+		)
 
-    async def __enter__(self) -> "AsyncGeoServerX":
-        return self
 
-    async def __exit__(self, exc_t, exc_v, exc_tb) -> None:
-        await self.close()
+	async def __aenter__(self) -> "AsyncGeoServerX":
+		return self
 
-    async def close(self) -> None:
-        await self.http_client.aclose()
+	async def __aexit__(self, exc_t, exc_v, exc_tb) -> None:
+		await self.close()
 
-    @staticmethod
-    def from_auth(auth: GeoServerXAuth,) -> "AsyncGeoServerX":
-        return AsyncGeoServerX(auth.username, auth.password, auth.url)
+	async def close(self) -> None:
+		await self.http_client.aclose()
 
-    def response_recognise(self, r):
-        resp = {"code": r.status_code}
-        if r.status_code == 200:
-            resp["result"] = r.json()
-        elif r.status_code == 401:
-            resp["error"] = "Unauthorized request"
-        elif r.status_code == 500:
-            resp["error"] = "Internal Server error"
-        elif r.status_code == 404:
-            resp["error"] = "Result not found"
-        elif r.status_code == 201:
-            resp["result"] = "Data added successfully"
-        elif r.status_code == 409:
-            resp["error"] = "Same data found"
-        return resp
+	@staticmethod
+	def from_auth(
+		auth: GeoServerXAuth,
+	) -> "AsyncGeoServerX":
+		return AsyncGeoServerX(auth.username, auth.password, auth.url)
 
-    # Get all workspaces
-    async def get_all_workspaces(self):
-        async with self.http_client as Client:
-            responses = await Client.get(f"workspaces")
-        results = self.response_recognise(responses)
-        return results
+	def response_recognise(self, r) -> GSResponse:
+		if r.status_code == 401:
+			resp= GSResponseEnum._401.value
+		elif r.status_code == 500:
+			resp= GSResponseEnum._500.value
+		elif r.status_code == 404:
+			resp= GSResponseEnum._404.value
+		elif r.status_code == 201:
+			resp = GSResponseEnum._201.value
+		elif r.status_code == 409:
+			resp= GSResponseEnum._409.value
+		return GSResponse.parse_obj(resp)
 
-    # Get specific workspaces
-    async def get_workspaces(self, workspace):
-        async with self.http_client as Client:
-            responses = await Client.get(f"workspaces/{workspace}")
-        results = self.response_recognise(responses)
-        return results
+	# Get all workspaces
+	async def get_all_workspaces(self) -> Union[WorkspacesModel, GSResponse]:
+		async with self.http_client as Client:
+			responses = await Client.get(f"workspaces")
+		if responses.status_code == 200:
+			return WorkspacesModel.parse_obj(responses.json())
+		else :
+			results = self.response_recognise(responses)
+			return results
 
-    # Create workspace
-    async def create_workspace(self, name, default=False, Isolated=False) -> dict:
-        try:
-            payload: str = json.dumps(
-                {"workspace": {"name": name, "isolated": Isolated}}
-            )
-            async with self.http_client as Client:
-                responses = await Client.post(
-                    f"workspaces?default={default}", data=payload, headers=self.head
-                )
-            results = self.response_recognise(responses)
-            return results
-        except Exception as e:
-            return {"reload error": str(e)}
+
+	# Get specific workspaces
+	async def get_workspace(self, workspace: str) -> Union[WorkspaceModel, GSResponse]:
+		async with self.http_client as Client:
+			responses = await Client.get(f"workspaces/{workspace}")
+		if responses.status_code == 200:
+			return WorkspaceModel.parse_obj(responses.json())
+		else :
+			results = self.response_recognise(responses)
+			return results
+
+	# Create workspace
+	async def create_workspace(
+		self, name: str, default: bool = False, Isolated: bool = False
+	) -> GSResponse:
+		try:
+			payload: NewWorkspace = NewWorkspace(
+				workspace=NewWorkspaceInfo(
+					name=name, isolated=Isolated
+				)
+			)
+			async with self.http_client as Client:
+				responses = await Client.post(
+					f"workspaces?default={default}", data=payload.json(), headers=self.head
+				)
+			results = self.response_recognise(responses)
+			return results
+		except Exception as e:
+			resp = {"code":500,"response":"Error in sending request"}
+			return GSResponse.parse_obj(resp)
+
+	# Get vector stores in specific workspaces
+	async def get_vector_stores_in_workspaces(self, workspace: str) -> DataStoresModel:
+		async with self.http_client as Client:
+			responses = await Client.get(f"workspaces/{workspace}/datastores")
+		if responses.status_code == 200:
+			return DataStoresModel.parse_obj(responses.json())
+		else :
+			results = self.response_recognise(responses)
+			return results
+
+	# Get raster stores in specific workspaces
+	async def get_raster_stores_in_workspaces(self, workspace: str) -> CoveragesStoresModel:
+		async with self.http_client as Client:
+			responses = await Client.get(f"workspaces/{workspace}/coveragestores")
+		if responses.status_code == 200:
+			return CoveragesStoresModel.parse_obj(responses.json())
+		else :
+			results = self.response_recognise(responses)
+			return results
+
+	# Get vector store information in specific workspaces
+	async def get_vector_store(self, workspace: str, store: str) -> DataStoreModel:
+		url = f"workspaces/{workspace}/datastores/{store}.json"
+		async with self.http_client as Client:
+			responses = await Client.get(url)
+		if responses.status_code == 200:
+			return DataStoreModel.parse_obj(responses.json())
+		else :
+			results = self.response_recognise(responses)
+			return results
+
+	# Get raster  store information in specific workspaces
+	async def get_raster_store(self, workspace: str, store: str) -> CoveragesStoreModel:
+		url = f"workspaces/{workspace}/coveragestores/{store}.json"
+		async with self.http_client as Client:
+			responses = await Client.get(url)
+		if responses.status_code == 200:
+			return CoveragesStoreModel.parse_obj(responses.json())
+		else :
+			results = self.response_recognise(responses)
+			return results
+
+	# Get all styles in GS
+	async def get_allstyles(self) -> AllStylesModel:
+		async with self.http_client as Client:
+			responses = await Client.get(f"styles")
+		if responses.status_code == 200:
+			return AllStylesModel.parse_obj(responses.json())
+		else :
+			results = self.response_recognise(responses)
+			return results
+
+	# Get specific style in GS
+	async def get_style(self, style: str) -> StyleModel:
+		async with self.http_client as Client:
+			responses = await Client.get(f"styles/{style}.json")
+		if responses.status_code == 200:
+			return StyleModel.parse_obj(responses.json())
+		else :
+			results = self.response_recognise(responses)
+			return results
+
+	async def create_file_store(
+		self,
+		workspace:str,
+		store:str,
+		file,
+		service_type
+	):
+		service : AddDataStoreProtocol = CreateFileStore()
+
+		if service_type == 'shapefile':
+			service = ShapefileStore(client=self.http_client,
+				service=service, logger=std_out_logger("Shapefile"), file=file)
+		elif service_type == 'gpkg':
+			service = GPKGfileStore(
+				service=service, logger=std_out_logger("GeoPackage"), file=file)
+		else:
+			raise ValueError(f"Service type {service_type} not supported")
+		await service.addFile(self.http_client, workspace, store)
+
