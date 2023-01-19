@@ -286,15 +286,17 @@ def create_file(
     """
     if request.value == "sync":
         client = SyncGeoServerX(username, password, url)
-        files = open(file, "rb")
-        result = json.loads(client.create_file_store(
-                workspace, store, files.read(), service_type
-            ).json())
-        
-        if result["code"] == 201:
-            typer.secho(result, fg=typer.colors.GREEN)
-        else:
-            typer.secho(result, fg=typer.colors.RED)
-
+        try :
+            files = open(file, "rb")
+            result = client.create_file_store(
+                    workspace, store, files.read(), service_type
+                )
+            if result.code == 201:
+                typer.secho(result, fg=typer.colors.GREEN)
+            else:
+                typer.secho(result, fg=typer.colors.RED)
+        except:
+            typer.secho("File path is incorrect",fg=typer.colors.YELLOW)
     else:
-        typer.echo("Async support will be shortly")
+            typer.echo("Async support will be shortly")
+        

@@ -204,7 +204,7 @@ class SyncGeoServerX:
             return results
 
     @exception_handler
-    def create_file_store(self, workspace: str, store: str, file, service_type):
+    def create_file_store(self, workspace: str, store: str, file, service_type) -> GSResponse:
         service: AddDataStoreProtocol = CreateFileStore()
 
         if service_type == "shapefile":
@@ -218,5 +218,4 @@ class SyncGeoServerX:
         else:
             raise ValueError(f"Service type {service_type} not supported")
         responses = service.addFile(self.http_client, workspace, store)
-        results = self.response_recognise(responses)
-        return results
+        return self.response_recognise(responses)
