@@ -38,12 +38,12 @@ class CreateFileStore:
     ):
         store_responses = client.post(
             f"workspaces/{workspace}/datastores/",
-            data=store_payload,
+            content=store_payload,
             headers=store_header,
         )
         layer_responses = client.put(
             f"workspaces/{workspace}/datastores/{store}/file.{method}",
-            data=layer_payload,
+            content=layer_payload,
             headers=layer_header,
         )
         result = store_responses.status_code
