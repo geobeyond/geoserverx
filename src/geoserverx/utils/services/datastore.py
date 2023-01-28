@@ -1,6 +1,6 @@
 import json
 from logging import Logger
-from typing import Protocol
+from typing import Protocol, Literal
 from geoserverx.models.gs_response import GSResponse
 import httpx
 
@@ -36,19 +36,18 @@ class CreateFileStore:
         store_header,
         layer_header,
     ):
-
         store_responses = client.post(
             f"workspaces/{workspace}/datastores/",
-            data=store_payload,
+            content=store_payload,
             headers=store_header,
         )
         layer_responses = client.put(
             f"workspaces/{workspace}/datastores/{store}/file.{method}",
-            data=layer_payload,
+            content=layer_payload,
             headers=layer_header,
         )
-        results = layer_responses.status_code
-        return results
+        result = store_responses.status_code
+        return result
 
 
 class ShapefileStore:
@@ -56,6 +55,7 @@ class ShapefileStore:
         self.inner = service
         self.logger = logger
         self.file = file
+        self.result = None
 
     def addFile(self, client, workspace, store):
         store_payload: str = json.dumps(
@@ -68,9 +68,9 @@ class ShapefileStore:
                 }
             }
         )
-        self.logger.debug(f"Shapefile store payload: {store_payload}")
+        # self.logger.debug(f"Shapefile store payload: {store_payload}")
         layer_payload = self.file
-        result = self.inner.addFile(
+        response = self.inner.addFile(
             client,
             workspace,
             store,
@@ -80,7 +80,8 @@ class ShapefileStore:
             {"Content-Type": "application/json"},
             {"Content-Type": "application/zip"},
         )
-        return result
+        self.result = response
+        return self.result
 
 
 class GPKGfileStore:
@@ -88,6 +89,7 @@ class GPKGfileStore:
         self.inner = service
         self.logger = logger
         self.file = file
+        self.result = None
 
     def addFile(self, client, workspace, store):
         store_payload: str = json.dumps(
@@ -103,9 +105,9 @@ class GPKGfileStore:
                 }
             }
         )
-        self.logger.debug(f"GeoPackage store payload: {store_payload}")
+        # self.logger.debug(f"GeoPackage store payload: {store_payload}")
         layer_payload = self.file
-        result = self.inner.addFile(
+        response = self.inner.addFile(
             client,
             workspace,
             store,
@@ -115,4 +117,5 @@ class GPKGfileStore:
             {"Content-Type": "application/json"},
             {"Content-Type": "application/json"},
         )
-        return result
+        self.result = response
+        return self.result

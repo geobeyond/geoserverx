@@ -18,7 +18,7 @@ class DataStoresModel(BaseModel):
 
 
 class DatastoreConnection(BaseModel):
-    key: str = Field(..., alias="@Key")
+    key: str = Field(..., alias="@key")
     path: str = Field(..., alias="$")
 
     class Config:
@@ -41,8 +41,8 @@ class DataStoreModelDetails(BaseModel):
     workspace: WorkspaceInBulk = ...
     connectionParameters: EntryItem = ...
     _default: bool = ...
-    dateCreated: str
-    dateModified: str
+    dateCreated: Optional[str]
+    dateModified: Optional[str]
     featureTypes: str
 
 

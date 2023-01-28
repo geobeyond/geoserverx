@@ -29,7 +29,7 @@ class CreateFileStore:
         # async with client as Client:
         layer_responses = await Client.put(
             f"workspaces/{workspace}/datastores/{store}/file.{method}",
-            data=layer_payload,
+            content=layer_payload,
             headers=layer_header,
         )
         results = store_responses.status_code
