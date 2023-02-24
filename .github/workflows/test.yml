@@ -53,6 +53,6 @@ jobs:
       run: poetry run pytest
     
     - name: Run black
-      uses: rickstaa/action-black@v1
+      uses: psf/black@stable
       with:
         black_args: "."
