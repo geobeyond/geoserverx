@@ -123,20 +123,15 @@ Options:
 As listed above, `create-workspace` command accepts parameters as follows
 
 * workspace - name of workspace
-* default - To keep 
+* --default/--no-default - To keep workspace either default or not
+* --isolated/--no-isolated - To keep workspace either isolated or not
 
 
 ## Get single workspaces
 
 <div class="termy">
 ```
-gsx workspace --workspace cesium
-{"workspace": {"name": "cesium", "isolated": false, "dateCreated": "2023-02-13 
-06:43:28.793 UTC", "dataStores": 
-"http://127.0.0.1:8080/geoserver/rest/workspaces/cesium/datastores.json", 
-"coverageStores": 
-"http://127.0.0.1:8080/geoserver/rest/workspaces/cesium/coveragestores.json", 
-"wmsStores": "http://127.0.0.1:8080/geoserver/rest/workspaces/cesium/wmsstores.json", 
-"wmtsStores": "http://127.0.0.1:8080/geoserver/rest/workspaces/cesium/wmtsstores.json"}}
+gsx create-workspace --workspace mydefaultws --default
+code=201 response='Data added successfully'
 ```
 </div>
