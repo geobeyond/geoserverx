@@ -1,31 +1,21 @@
 # Style 
 
-`geoserverx` allows users to access all/one styles from geoserver.
-
-!!! get "Get started"
-    To start using `geoserverx` in Sync mode, create a new instance of `SyncGeoServerX` Class
-
-## Setup Class instance
-
-<div class="termy">
-```py
-from geoserverx._sync.gsx import SyncGeoServerX
-client = SyncGeoServerX(username='admin', password='geoserver',url='127.0.0.1')
-```
-</div>
 
 ## Get all Styles  
 
-<div class="termy">
-```py
+This command fetches all Styles available in geoserver. 
+
+```Python
+# Get all styles available in geoserver
 client.get_allstyles()
 ```
-</div>
+
 
 ## Get single Style
 
-<div class="termy">
+This command fetches information about particular Style from geoserver. 
+
 ```py
+# Get information about `population` style from geoserver
 client.get_style('population') 
 ```
-</div>

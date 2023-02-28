@@ -2,47 +2,29 @@
 
 `geoserverx` allows users to access all/one workspace from geoserver, along with ability to add new workspaces. 
 
-!!! get "Get started"
-    To start using `geoserverx` in Sync mode, create a new instance of `SyncGeoServerX` Class
-
-
-## Setup Class instance
-
-<div class="termy">
-
-```console
-from geoserverx._sync.gsx import SyncGeoServerX
-client = SyncGeoServerX(username='admin', password='geoserver',url='127.0.0.1')
-```
-</div>
-
 ## Get all workspaces
+This command fetches all workspaces available in geoserver. No paramters are required to be passed.
 
-<div class="termy">
-
-```py
+```Python
 client.get_all_workspaces()
 ```
-</div>
 
 ## Get single workspace
-
-<div class="termy">
-```py
+This command fetches workspace with paramter as name of it from geoserver.
+```Python
+# Get workspace with name `cite`
 client.get_workspace('cite')
 ```
-</div>
 
 ## Create workspace
-
+This command allows user to create new workspace. 
 Creating new workspace requires following parameters
 
 * Name `str` : To define Name of the workspace
 * default `bool` : To define whether to keep workspace as default or not
 * Isolated `bool` : To define whether to keep workspace Isolated or not
   
-<div class="termy">
-```py
+```Python
+#Create new workspace with name `my_wrkspc` , make it Default and Isolated
 client.create_workspace(name='my_wrkspc',default=True,Isolated=True)
 ```
-</div>

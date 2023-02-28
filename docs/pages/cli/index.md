@@ -8,8 +8,13 @@ To use `gsx` , Install `geoserverx` using `pip` on local environment.
 
 <div class="termy">
 
-```
-gsx --help
+```console
+
+pip install geoserverx
+
+---> 100%
+
+$ gsx --help
 Usage: gsx [OPTIONS] COMMAND [ARGS]...
 
   GeoserverX CLI tools to talk to Geoserver efficiently .

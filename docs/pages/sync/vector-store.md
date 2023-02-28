@@ -2,47 +2,39 @@
 
 `geoserverx` allows users to access all/one vector stores from geoserver. As of now, `geoserverx` also supports new vector store creation for `shapefile` and `gpkg` data
 
-!!! get "Get started"
-    To start using `geoserverx` in Sync mode, create a new instance of `SyncGeoServerX` Class
-
-## Setup Class instance
-
-<div class="termy">
-```py
-from geoserverx._sync.gsx import SyncGeoServerX
-client = SyncGeoServerX(username='admin', password='geoserver',url='127.0.0.1')
-```
-</div>
-
 ## Get all Vector stores 
+This command fetches all Vector store available in given workspace from geoserver. 
 
-<div class="termy">
-```py
+```Python
+# Get all vector stores available in `cite` workspace
 client.get_vector_stores_in_workspaces('cite')
 ```
-</div>
+
 
 
 ## Get single Vector store
+This command fetches all Information about Vector store available in given workspace from geoserver. 
 
-<div class="termy">
-```py
+```Python
+# Get all information about `shape` vector stores available in `cite` workspace
+
 client.get_vector_store(workspace='cite', store='shape') 
 ```
-</div>
+
 
 ## Create new shapefile Vector store
+Use this command to create new Vector store based on `shapefile` path. 
 
-<div class="termy">
-```py
+```Python
+# Create new store in `cite` workspace with name `shape` and using `path/for/shapefile` as local shapefile path
 client.create_file_store(workspace='cite', store='shape', file='path/for/shapefile', service_type='shapefile') 
 ```
-</div>
+
 
 ## Create new geopackage Vector store
+Use this command to create new Vector store based on `Geopackage` path. 
 
-<div class="termy">
-```py
+```Python
+# Create new store in `cite` workspace with name `shape` and using `path/for/gpkg` as local Geopackage path
 client.create_file_store(workspace='cite', store='shape', file='path/for/gpkg', service_type='gpkg') 
 ```
-</div>

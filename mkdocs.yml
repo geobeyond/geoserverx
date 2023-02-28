@@ -14,15 +14,16 @@ repo_url: https://github.com/geobeyond/geoserverx
 nav:
     - Home: index.md
     - Sync : 
+      - pages/sync/index.md
       - Workspaces : pages/sync/workspace.md
       - Vector Data : pages/sync/vector-store.md
       - Raster Data : pages/sync/raster-store.md
       - Style : pages/sync/style.md
-    - Async : 
-      - Workspaces : pages/async/workspace.md
-      - Vector Data : pages/async/vector-store.md
-      - Raster Data : pages/async/raster-store.md
-      - Style : pages/async/style.md
+    # - Async : 
+    #   - Workspaces : pages/async/workspace.md
+    #   - Vector Data : pages/async/vector-store.md
+    #   - Raster Data : pages/async/raster-store.md
+    #   - Style : pages/async/style.md
     - Command Line : 
       - pages/cli/index.md
       - Workspaces : pages/cli/workspace.md

@@ -8,9 +8,18 @@ Apart from being implemented in Python Projects, geoserverx also provides CLI su
 
 In this talk we discover for the very first time about how geoserverx work and underlying code ideology. Along with that we'll also spread some light on upcoming modules to be integrated in geoserverx
 
-## Document layout
+## Get Started
 
-    mkdocs.yml    # The configuration file.
-    docs/
-        index.md  # The documentation homepage.
-        ...       # Other markdown pages, images and other files. 
+`geoserverx` can be installed using `pip` or `pip3`
+
+<div class="termy">
+
+```console
+
+pip install geoserverx
+
+---> 100%
+```
+</div>
+
+After which , It can be used in Python projects using <i>sync, async</i> methods or can ve used as Command Line tool

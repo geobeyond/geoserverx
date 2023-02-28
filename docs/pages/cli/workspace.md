@@ -11,8 +11,9 @@
 
 <div class="termy">
 
-```
- gsx workspaces --help
+```console
+$ gsx workspaces --help
+
 Usage: gsx workspaces [OPTIONS]
 
   Get all workspaces in the Geoserver
@@ -39,8 +40,9 @@ All these parameters have default value setup which will work for local default 
 ## Get all workspaces
 
 <div class="termy">
-```
-gsx workspaces
+```console
+$ gsx workspaces
+
 {"workspaces": {"workspace": [{"name": "cesium", "href": 
 "http://127.0.0.1:8080/geoserver/rest/workspaces/cesium.json"}]}}
 ```
@@ -49,8 +51,8 @@ gsx workspaces
 ## Get all workspaces of hosted geoserver
 
 <div class="termy">
-```
-gsx workspaces --url http://89.233.108.250:8080/geoserver/rest --password myPassword --username admin
+```console
+$ gsx workspaces --url http://89.233.108.250:8080/geoserver/rest --password myPassword --username admin
 {"workspaces": {"workspace": [{"name": "giz", "href": 
 "http://89.233.108.250:8080/geoserver/rest/workspaces/giz.json"}]}}
 ```
@@ -61,8 +63,8 @@ gsx workspaces --url http://89.233.108.250:8080/geoserver/rest --password myPass
 
 <div class="termy">
 
-```
-gsx workspace --help
+```console
+$ gsx workspace --help
 Usage: gsx workspace [OPTIONS]
 
   Get workspace in the Geoserver
@@ -84,8 +86,8 @@ As listed above, `workspace` accepts `workspace` parameter as the name of worksp
 ## Get single workspaces
 
 <div class="termy">
-```
-gsx workspace --workspace cesium
+```console
+$ gsx workspace --workspace cesium
 {"workspace": {"name": "cesium", "isolated": false, "dateCreated": "2023-02-13 
 06:43:28.793 UTC", "dataStores": 
 "http://127.0.0.1:8080/geoserver/rest/workspaces/cesium/datastores.json", 
@@ -101,8 +103,8 @@ gsx workspace --workspace cesium
 
 <div class="termy">
 
-```
-gsx create-workspace --help
+```console
+$ gsx create-workspace --help
 Usage: gsx create-workspace [OPTIONS]
 
   Add workspace in the Geoserver
@@ -127,11 +129,11 @@ As listed above, `create-workspace` command accepts parameters as follows
 * --isolated/--no-isolated - To keep workspace either isolated or not
 
 
-## Get single workspaces
+## Create single workspaces
 
 <div class="termy">
-```
-gsx create-workspace --workspace mydefaultws --default
+```console
+$ gsx create-workspace --workspace mydefaultws --default
 code=201 response='Data added successfully'
 ```
 </div>
