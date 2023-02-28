@@ -8,14 +8,27 @@ theme:
     primary: green
   features:
     - content.code.copy
+    - navigation.tabs
+    - navigation.tabs.sticky
 repo_url: https://github.com/geobeyond/geoserverx
 nav:
     - Home: index.md
     - Sync : 
-      - Workspaces : sync/workspace.md
-      - Vector Data : sync/vector-store.md
-      - Raster Data : sync/raster-store.md
-      - Style : sync/style.md
+      - Workspaces : pages/sync/workspace.md
+      - Vector Data : pages/sync/vector-store.md
+      - Raster Data : pages/sync/raster-store.md
+      - Style : pages/sync/style.md
+    - Async : 
+      - Workspaces : pages/async/workspace.md
+      - Vector Data : pages/async/vector-store.md
+      - Raster Data : pages/async/raster-store.md
+      - Style : pages/async/style.md
+    - Command Line : 
+      - pages/cli/index.md
+      - Workspaces : pages/cli/workspace.md
+      - Vector Data : pages/cli/vector-store.md
+      - Raster Data : pages/cli/raster-store.md
+      - Style : pages/cli/style.md
 markdown_extensions:
   - meta # option to add some meta tags on top, title, author, date, etc
   - admonition # adds the note, question, tip boxes, eg: !!! tip "my tip"

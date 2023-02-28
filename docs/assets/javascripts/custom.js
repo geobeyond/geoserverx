@@ -1,7 +1,7 @@
 document.querySelectorAll(".use-termynal").forEach(node => {
     node.style.display = "block";
     new Termynal(node, {
-        lineDelay: 500
+        lineDelay: 1500
     });
 });
 const progressLiteralStart = "---> 100%";
