@@ -26,3 +26,13 @@ markdown_extensions:
   - md_in_html # used to size images
   - pymdownx.tabbed: 
       alternate_style: true
+
+extra_css:
+  # pygeoapi primary color with light and dark variations from material.io
+  # https://material.io/resources/color/#!/?view.left=0&view.right=1
+  - assets/stylesheets/termynal.css
+  - assets/stylesheets/custom.css
+
+extra_javascript:
+    - assets/javascripts/termynal.js
+    - assets/javascripts/custom.js
