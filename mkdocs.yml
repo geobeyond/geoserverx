@@ -4,7 +4,7 @@ site_author: Geobeyond
 copyright: "&copy; 2023 Geobeyond"
 theme:
   name: material
-  logo: assets/images/geo-logo-white.svg
+  # logo: assets/images/logo.png
   palette:
     primary: green
   features:
@@ -20,6 +20,7 @@ nav:
       - Vector Data : pages/sync/vector-store.md
       - Raster Data : pages/sync/raster-store.md
       - Style : pages/sync/style.md
+      - Example : pages/sync/example.md
     - Async : 
       - pages/async/index.md
       - Workspaces : pages/async/workspace.md
