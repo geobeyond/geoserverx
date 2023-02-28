@@ -7,14 +7,14 @@ This command fetches all workspaces available in geoserver. No paramters are req
 
 ```Python
 # Get all workspaces in geoserver
-client.get_all_workspaces()
+await client.get_all_workspaces()
 ```
 
 ## Get single workspace
 This command fetches workspace with paramter as name of it from geoserver.
 ```Python
 # Get workspace with name `cite`
-client.get_workspace('cite')
+await client.get_workspace('cite')
 ```
 
 ## Create workspace
@@ -27,5 +27,5 @@ Creating new workspace requires following parameters
   
 ```Python
 #Create new workspace with name `my_wrkspc` , make it Default and Isolated
-client.create_workspace(name='my_wrkspc',default=True,Isolated=True)
+await client.create_workspace(name='my_wrkspc',default=True,Isolated=True)
 ```
