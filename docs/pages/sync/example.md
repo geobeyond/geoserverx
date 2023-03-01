@@ -148,11 +148,10 @@ print(result.json())
 '''
 ```
 
-## Create new shapefile Vector store in `cesium` workspace with name `myshp`
+## Create new shapefile Vector store in `cesium` workspace with name `natural_earth`
 
 Create new store using Shapefile available at given path
 ```Python hl_lines="8"
-# Import Class from Package
 from geoserverx._sync.gsx import SyncGeoServerX
 
 def add_vector_workspaces(url, username, password,workspace,store,file):
@@ -162,9 +161,8 @@ def add_vector_workspaces(url, username, password,workspace,store,file):
     return client.create_file_store(workspace, store, file, service_type='shapefile') 
 
 result = add_vector_workspaces(url='http://localhost:8080/geoserver/rest/',username='admin', password='geoserver',
-workspace='cesium',store='myshp', file='safe_users.zip' )
+workspace='cesium',store='natural_earth', file='/Users/krishnaglodha/Downloads/ne_10m_populated_places_simple/ne_10m_populated_places_simple.shp' )
 print(result.json())
-
 ''' Console 
 -------------start-----------------
 {"code": 201, "response": "Data added successfully"}
