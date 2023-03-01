@@ -29,7 +29,7 @@ If you don't have geoserver installed locally, feel free to use following comman
 
 <div class="termy">
 ```console
-docker run -e GEOSERVER_ADMIN_USER=admin -e GEOSERVER_ADMIN_PASSWORD=geoserver -p 8080:8080 kartoza/geoserver
+docker run -e GEOSERVER_ADMIN_USER=admin -e GEOSERVER_ADMIN_PASSWORD=geoserver -e SAMPLE_DATA=true -p 8080:8080 kartoza/geoserver
 ```
 </div>
 

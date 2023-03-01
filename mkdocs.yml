@@ -27,6 +27,7 @@ nav:
       - Vector Data : pages/async/vector-store.md
       - Raster Data : pages/async/raster-store.md
       - Style : pages/async/style.md
+      - Example : pages/async/example.md
     - Command Line : 
       - pages/cli/index.md
       - Workspaces : pages/cli/workspace.md

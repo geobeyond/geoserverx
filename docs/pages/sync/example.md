@@ -73,28 +73,28 @@ print(result.json())
 from geoserverx._sync.gsx import SyncGeoServerX
 
 
-def get_single_workspaces(url, username, password,workspace,default,isolated):
+def create_single_workspaces(url, username, password,workspace,default,isolated):
     print("-------------start-----------------")
     # Setup Class Instance
     client = SyncGeoServerX(username, password,url)
     return client.create_workspace(workspace, default,isolated)
 
-first = get_single_workspaces(url='http://localhost:8080/geoserver/rest/',username='admin', password='geoserver',
+first = create_single_workspaces(url='http://localhost:8080/geoserver/rest/',username='admin', password='geoserver',
 workspace='MyDefault',default=True,isolated= False)
 print(first.json())
-second = get_single_workspaces(url='http://localhost:8080/geoserver/rest/',username='admin', password='geoserver',
+second = create_single_workspaces(url='http://localhost:8080/geoserver/rest/',username='admin', password='geoserver',
 workspace='MyHidden',default=False,isolated= True)
 print(second.json())
-third = get_single_workspaces(url='http://localhost:8080/geoserver/rest/',username='admin', password='geoserver',
+third = create_single_workspaces(url='http://localhost:8080/geoserver/rest/',username='admin', password='geoserver',
 workspace='MySimple',default=False,isolated= False)
 print(third.json())
 ''' Console 
 -------------start-----------------
-{"code": 201, "response": "Data added successfully"}
 -------------start-----------------
-{"code": 201, "response": "Data added successfully"}
 -------------start-----------------
-{"code": 201, "response": "Data added successfully"}
+code=201 response='Data added successfully'
+code=201 response='Data added successfully'
+code=201 response='Data added successfully'
 '''
 ```
 ![workspace created](/../assets/images/workspace_created.png "workspace created")
@@ -195,7 +195,7 @@ print(result.json())
 '''
 ```
 
-## Get Information of Vector store `mysqldb` in `cesium` workspace
+## Get Information of Raster store `dsm` in `cesium` workspace
 
 ```Python hl_lines="8"
 # Import Class from Package
@@ -238,7 +238,7 @@ print(result.json())
 '''
 ```
 
-## Get all Styles in geoserver
+## Get Single Style in geoserver
 
 ```Python hl_lines="8"
 # Import Class from Package
