@@ -33,6 +33,7 @@ nav:
       - Vector Data : pages/cli/vector-store.md
       - Raster Data : pages/cli/raster-store.md
       - Style : pages/cli/style.md
+      - Example : pages/cli/example.md
 markdown_extensions:
   - meta # option to add some meta tags on top, title, author, date, etc
   - admonition # adds the note, question, tip boxes, eg: !!! tip "my tip"
