@@ -23,3 +23,14 @@ pip install geoserverx
 </div>
 
 After which , It can be used in Python projects using <i>sync, async</i> methods or can ve used as Command Line tool
+
+## For testing purpose
+If you don't have geoserver installed locally, feel free to use following command to quickly spin up Geoserver using [Docker](https://www.docker.com/)
+
+<div class="termy">
+```console
+docker run -e GEOSERVER_ADMIN_USER=admin -e GEOSERVER_ADMIN_PASSWORD=geoserver -p 8080:8080 kartoza/geoserver
+```
+</div>
+
+Please not that this will work on amd64 architecture machines.
