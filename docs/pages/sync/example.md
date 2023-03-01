@@ -16,7 +16,6 @@ client = SyncGeoServerX()
 ```
 We'll assume connection to local geoserver with default credentials
 
-
 ## Get all workspaces
 
 ```Python hl_lines="8" linenums="1"
@@ -25,7 +24,7 @@ from geoserverx._sync.gsx import SyncGeoServerX
 
 def get_all_gs_workspaces(url, username, password):
     print("-------------start-----------------")
-    # Get all workspaces
+    # Setup Class Instance 
     client = SyncGeoServerX(username, password,url)
     return client.get_all_workspaces()
 
@@ -43,13 +42,13 @@ print(result.json())
 
 ## Get Information about `cesium` workspace
 
-```Python hl_lines="8"
+```Python hl_lines="7"
 # Import Class from Package
 from geoserverx._sync.gsx import SyncGeoServerX
 
 def get_single_workspaces(url, username, password,workspace):
     print("-------------start-----------------")
-    # Get single workspaces
+    # Setup Class Instance
     client = SyncGeoServerX(username, password,url)
     return client.get_workspace(workspace)
 
@@ -76,7 +75,7 @@ from geoserverx._sync.gsx import SyncGeoServerX
 
 def get_single_workspaces(url, username, password,workspace,default,isolated):
     print("-------------start-----------------")
-    # Get single workspaces
+    # Setup Class Instance
     client = SyncGeoServerX(username, password,url)
     return client.create_workspace(workspace, default,isolated)
 
@@ -100,9 +99,7 @@ print(third.json())
 ```
 ![workspace created](/../assets/images/workspace_created.png "workspace created")
 
-
-
-## Get all Vector datasets in `cesium` workspace
+## Get all Vector stores in `cesium` workspace
 
 ```Python hl_lines="8"
 
@@ -111,7 +108,7 @@ from geoserverx._sync.gsx import SyncGeoServerX
 
 def get_all_vector_workspaces(url, username, password,workspace):
     print("-------------start-----------------")
-    # Get single workspaces
+    # Setup Class Instance
     client = SyncGeoServerX(username, password,url)
     return client.get_vector_stores_in_workspaces(workspace)
 
@@ -125,7 +122,7 @@ print(result.json())
 '''
 ```
 
-## Get Information Vector dataset `mysqldb` in `cesium` workspace
+## Get Information of Vector store `mysqldb` in `cesium` workspace
 
 ```Python hl_lines="8"
 
@@ -134,7 +131,7 @@ from geoserverx._sync.gsx import SyncGeoServerX
 
 def get_info_vector_workspaces(url, username, password,workspace,store):
     print("-------------start-----------------")
-    # Get single workspaces
+    # Setup Class Instance
     client = SyncGeoServerX(username, password,url)
     return client.get_vector_store(workspace,store)
 
@@ -151,18 +148,16 @@ print(result.json())
 '''
 ```
 
-
 ## Create new shapefile Vector store in `cesium` workspace with name `myshp`
 
 Create new store using Shapefile available at given path
-```Python
+```Python hl_lines="8"
 # Import Class from Package
 from geoserverx._sync.gsx import SyncGeoServerX
 
-
 def add_vector_workspaces(url, username, password,workspace,store,file):
     print("-------------start-----------------")
-    # Get single workspaces
+    # Setup Class Instance
     client = SyncGeoServerX(username, password,url)
     return client.create_file_store(workspace, store, file, service_type='shapefile') 
 
@@ -177,3 +172,88 @@ print(result.json())
 ```
 
 ![new_shp_vector](/../assets/images/new_shp_vector.png "new_shp_vector")
+
+## Get all Raster stores in `cesium` workspace
+
+```Python hl_lines="8"
+# Import Class from Package
+from geoserverx._sync.gsx import SyncGeoServerX
+
+def get_all_raster_workspaces(url, username, password,workspace):
+    print("-------------start-----------------")
+    # Setup Class Instance
+    client = SyncGeoServerX(username, password,url)
+    return client.get_raster_stores_in_workspaces(workspace)
+
+result = get_all_raster_workspaces(url='http://localhost:8080/geoserver/rest/',username='admin', password='geoserver',
+workspace='cesium')
+print(result.json())
+
+''' Console 
+-------------start-----------------
+{"coverageStores": {"coverageStore": [{"name": "dem", "href": "http://localhost:8080/geoserver/rest/workspaces/cesium/coveragestores/dem.json"}, {"name": "dsm", "href": "http://localhost:8080/geoserver/rest/workspaces/cesium/coveragestores/dsm.json"}, {"name": "ortho", "href": "http://localhost:8080/geoserver/rest/workspaces/cesium/coveragestores/ortho.json"}]}}
+'''
+```
+
+## Get Information of Vector store `mysqldb` in `cesium` workspace
+
+```Python hl_lines="8"
+# Import Class from Package
+from geoserverx._sync.gsx import SyncGeoServerX
+
+def get_info_raster_workspaces(url, username, password,workspace,store):
+    print("-------------start-----------------")
+    # Setup Class Instance
+    client = SyncGeoServerX(username, password,url)
+    return client.get_raster_store(workspace,store)
+
+result = get_info_raster_workspaces(url='http://localhost:8080/geoserver/rest/',username='admin', password='geoserver',
+workspace='cesium',store='dsm' )
+print(result.json())
+
+''' Console 
+-------------start-----------------
+{"coverageStore": {"name": "dsm", "description": null, "enabled": true, "workspace": {"name": "cesium", "href": "http://localhost:8080/geoserver/rest/workspaces/cesium.json"}, "url": "file:///Users/krishnaglodha/Desktop/IGI_DATA/DSM/IGI_DSM1m1.tif", "coverages": "http://localhost:8080/geoserver/rest/workspaces/cesium/coveragestores/dsm/coverages.json", "dateCreated": "2023-02-23 13:39:48.417 UTC", "metadata": null}}
+'''
+```
+
+## Get all Styles in geoserver
+
+```Python hl_lines="8"
+# Import Class from Package
+from geoserverx._sync.gsx import SyncGeoServerX
+
+def get_all_styles(url, username, password):
+    print("-------------start-----------------")
+
+    client = SyncGeoServerX(username, password,url)
+    return client.get_allstyles()
+
+result = get_all_styles(url='http://localhost:8080/geoserver/rest/',username='admin', password='geoserver' )
+print(result.json())
+
+''' Console 
+-------------start-----------------
+{"styles": {"style": [{"name": "burg", "href": "http://localhost:8080/geoserver/rest/styles/burg.json"}, {"name": "capitals", "href": "http://localhost:8080/geoserver/rest/styles/capitals.json"}, {"name": "cite_lakes", "href": "http://localhost:8080/geoserver/rest/styles/cite_lakes.json"}, {"name": "dem", "href": "http://localhost:8080/geoserver/rest/styles/dem.json"}, {"name": "generic", "href": "http://localhost:8080/geoserver/rest/styles/generic.json"}, {"name": "giant_polygon", "href": "http://localhost:8080/geoserver/rest/styles/giant_polygon.json"}, {"name": "grass", "href": "http://localhost:8080/geoserver/rest/styles/grass.json"}, {"name": "green", "href": "http://localhost:8080/geoserver/rest/styles/green.json"}, {"name": "line", "href": "http://localhost:8080/geoserver/rest/styles/line.json"}, {"name": "poi", "href": "http://localhost:8080/geoserver/rest/styles/poi.json"}, {"name": "point", "href": "http://localhost:8080/geoserver/rest/styles/point.json"}, {"name": "poly_landmarks", "href": "http://localhost:8080/geoserver/rest/styles/poly_landmarks.json"}, {"name": "polygon", "href": "http://localhost:8080/geoserver/rest/styles/polygon.json"}, {"name": "pophatch", "href": "http://localhost:8080/geoserver/rest/styles/pophatch.json"}, {"name": "population", "href": "http://localhost:8080/geoserver/rest/styles/population.json"}, {"name": "rain", "href": "http://localhost:8080/geoserver/rest/styles/rain.json"}, {"name": "raster", "href": "http://localhost:8080/geoserver/rest/styles/raster.json"}, {"name": "restricted", "href": "http://localhost:8080/geoserver/rest/styles/restricted.json"}, {"name": "simple_roads", "href": "http://localhost:8080/geoserver/rest/styles/simple_roads.json"}, {"name": "simple_streams", "href": "http://localhost:8080/geoserver/rest/styles/simple_streams.json"}, {"name": "tiger_roads", "href": "http://localhost:8080/geoserver/rest/styles/tiger_roads.json"}]}}
+'''
+```
+
+## Get all Styles in geoserver
+
+```Python hl_lines="8"
+# Import Class from Package
+from geoserverx._sync.gsx import SyncGeoServerX
+
+def get_style_info(url, username, password,style):
+    print("-------------start-----------------")
+
+    client = SyncGeoServerX(username, password,url)
+    return client.get_style(style)
+
+result = get_style_info(url='http://localhost:8080/geoserver/rest/',username='admin', password='geoserver',style='poi' )
+print(result.json())
+''' Console 
+-------------start-----------------
+{"style": {"name": "poi", "format": "sld", "languageVersion": {"version": "1.0.0"}, "filename": "poi.sld"}}
+'''
+```
