@@ -63,7 +63,7 @@ class ShapefileStore:
                 "dataStore": {
                     "name": store,
                     "connectionParameters": {
-                        "entry": [{"@key": "url", "$": "file:/path/to/nyc.shp"}]
+                        "entry": [{"@key": "url", "$": "file:"+self.file}]
                     },
                 }
             }
@@ -98,7 +98,7 @@ class GPKGfileStore:
                     "name": store,
                     "connectionParameters": {
                         "entry": [
-                            {"@key": "database", "$": "file:///path/to/nyc.gpkg"},
+                            {"@key": "database", "$": "file:"+self.file},
                             {"@key": "dbtype", "$": "geopkg"},
                         ]
                     },
