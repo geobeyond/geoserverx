@@ -99,8 +99,7 @@ def create_workspace(
     if request.value == "sync":
         client = SyncGeoServerX(username, password, url)
         result = client.create_workspace(workspace, default, isolated).json()
-        print(type(result))
-        if result.code == 201:
+        if json.loads(result)['code'] == 201:
             typer.secho(result, fg=typer.colors.GREEN)
         else:
             typer.secho(result, fg=typer.colors.RED)
