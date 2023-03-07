@@ -299,4 +299,39 @@ def create_file(
             typer.secho("File path is incorrect",fg=typer.colors.YELLOW)
     else:
             typer.echo("Async support will be shortly")
-        
+
+
+# Create PostgreSQL store in Geoserver
+@SyncGeoServerX.exception_handler
+@app.command(help="Create PostgreSQL store in Geoserver")
+def create_pg_store(
+    request: requestEnum = requestEnum._sync,
+    url: str = typer.Option(
+        "http://127.0.0.1:8080/geoserver/rest/", help="Geoserver REST URL"
+    ),
+    name: str = typer.Option(..., help="Store name"),
+    password: str = typer.Option("geoserver", help="Geoserver Password"),
+    username: str = typer.Option("admin", help="Geoserver username"),
+    workspace: str = typer.Option(..., help="workspace name"),
+    host: str = typer.Option('localhost', help="Host IP Address"),
+    port: int = typer.Option(5432, help="Database port"),
+    dbuser : str = typer.Option('postgres', help="Database username"),
+    dbname : str = typer.Option(..., help="Database name"),
+    dbpwd : str = typer.Option(..., help="Database password"),
+):
+    """
+    Create PostgreSQL store in Geoserver
+    """
+    if request.value == "sync":
+        client = SyncGeoServerX(username, password, url)
+        result = client.create_pg_store(name=name, workspace=workspace, 
+                           host=host,
+                           port=port, username=dbuser, 
+                           password=dbpwd, database=dbname) 
+        if result.code == 201:
+            typer.secho(result, fg=typer.colors.GREEN)
+        else:
+            typer.secho(result, fg=typer.colors.RED)
+    else:
+        typer.echo("Async support will be shortly")
+

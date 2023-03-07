@@ -7,7 +7,6 @@ from geoserverx._async.gsx import (
     AsyncGeoServerX, GeoServerXAuth, GeoServerXError
 )
 
-
 @fixture(name="client")
 async def create_client():
     client = AsyncGeoServerX.from_auth(GeoServerXAuth())
@@ -137,3 +136,4 @@ async def test_style_fail(
     httpx_mock.add_response(json=bad_style_model_connection)
     with pytest.raises(ValidationError):
         style = await client.get_style('dssdgsg')
+

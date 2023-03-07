@@ -25,7 +25,7 @@ from geoserverx.utils.services.datastore import (
 )
 from geoserverx.utils.http_client import SyncClient
 from geoserverx.utils.auth import GeoServerXAuth
-import httpx
+import httpx, json
 
 
 @dataclass
@@ -219,3 +219,32 @@ class SyncGeoServerX:
             raise ValueError(f"Service type {service_type} not supported")
         responses = service.addFile(self.http_client, workspace, store)
         return self.response_recognise(responses)
+
+
+    # Create workspace
+    @exception_handler
+    def create_pg_store(
+        self, name: str, workspace:str, host: str, port: int, username : str, password : str , database: str 
+    ) -> GSResponse:
+        payload =json.dumps({
+            'dataStore': {
+                'name': name,
+                'connectionParameters': {
+                    'host': host,
+                    'port': port,
+                    'database': database,
+                    'user': username,
+                    'passwd': password,
+                    'dbtype': 'postgis'
+                }
+            }
+        })
+        Client = self.http_client
+        responses = Client.post(
+            f"workspaces/{workspace}/datastores/",
+            data=payload,
+            headers=self.head,
+        )
+        results = self.response_recognise(responses.status_code)
+        return results
+    
