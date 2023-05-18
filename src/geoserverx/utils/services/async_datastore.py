@@ -82,7 +82,7 @@ class GPKGfileStore:
                     "name": store,
                     "connectionParameters": {
                         "entry":  [
-                            {"@key": "database", "$": "file:"+self.file},
+                            {"@key": "database", "$": f"file:{self.file}"},
                             {"@key": "dbtype", "$": "geopkg"},
                         ]
                     },
