@@ -191,9 +191,10 @@ class AsyncGeoServerX:
 			service = ShapefileStore(client=self.http_client,
 				service=service, logger=std_out_logger("Shapefile"), file=file)
 		elif service_type == 'gpkg':
-			service = GPKGfileStore(
+			service = GPKGfileStore(client=self.http_client,
 				service=service, logger=std_out_logger("GeoPackage"), file=file)
 		else:
 			raise ValueError(f"Service type {service_type} not supported")
-		await service.addFile(self.http_client, workspace, store)
+		responses = await service.addFile(self.http_client, workspace, store)
+		return self.response_recognise(responses)
 
