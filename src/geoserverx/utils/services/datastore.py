@@ -63,7 +63,7 @@ class ShapefileStore:
                 "dataStore": {
                     "name": store,
                     "connectionParameters": {
-                        "entry": [{"@key": "url", "$": "file:"+self.file}]
+                        "entry": [{"@key": "url", "$": f"file:{self.file}"}]
                     },
                 }
             }
