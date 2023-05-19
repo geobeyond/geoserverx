@@ -124,7 +124,7 @@ class SyncGeoServerX:
             results = self.response_recognise(responses.status_code)
             return results
 
-    # Create workspace
+    # Create workspace on geoserver 
     @exception_handler
     def create_workspace(
         self, name: str, default: bool = False, Isolated: bool = False
