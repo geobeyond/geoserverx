@@ -48,3 +48,21 @@ class DataStoreModelDetails(BaseModel):
 
 class DataStoreModel(BaseModel):
     dataStore: DataStoreModelDetails = {}
+
+
+class createStoreItem(BaseModel):
+    host: str
+    port: int
+    database: str
+    user: str
+    passwd: str
+    dbtype: str
+
+
+class CreateDataStoreModel(BaseModel):
+    name: str
+    connectionParameters: createStoreItem
+
+
+class CreateDataStoreModelDataStore(BaseModel):
+    dataStore: CreateDataStoreModel

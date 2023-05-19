@@ -536,9 +536,10 @@ def invalid_new_workspace_connection() -> dict:
     item = {"code": 404, "response": "Result not found"}
     return item
 
+
 @pytest.fixture
 def bad_new_pg_store_connection() -> dict:
-    item = {"store":""}
+    item = {"store": ""}
     return item
 
 
@@ -550,17 +551,17 @@ def invalid_new_pg_store_connection() -> dict:
 
 @pytest.fixture
 def good_new_pg_store_connection() -> dict:
-    item ={
-            'dataStore': {
-                'name': 'pgg',
-                'connectionParameters': {
-                    'host': 'localhost',
-                    'port': 5432,
-                    'database': 'postgres',
-                    'user': 'postgres',
-                    'passwd': 'postgres',
-                    'dbtype': 'postgis'
-                }
-            }
+    item = {
+        "dataStore": {
+            "name": "pgg",
+            "connectionParameters": {
+                "host": "localhost",
+                "port": 5432,
+                "database": "postgres",
+                "user": "postgres",
+                "passwd": "postgres",
+                "dbtype": "postgis",
+            },
         }
+    }
     return item

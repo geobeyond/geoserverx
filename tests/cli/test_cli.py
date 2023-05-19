@@ -252,6 +252,7 @@ def test_create_workspace_ConnectError(respx_mock):
     )
     assert "Error in connecting to Geoserver" in result.stdout
 
+
 # Test - pg_store
 def test_pg_store_validation(invalid_new_pg_store_connection, respx_mock):
     respx_mock.post(f"{baseUrl}workspaces/cesium/datastores/").mock(
@@ -259,7 +260,17 @@ def test_pg_store_validation(invalid_new_pg_store_connection, respx_mock):
     )
     result = runner.invoke(
         app,
-        ["create-pg-store", "--name", "pgg", "--workspace", "cesium", "--dbname", "postgres","--dbpwd", "postgres"],
+        [
+            "create-pg-store",
+            "--name",
+            "pgg",
+            "--workspace",
+            "cesium",
+            "--dbname",
+            "postgres",
+            "--dbpwd",
+            "postgres",
+        ],
     )
     assert "Result not found" in result.stdout
 
@@ -269,7 +280,18 @@ def test_pg_store_success(good_new_workspace_connection, respx_mock):
         return_value=httpx.Response(201, json=good_new_workspace_connection)
     )
     result = runner.invoke(
-        app, ["create-pg-store", "--name", "pgg", "--workspace", "cesium", "--dbname", "postgres","--dbpwd", "postgres"]
+        app,
+        [
+            "create-pg-store",
+            "--name",
+            "pgg",
+            "--workspace",
+            "cesium",
+            "--dbname",
+            "postgres",
+            "--dbpwd",
+            "postgres",
+        ],
     )
     assert "Data added successfully" in result.stdout
 
@@ -279,6 +301,17 @@ def test_pg_store_ConnectError(respx_mock):
         side_effect=httpx.ConnectError
     )
     result = runner.invoke(
-        app, ["create-pg-store", "--name", "pgg", "--workspace", "cesium", "--dbname", "postgres","--dbpwd", "postgres" ]
+        app,
+        [
+            "create-pg-store",
+            "--name",
+            "pgg",
+            "--workspace",
+            "cesium",
+            "--dbname",
+            "postgres",
+            "--dbpwd",
+            "postgres",
+        ],
     )
     assert "Error in connecting to Geoserver" in result.stdout
