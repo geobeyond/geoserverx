@@ -17,8 +17,8 @@ from geoserverx.models.data_store import (
     DataStoreModel,
     DataStoresModel,
     CreateDataStoreModel,
-    createStoreItem,
-    CreateDataStoreModelDataStore,
+    CreateStoreItem,
+    MainCreateDataStoreModel,
 )
 from geoserverx.models.coverages_store import CoveragesStoreModel, CoveragesStoresModel
 
@@ -240,10 +240,10 @@ class SyncGeoServerX:
         password: str,
         database: str,
     ) -> GSResponse:
-        payload = CreateDataStoreModelDataStore(
+        payload = MainCreateDataStoreModel(
             dataStore=CreateDataStoreModel(
                 name=name,
-                connectionParameters=createStoreItem(
+                connectionParameters=CreateStoreItem(
                     host=host,
                     port=port,
                     database=database,

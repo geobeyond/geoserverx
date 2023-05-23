@@ -50,7 +50,7 @@ class DataStoreModel(BaseModel):
     dataStore: DataStoreModelDetails = {}
 
 
-class createStoreItem(BaseModel):
+class CreateStoreItem(BaseModel):
     host: str
     port: int
     database: str
@@ -61,8 +61,8 @@ class createStoreItem(BaseModel):
 
 class CreateDataStoreModel(BaseModel):
     name: str
-    connectionParameters: createStoreItem
+    connectionParameters: CreateStoreItem
 
 
-class CreateDataStoreModelDataStore(BaseModel):
+class MainCreateDataStoreModel(BaseModel):
     dataStore: CreateDataStoreModel

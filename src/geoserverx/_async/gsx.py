@@ -18,8 +18,8 @@ from geoserverx.models.data_store import (
     DataStoreModel,
     DataStoresModel,
     CreateDataStoreModel,
-    createStoreItem,
-    CreateDataStoreModelDataStore,
+    CreateStoreItem,
+    MainCreateDataStoreModel,
 )
 from geoserverx.models.coverages_store import CoveragesStoreModel, CoveragesStoresModel
 from geoserverx.models.gs_response import GSResponse
@@ -200,10 +200,10 @@ class AsyncGeoServerX:
         password: str,
         database: str,
     ) -> GSResponse:
-        payload = CreateDataStoreModelDataStore(
+        payload = MainCreateDataStoreModel(
             dataStore=CreateDataStoreModel(
                 name=name,
-                connectionParameters=createStoreItem(
+                connectionParameters=CreateStoreItem(
                     host=host,
                     port=port,
                     database=database,
