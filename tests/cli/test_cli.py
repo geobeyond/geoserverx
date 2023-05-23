@@ -251,3 +251,67 @@ def test_create_workspace_ConnectError(respx_mock):
         app, ["create-workspace", "--workspace", "pydad", "--no-default", "--isolated"]
     )
     assert "Error in connecting to Geoserver" in result.stdout
+
+
+# Test - pg_store
+def test_pg_store_validation(invalid_new_pg_store_connection, respx_mock):
+    respx_mock.post(f"{baseUrl}workspaces/cesium/datastores/").mock(
+        return_value=httpx.Response(404, json=invalid_new_pg_store_connection)
+    )
+    result = runner.invoke(
+        app,
+        [
+            "create-pg-store",
+            "--name",
+            "pgg",
+            "--workspace",
+            "cesium",
+            "--dbname",
+            "postgres",
+            "--dbpwd",
+            "postgres",
+        ],
+    )
+    assert "Result not found" in result.stdout
+
+
+def test_pg_store_success(good_new_workspace_connection, respx_mock):
+    respx_mock.post(f"{baseUrl}workspaces/cesium/datastores/").mock(
+        return_value=httpx.Response(201, json=good_new_workspace_connection)
+    )
+    result = runner.invoke(
+        app,
+        [
+            "create-pg-store",
+            "--name",
+            "pgg",
+            "--workspace",
+            "cesium",
+            "--dbname",
+            "postgres",
+            "--dbpwd",
+            "postgres",
+        ],
+    )
+    assert "Data added successfully" in result.stdout
+
+
+def test_pg_store_ConnectError(respx_mock):
+    respx_mock.post(f"{baseUrl}workspaces/cesium/datastores/").mock(
+        side_effect=httpx.ConnectError
+    )
+    result = runner.invoke(
+        app,
+        [
+            "create-pg-store",
+            "--name",
+            "pgg",
+            "--workspace",
+            "cesium",
+            "--dbname",
+            "postgres",
+            "--dbpwd",
+            "postgres",
+        ],
+    )
+    assert "Error in connecting to Geoserver" in result.stdout

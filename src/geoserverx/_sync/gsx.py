@@ -13,7 +13,13 @@ from geoserverx.models.workspace import (
     WorkspaceModel,
     WorkspacesModel,
 )
-from geoserverx.models.data_store import DataStoreModel, DataStoresModel
+from geoserverx.models.data_store import (
+    DataStoreModel,
+    DataStoresModel,
+    CreateDataStoreModel,
+    CreateStoreItem,
+    MainCreateDataStoreModel,
+)
 from geoserverx.models.coverages_store import CoveragesStoreModel, CoveragesStoresModel
 
 from geoserverx.models.gs_response import GSResponse, HttpxError
@@ -25,7 +31,7 @@ from geoserverx.utils.services.datastore import (
 )
 from geoserverx.utils.http_client import SyncClient
 from geoserverx.utils.auth import GeoServerXAuth
-import httpx
+import httpx, json
 
 
 @dataclass
@@ -118,7 +124,7 @@ class SyncGeoServerX:
             results = self.response_recognise(responses.status_code)
             return results
 
-    # Create workspace
+    # Create workspace on geoserver
     @exception_handler
     def create_workspace(
         self, name: str, default: bool = False, Isolated: bool = False
@@ -204,7 +210,9 @@ class SyncGeoServerX:
             return results
 
     @exception_handler
-    def create_file_store(self, workspace: str, store: str, file, service_type) -> GSResponse:
+    def create_file_store(
+        self, workspace: str, store: str, file, service_type
+    ) -> GSResponse:
         service: AddDataStoreProtocol = CreateFileStore()
 
         if service_type == "shapefile":
@@ -219,3 +227,37 @@ class SyncGeoServerX:
             raise ValueError(f"Service type {service_type} not supported")
         responses = service.addFile(self.http_client, workspace, store)
         return self.response_recognise(responses)
+
+    # Create workspace
+    @exception_handler
+    def create_pg_store(
+        self,
+        name: str,
+        workspace: str,
+        host: str,
+        port: int,
+        username: str,
+        password: str,
+        database: str,
+    ) -> GSResponse:
+        payload = MainCreateDataStoreModel(
+            dataStore=CreateDataStoreModel(
+                name=name,
+                connectionParameters=CreateStoreItem(
+                    host=host,
+                    port=port,
+                    database=database,
+                    user=username,
+                    passwd=password,
+                    dbtype="postgis",
+                ).dict(exclude_none=True),
+            )
+        )
+        Client = self.http_client
+        responses = Client.post(
+            f"workspaces/{workspace}/datastores/",
+            data=payload.json(),
+            headers=self.head,
+        )
+        results = self.response_recognise(responses.status_code)
+        return results
