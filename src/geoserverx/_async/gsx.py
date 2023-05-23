@@ -5,7 +5,7 @@ from geoserverx.utils.enums import GSResponseEnum
 from geoserverx.models.gs_response import GSResponse
 from geoserverx.utils.errors import GeoServerXError
 from geoserverx.models.style import StyleModel, AllStylesModel
-
+import asyncio
 from geoserverx.utils.http_client import AsyncClient
 from geoserverx.utils.auth import GeoServerXAuth
 from geoserverx.models.workspace import (
@@ -91,106 +91,102 @@ class AsyncGeoServerX:
 
     # Get all workspaces
     async def get_all_workspaces(self) -> Union[WorkspacesModel, GSResponse]:
-        async with self.http_client as Client:
-            responses = await Client.get(f"workspaces")
+        Client = self.http_client
+        responses = await Client.get(f"workspaces")
         if responses.status_code == 200:
             return WorkspacesModel.parse_obj(responses.json())
         else:
-            results = self.response_recognise(responses)
+            results = self.response_recognise(responses.status_code)
             return results
 
     # Get specific workspaces
     async def get_workspace(self, workspace: str) -> Union[WorkspaceModel, GSResponse]:
-        async with self.http_client as Client:
-            responses = await Client.get(f"workspaces/{workspace}")
+        Client = self.http_client
+        responses = await Client.get(f"workspaces/{workspace}")
         if responses.status_code == 200:
             return WorkspaceModel.parse_obj(responses.json())
         else:
-            results = self.response_recognise(responses)
+            results = self.response_recognise(responses.status_code)
             return results
 
     # Create workspace
     async def create_workspace(
         self, name: str, default: bool = False, Isolated: bool = False
     ) -> GSResponse:
-        try:
-            payload: NewWorkspace = NewWorkspace(
-                workspace=NewWorkspaceInfo(name=name, isolated=Isolated)
+        Client = self.http_client
+        payload: NewWorkspace = NewWorkspace(
+            workspace=NewWorkspaceInfo(name=name, isolated=Isolated)
+        )
+        responses = await Client.post(
+                f"workspaces?default={default}",
+                data=payload.json(),
+                headers=self.head,
             )
-            async with self.http_client as Client:
-                responses = await Client.post(
-                    f"workspaces?default={default}",
-                    data=payload.json(),
-                    headers=self.head,
-                )
-            results = self.response_recognise(responses)
-            return results
-        except Exception as e:
-            resp = {"code": 500, "response": "Error in sending request"}
-            return GSResponse.parse_obj(resp)
-
+        results = self.response_recognise(responses.status_code)
+        return results
+       
     # Get vector stores in specific workspaces
     async def get_vector_stores_in_workspaces(self, workspace: str) -> DataStoresModel:
-        async with self.http_client as Client:
-            responses = await Client.get(f"workspaces/{workspace}/datastores")
+        Client = self.http_client
+        responses = await Client.get(f"workspaces/{workspace}/datastores")
         if responses.status_code == 200:
             return DataStoresModel.parse_obj(responses.json())
         else:
-            results = self.response_recognise(responses)
+            results = self.response_recognise(responses.status_code)
             return results
 
     # Get raster stores in specific workspaces
     async def get_raster_stores_in_workspaces(
         self, workspace: str
     ) -> CoveragesStoresModel:
-        async with self.http_client as Client:
-            responses = await Client.get(f"workspaces/{workspace}/coveragestores")
+        Client = self.http_client
+        responses = await Client.get(f"workspaces/{workspace}/coveragestores")
         if responses.status_code == 200:
             return CoveragesStoresModel.parse_obj(responses.json())
         else:
-            results = self.response_recognise(responses)
+            results = self.response_recognise(responses.status_code)
             return results
 
     # Get vector store information in specific workspaces
     async def get_vector_store(self, workspace: str, store: str) -> DataStoreModel:
         url = f"workspaces/{workspace}/datastores/{store}.json"
-        async with self.http_client as Client:
-            responses = await Client.get(url)
+        Client = self.http_client
+        responses = await Client.get(url)
         if responses.status_code == 200:
             return DataStoreModel.parse_obj(responses.json())
         else:
-            results = self.response_recognise(responses)
+            results = self.response_recognise(responses.status_code)
             return results
 
     # Get raster  store information in specific workspaces
     async def get_raster_store(self, workspace: str, store: str) -> CoveragesStoreModel:
         url = f"workspaces/{workspace}/coveragestores/{store}.json"
-        async with self.http_client as Client:
-            responses = await Client.get(url)
+        Client = self.http_client
+        responses = await Client.get(url)
         if responses.status_code == 200:
             return CoveragesStoreModel.parse_obj(responses.json())
         else:
-            results = self.response_recognise(responses)
+            results = self.response_recognise(responses.status_code)
             return results
 
     # Get all styles in GS
     async def get_allstyles(self) -> AllStylesModel:
-        async with self.http_client as Client:
-            responses = await Client.get(f"styles")
+        Client = self.http_client
+        responses = await Client.get(f"styles")
         if responses.status_code == 200:
             return AllStylesModel.parse_obj(responses.json())
         else:
-            results = self.response_recognise(responses)
+            results = self.response_recognise(responses.status_code)
             return results
 
     # Get specific style in GS
     async def get_style(self, style: str) -> StyleModel:
-        async with self.http_client as Client:
-            responses = await Client.get(f"styles/{style}.json")
+        Client = self.http_client
+        responses = await Client.get(f"styles/{style}.json")
         if responses.status_code == 200:
             return StyleModel.parse_obj(responses.json())
         else:
-            results = self.response_recognise(responses)
+            results = self.response_recognise(responses.status_code)
             return results
 
     # Add postgres db
@@ -217,10 +213,10 @@ class AsyncGeoServerX:
                 ).dict(exclude_none=True),
             )
         )
-        async with self.http_client as Client:
-            responses = await Client.post(
+        Client = self.http_client
+        responses = await Client.post(
                 f"workspaces/{workspace}/datastores/",
-                data=payload,
+                data=payload.json(),
                 headers=self.head,
             )
         results = self.response_recognise(responses.status_code)
