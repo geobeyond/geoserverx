@@ -118,13 +118,13 @@ class AsyncGeoServerX:
             workspace=NewWorkspaceInfo(name=name, isolated=Isolated)
         )
         responses = await Client.post(
-                f"workspaces?default={default}",
-                data=payload.json(),
-                headers=self.head,
-            )
+            f"workspaces?default={default}",
+            data=payload.json(),
+            headers=self.head,
+        )
         results = self.response_recognise(responses.status_code)
         return results
-       
+
     # Get vector stores in specific workspaces
     async def get_vector_stores_in_workspaces(self, workspace: str) -> DataStoresModel:
         Client = self.http_client
@@ -215,15 +215,54 @@ class AsyncGeoServerX:
         )
         Client = self.http_client
         responses = await Client.post(
-                f"workspaces/{workspace}/datastores/",
-                data=payload.json(),
-                headers=self.head,
-            )
+            f"workspaces/{workspace}/datastores/",
+            data=payload.json(),
+            headers=self.head,
+        )
         results = self.response_recognise(responses.status_code)
         return results
 
+    # Get all styles in GS
+    async def get_allstyles(self) -> AllStylesModel:
+        Client = self.http_client
+        responses = await Client.get(f"styles")
+        if responses.status_code == 200:
+            return AllStylesModel.parse_obj(responses.json())
+        else:
+            results = self.response_recognise(responses.status_code)
+            return results
+
+    # Get specific style in GS
+    async def get_style(self, style: str) -> StyleModel:
+        Client = self.http_client
+        responses = await Client.get(f"styles/{style}.json")
+        if responses.status_code == 200:
+            return StyleModel.parse_obj(responses.json())
+        else:
+            results = self.response_recognise(responses.status_code)
+            return results
+
     async def create_file_store(self, workspace: str, store: str, file, service_type):
         service: AddDataStoreProtocol = CreateFileStore()
+
+        if service_type == "shapefile":
+            service = ShapefileStore(
+                client=self.http_client,
+                service=service,
+                logger=std_out_logger("Shapefile"),
+                file=file,
+            )
+        elif service_type == "gpkg":
+            service = GPKGfileStore(
+                client=self.http_client,
+                service=service,
+                logger=std_out_logger("GeoPackage"),
+                file=file,
+            )
+        else:
+            raise ValueError(f"Service type {service_type} not supported")
+        responses = await service.addFile(self.http_client, workspace, store)
+        return self.response_recognise(responses)
 
         if service_type == "shapefile":
             service = ShapefileStore(

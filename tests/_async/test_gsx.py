@@ -1,5 +1,5 @@
 import httpx, respx
-from pytest import  mark as pytest_mark
+from pytest import mark as pytest_mark
 from geoserverx.models.workspace import WorkspaceInBulk
 from geoserverx._async.gsx import AsyncGeoServerX, GeoServerXAuth, GeoServerXError
 import pytest_asyncio
@@ -12,7 +12,7 @@ from respx.fixtures import session_event_loop as event_loop  # noqa: F401
 
 
 @pytest_asyncio.fixture(scope="session")
-async def create_a_client() :
+async def create_a_client():
     client = AsyncGeoServerX.from_auth(GeoServerXAuth())
     yield client
     client.close()
@@ -28,17 +28,21 @@ async def test_error():
         assert True
 
 
-
 @pytest.mark.asyncio
-async def test_get_all_workspaces_validation(create_a_client, respx_mock, bad_workspaces_connection,event_loop):
+async def test_get_all_workspaces_validation(
+    create_a_client, respx_mock, bad_workspaces_connection, event_loop
+):
     respx_mock.get(f"{baseUrl}workspaces").mock(
-            return_value=httpx.Response(404, json=bad_workspaces_connection)
+        return_value=httpx.Response(404, json=bad_workspaces_connection)
     )
     response = await create_a_client.get_all_workspaces()
     assert response.code == 404
 
+
 @pytest.mark.asyncio
-async def test_get_all_workspaces_success(create_a_client, respx_mock, good_workspaces_connection,event_loop):
+async def test_get_all_workspaces_success(
+    create_a_client, respx_mock, good_workspaces_connection, event_loop
+):
     respx_mock.get(f"{baseUrl}workspaces").mock(
         return_value=httpx.Response(200, json=good_workspaces_connection)
     )
@@ -54,7 +58,7 @@ async def test_get_all_workspaces_NetworkError(create_a_client, respx_mock):
         assert response.response == "Error in connecting to Geoserver"
 
 
- # Test - get_workspace
+# Test - get_workspace
 @pytest_mark.anyio
 async def test_get_workspace_validation(
     create_a_client, bad_workspace_connection, respx_mock
@@ -306,7 +310,6 @@ async def test_create_workspace_success(
     assert response.response == "Data added successfully"
 
 
-
 @pytest_mark.anyio
 async def test_create_workspace_ConnectError(create_a_client, respx_mock):
     respx_mock.post(f"{baseUrl}workspaces?default=False").mock(
@@ -315,6 +318,8 @@ async def test_create_workspace_ConnectError(create_a_client, respx_mock):
     with pytest.raises(httpx.ConnectError):
         response = await create_a_client.create_workspace("pydad", False, True)
         assert response.response == "Error in connecting to Geoserver"
+
+
 # # Test - create_pg_store
 @pytest_mark.anyio
 async def test_create_pg_store_validation(
@@ -323,10 +328,15 @@ async def test_create_pg_store_validation(
     respx_mock.post(f"{baseUrl}workspaces/cesium/datastores/").mock(
         return_value=httpx.Response(404, json=invalid_new_pg_store_connection)
     )
-    response = await create_a_client.create_pg_store(name='pgg', workspace='cesium', 
-                           host='localhost',
-                           port=5432, username='postgres', 
-                           password='postgres', database='postgres') 
+    response = await create_a_client.create_pg_store(
+        name="pgg",
+        workspace="cesium",
+        host="localhost",
+        port=5432,
+        username="postgres",
+        password="postgres",
+        database="postgres",
+    )
     assert response.response == "Result not found"
 
 
@@ -337,10 +347,15 @@ async def test_create_pg_store_success(
     respx_mock.post(f"{baseUrl}workspaces/cesium/datastores/").mock(
         return_value=httpx.Response(201, json=good_new_workspace_connection)
     )
-    response = await create_a_client.create_pg_store(name='pgg', workspace='cesium', 
-                           host='localhost',
-                           port=5432, username='postgres', 
-                           password='postgres', database='postgres') 
+    response = await create_a_client.create_pg_store(
+        name="pgg",
+        workspace="cesium",
+        host="localhost",
+        port=5432,
+        username="postgres",
+        password="postgres",
+        database="postgres",
+    )
     assert response.response == "Data added successfully"
 
 
@@ -350,9 +365,13 @@ async def test_create_pg_store_ConnectError(create_a_client, respx_mock):
         side_effect=httpx.ConnectError
     )
     with pytest.raises(httpx.ConnectError):
-        response = await create_a_client.create_pg_store(name='pgg', workspace='cesium', 
-                            host='localhost',
-                            port=5432, username='postgres', 
-                            password='postgres', database='postgres') 
+        response = await create_a_client.create_pg_store(
+            name="pgg",
+            workspace="cesium",
+            host="localhost",
+            port=5432,
+            username="postgres",
+            password="postgres",
+            database="postgres",
+        )
         assert response.response == "Error in connecting to Geoserver"
-   

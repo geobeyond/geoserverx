@@ -124,7 +124,7 @@ class SyncGeoServerX:
             results = self.response_recognise(responses.status_code)
             return results
 
-    # Create workspace on geoserver 
+    # Create workspace on geoserver
     @exception_handler
     def create_workspace(
         self, name: str, default: bool = False, Isolated: bool = False
@@ -254,7 +254,8 @@ class SyncGeoServerX:
             )
         )
         Client = self.http_client
-        responses = Client.post(f"workspaces/{workspace}/datastores/",
+        responses = Client.post(
+            f"workspaces/{workspace}/datastores/",
             data=payload.json(),
             headers=self.head,
         )

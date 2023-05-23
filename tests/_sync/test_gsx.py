@@ -281,7 +281,6 @@ def test_create_workspace_ConnectError(client: SyncGeoServerX, respx_mock):
     assert response.response == "Error in connecting to Geoserver"
 
 
-
 # Test - create_pg_store
 def test_create_pg_store_validation(
     client: SyncGeoServerX, invalid_new_pg_store_connection, respx_mock
@@ -289,10 +288,15 @@ def test_create_pg_store_validation(
     respx_mock.post(f"{baseUrl}workspaces/cesium/datastores/").mock(
         return_value=httpx.Response(404, json=invalid_new_pg_store_connection)
     )
-    response = client.create_pg_store(name='pgg', workspace='cesium', 
-                           host='localhost',
-                           port=5432, username='postgres', 
-                           password='postgres', database='postgres') 
+    response = client.create_pg_store(
+        name="pgg",
+        workspace="cesium",
+        host="localhost",
+        port=5432,
+        username="postgres",
+        password="postgres",
+        database="postgres",
+    )
     assert response.response == "Result not found"
 
 
@@ -302,10 +306,15 @@ def test_create_pg_store_success(
     respx_mock.post(f"{baseUrl}workspaces/cesium/datastores/").mock(
         return_value=httpx.Response(201, json=good_new_workspace_connection)
     )
-    response = client.create_pg_store(name='pgg', workspace='cesium', 
-                           host='localhost',
-                           port=5432, username='postgres', 
-                           password='postgres', database='postgres') 
+    response = client.create_pg_store(
+        name="pgg",
+        workspace="cesium",
+        host="localhost",
+        port=5432,
+        username="postgres",
+        password="postgres",
+        database="postgres",
+    )
     assert response.response == "Data added successfully"
 
 
@@ -313,8 +322,13 @@ def test_create_pg_store_ConnectError(client: SyncGeoServerX, respx_mock):
     respx_mock.post(f"{baseUrl}workspaces/cesium/datastores/").mock(
         side_effect=httpx.ConnectError
     )
-    response = client.create_pg_store(name='pgg', workspace='cesium', 
-                           host='localhost',
-                           port=5432, username='postgres', 
-                           password='postgres', database='postgres') 
+    response = client.create_pg_store(
+        name="pgg",
+        workspace="cesium",
+        host="localhost",
+        port=5432,
+        username="postgres",
+        password="postgres",
+        database="postgres",
+    )
     assert response.response == "Error in connecting to Geoserver"

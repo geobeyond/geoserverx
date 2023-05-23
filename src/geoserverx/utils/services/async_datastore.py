@@ -1,6 +1,7 @@
 import json
 from logging import Logger
 from typing import Protocol
+import asyncio
 
 
 class AddDataStoreProtocol(Protocol):
@@ -62,26 +63,24 @@ class ShapefileStore:
         self.file = file
         self.client = client
 
-    def addFile(self, client, workspace, store):
+    async def addFile(self, client, workspace, store):
         store_payload: str = json.dumps(
             {
                 "dataStore": {
                     "name": store,
                     "connectionParameters": {
-                        "entry": [{"@key": "url", "$": "file:/path/to/nyc.shp"}]
+                        "entry": [{"@key": "url", "$": "file:" + self.file}]
                     },
                 }
             }
         )
-        self.logger.debug(f"Shapefile store payload: {store_payload}")
-        layer_payload = self.file
-        result = self.inner.addFile(
+        # self.logger.debug(f"Shapefile store payload: {store_payload}")
+        result = await self.inner.addFile(
             self.client,
             workspace,
             store,
             "shp",
             store_payload,
-            layer_payload,
             {"Content-Type": "application/json"},
             {"Content-Type": "application/zip"},
         )
@@ -97,30 +96,27 @@ class GPKGfileStore:
         self.file = file
         self.client = client
 
-    def addFile(self, client, workspace, store):
+    async def addFile(self, client, workspace, store):
         store_payload: str = json.dumps(
             {
                 "dataStore": {
                     "name": store,
                     "connectionParameters": {
                         "entry": [
-                            {"@key": "database", "$": "file:///path/to/nyc.gpkg"},
+                            {"@key": "database", "$": f"file:{self.file}"},
                             {"@key": "dbtype", "$": "geopkg"},
                         ]
                     },
                 }
             }
         )
-        self.logger.debug(f"GeoPackage store payload: {store_payload}")
-        layer_payload = self.file
-        result = self.inner.addFile(
+        # self.logger.debug(f"GeoPackage store payload: {store_payload}")
+        result = await self.inner.addFile(
             self.client,
             workspace,
             store,
             "gpkg",
             store_payload,
-            layer_payload,
-            {"Content-Type": "application/json"},
             {"Content-Type": "application/json"},
         )
         return result
