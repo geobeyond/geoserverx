@@ -38,3 +38,18 @@ Use this command to create new Vector store based on `Geopackage` path.
 # Create new store in `cite` workspace with name `shape` and using `path/for/gpkg` as local Geopackage path
 client.create_file_store(workspace='cite', store='shape', file='path/for/gpkg', service_type='gpkg') 
 ```
+
+## Create new PostGIS Vector store
+Use this command to create new Vector store based on `PostGIS` connection. 
+
+```Python
+# Create new store in `cite` workspace with name `pg` and using `PostgreSQL` credentials
+client.create_pg_store(
+        name="pg",
+        workspace="cite",
+        host="localhost",
+        port=5432,
+        username="XXXXXXXX",
+        password="XXXXXXXX",
+        database="test")
+```
