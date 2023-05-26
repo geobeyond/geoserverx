@@ -10,7 +10,8 @@ jobs:
   release:
     name: Release
     runs-on: ubuntu-latest
-    if:  needs.test.result == 'success'
+    needs: test
+    if: ${{ needs.test.result == 'success' }}
     steps:
       
       - name: Check out the repository
