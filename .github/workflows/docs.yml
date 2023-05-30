@@ -3,7 +3,7 @@ on:
   push:
     branches: ["mkdocs/**"]
   pull_request:
-    branches: [ "main" , "develop"]
+    branches: [ "main" ]
 permissions:
   contents: write
 jobs:
