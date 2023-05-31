@@ -6,6 +6,7 @@ With geoserverx, users can easily access and modify data in Geoserver, such as u
 
 Apart from being implemented as Python package, geoserverx also provides CLI support for all of its operations. Which makes it useful for people who want to avoid Python all-together. 
 
+Checkout official pypi link [here](https://pypi.org/project/geoserverx/)
 
 ## Get Started
 
