@@ -97,7 +97,7 @@ code=201 response='Data added successfully'
 code=201 response='Data added successfully'
 '''
 ```
-![workspace created](/../assets/images/workspace_created.png "workspace created")
+![workspace created](/assets/images/workspace_created.png "workspace created")
 
 ## Get all Vector stores in `cesium` workspace
 
@@ -169,7 +169,7 @@ print(result.json())
 '''
 ```
 
-![new_shp_vector](/../assets/images/new_shp_vector.png "new_shp_vector")
+![new_shp_vector](/assets/images/new_shp_vector.png "new_shp_vector")
 
 ## Get all Raster stores in `cesium` workspace
 
