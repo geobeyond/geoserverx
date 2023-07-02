@@ -263,7 +263,7 @@ class SyncGeoServerX:
         return results
 
     @exception_handler
-    def create_layer_group(self,  layers : list[str], name: str,mode: Literal['SINGLE' ,'OPAQUE_CONTAINER' ,'NAMED' ,'CONTAINER' ,'EO']  = 'SINGLE',abstract : Optional[str]=None,keywords: Optional[list[str]] = None,styles: Optional[list[str]] = None, workspace:  Optional[str] = None, title: Optional[str] = None):
+    def create_layer_group(self,  layers : list[str], name: str,mode: Literal['SINGLE' ,'OPAQUE_CONTAINER' ,'NAMED' ,'CONTAINER' ,'EO']  = 'SINGLE',abstract : Optional[str]=None,keywords: Optional[list[str]] = None,styles: Optional[list[str]] = None, workspace:  Optional[str] = None, title: Optional[str] = None) -> GSResponse:
         Client = self.http_client
         rawPayload = {
                 "layerGroup": {
@@ -297,7 +297,6 @@ class SyncGeoServerX:
         for layername in layers:
             rawPayload["layerGroup"]["layers"]["layer"].append({"name": layername})
         payload = json.dumps(rawPayload)
-        print(payload)
         res = Client.post(
             f"layergroups",
             content=payload,
