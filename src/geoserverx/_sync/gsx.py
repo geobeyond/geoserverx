@@ -2,7 +2,7 @@ from dataclasses import dataclass
 from typing import Union
 from geoserverx.utils.logger import std_out_logger
 import logging
-
+from typing import Optional, Literal
 from geoserverx.utils.errors import GeoServerXError
 from geoserverx.utils.enums import GSResponseEnum, HTTPXErrorEnum
 
@@ -261,3 +261,46 @@ class SyncGeoServerX:
         )
         results = self.response_recognise(responses.status_code)
         return results
+
+    @exception_handler
+    def create_layer_group(self,  layers : list[str], name: str,mode: Literal['SINGLE' ,'OPAQUE_CONTAINER' ,'NAMED' ,'CONTAINER' ,'EO']  = 'SINGLE',abstract : Optional[str]=None,keywords: Optional[list[str]] = None,styles: Optional[list[str]] = None, workspace:  Optional[str] = None, title: Optional[str] = None):
+        Client = self.http_client
+        rawPayload = {
+                "layerGroup": {
+                    "name": name,
+                    "mode": mode,
+                    "title": title if title else name,
+                    "layers": {
+                        "layer": [
+                            
+                        ]
+                    }
+                }
+            }
+        if abstract : 
+            rawPayload["layerGroup"]['abstractTxt'] = abstract
+        if workspace :
+            rawPayload["layerGroup"]["workspace"] = {
+                        "name": workspace
+                    } 
+        if styles :
+            rawPayload["layerGroup"]["styles"] = {
+                        "style": [] }
+            for style in styles:
+                rawPayload["layerGroup"]["styles"]["style"].append({"name": style})
+        if keywords :
+            rawPayload["layerGroup"]["keywords"] = {
+                        "keyword": [] }
+            for keyword in keywords:
+                rawPayload["layerGroup"]["keywords"]["keyword"].append(keyword)
+
+        for layername in layers:
+            rawPayload["layerGroup"]["layers"]["layer"].append({"name": layername})
+        payload = json.dumps(rawPayload)
+        print(payload)
+        res = Client.post(
+            f"layergroups",
+            content=payload,
+            headers=self.head,
+        )
+        return self.response_recognise(res.status_code)
