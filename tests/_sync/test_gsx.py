@@ -1,9 +1,11 @@
 import httpx
-from pytest import fixture, mark as pytest_mark
 import pytest
-from geoserverx.models.workspace import WorkspaceInBulk
-from geoserverx._sync.gsx import SyncGeoServerX, GeoServerXAuth, GeoServerXError
+from pytest import fixture
+from pytest import mark as pytest_mark
 
+from geoserverx._sync.gsx import (GeoServerXAuth, GeoServerXError,
+                                  SyncGeoServerX)
+from geoserverx.models.workspace import WorkspaceInBulk
 
 baseUrl = "http://127.0.0.1:8080/geoserver/rest/"
 
@@ -331,4 +333,31 @@ def test_create_pg_store_ConnectError(client: SyncGeoServerX, respx_mock):
         password="postgres",
         database="postgres",
     )
+    assert response.response == "Error in connecting to Geoserver"
+
+
+# Test - get_all_workspaces
+def test_get_all_layer_groups_validation(
+    client: SyncGeoServerX, bad_layer_group_connection, respx_mock
+):
+    respx_mock.get(f"{baseUrl}layergroups").mock(
+        return_value=httpx.Response(404, json=bad_layer_group_connection)
+    )
+    response = client.get_all_layer_groups()
+    assert response.code == 404
+
+
+def test_get_all_layer_groups_success(
+    client: SyncGeoServerX, good_all_layer_group_connection, respx_mock
+):
+    respx_mock.get(f"{baseUrl}layergroups").mock(
+        return_value=httpx.Response(200, json=good_all_layer_group_connection)
+    )
+    response = client.get_all_layer_groups()
+    assert response.layerGroups.layerGroup[0].name == "a"
+
+
+def test_get_all_layer_groups_NetworkError(client: SyncGeoServerX, respx_mock):
+    respx_mock.get(f"{baseUrl}layergroups").mock(side_effect=httpx.ConnectError)
+    response = client.get_all_layer_groups()
     assert response.response == "Error in connecting to Geoserver"

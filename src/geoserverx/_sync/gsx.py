@@ -1,37 +1,30 @@
-from dataclasses import dataclass
-from typing import Union
-from geoserverx.utils.logger import std_out_logger
+import json
 import logging
-from typing import Optional, Literal
-from geoserverx.utils.errors import GeoServerXError
-from geoserverx.utils.enums import GSResponseEnum, HTTPXErrorEnum
+from dataclasses import dataclass
+from typing import List, Literal, Optional, Union
 
-from geoserverx.models.style import StyleModel, AllStylesModel
-from geoserverx.models.workspace import (
-    NewWorkspace,
-    NewWorkspaceInfo,
-    WorkspaceModel,
-    WorkspacesModel,
-)
-from geoserverx.models.data_store import (
-    DataStoreModel,
-    DataStoresModel,
-    CreateDataStoreModel,
-    CreateStoreItem,
-    MainCreateDataStoreModel,
-)
-from geoserverx.models.coverages_store import CoveragesStoreModel, CoveragesStoresModel
+import httpx
 
+from geoserverx.models.coverages_store import (CoveragesStoreModel,
+                                               CoveragesStoresModel)
+from geoserverx.models.data_store import (CreateDataStoreModel,
+                                          CreateStoreItem, DataStoreModel,
+                                          DataStoresModel,
+                                          MainCreateDataStoreModel)
 from geoserverx.models.gs_response import GSResponse, HttpxError
-from geoserverx.utils.services.datastore import (
-    AddDataStoreProtocol,
-    CreateFileStore,
-    ShapefileStore,
-    GPKGfileStore,
-)
-from geoserverx.utils.http_client import SyncClient
+from geoserverx.models.layer_group import (LayerGroupsModel,
+                                           SingleLayerGroupModel)
+from geoserverx.models.style import AllStylesModel, StyleModel
+from geoserverx.models.workspace import (NewWorkspace, NewWorkspaceInfo,
+                                         WorkspaceModel, WorkspacesModel)
 from geoserverx.utils.auth import GeoServerXAuth
-import httpx, json
+from geoserverx.utils.enums import GSResponseEnum, HTTPXErrorEnum
+from geoserverx.utils.errors import GeoServerXError
+from geoserverx.utils.http_client import SyncClient
+from geoserverx.utils.logger import std_out_logger
+from geoserverx.utils.services.datastore import (AddDataStoreProtocol,
+                                                 CreateFileStore,
+                                                 GPKGfileStore, ShapefileStore)
 
 
 @dataclass
@@ -262,35 +255,61 @@ class SyncGeoServerX:
         results = self.response_recognise(responses.status_code)
         return results
 
+    # Get all layer groups
     @exception_handler
-    def create_layer_group(self,  layers : list[str], name: str,mode: Literal['SINGLE' ,'OPAQUE_CONTAINER' ,'NAMED' ,'CONTAINER' ,'EO']  = 'SINGLE',abstract : Optional[str]=None,keywords: Optional[list[str]] = None,styles: Optional[list[str]] = None, workspace:  Optional[str] = None, title: Optional[str] = None) -> GSResponse:
+    def get_all_layer_groups(self) -> Union[LayerGroupsModel, GSResponse]:
+        Client = self.http_client
+        responses = Client.get(f"layergroups")
+        if responses.status_code == 200:
+            return LayerGroupsModel.parse_obj(responses.json())
+        else:
+            results = self.response_recognise(responses.status_code)
+            return results
+
+    # Get single layer groups
+    @exception_handler
+    def get_layer_group(self, name: str) -> Union[SingleLayerGroupModel, GSResponse]:
+        Client = self.http_client
+        responses = Client.get(f"layergroups/{name}")
+        if responses.status_code == 200:
+            return SingleLayerGroupModel.parse_obj(responses.json())
+        else:
+            results = self.response_recognise(responses.status_code)
+            return results
+
+    @exception_handler
+    def create_layer_group(
+        self,
+        layers: List[str],
+        name: str,
+        mode: Literal[
+            "SINGLE", "OPAQUE_CONTAINER", "NAMED", "CONTAINER", "EO"
+        ] = "SINGLE",
+        abstract: Optional[str] = None,
+        keywords: Optional[List[str]] = None,
+        styles: Optional[List[str]] = None,
+        workspace: Optional[str] = None,
+        title: Optional[str] = None,
+    ) -> GSResponse:
         Client = self.http_client
         rawPayload = {
-                "layerGroup": {
-                    "name": name,
-                    "mode": mode,
-                    "title": title if title else name,
-                    "layers": {
-                        "layer": [
-                            
-                        ]
-                    }
-                }
+            "layerGroup": {
+                "name": name,
+                "mode": mode,
+                "title": title if title else name,
+                "layers": {"layer": []},
             }
-        if abstract : 
-            rawPayload["layerGroup"]['abstractTxt'] = abstract
-        if workspace :
-            rawPayload["layerGroup"]["workspace"] = {
-                        "name": workspace
-                    } 
-        if styles :
-            rawPayload["layerGroup"]["styles"] = {
-                        "style": [] }
+        }
+        if abstract:
+            rawPayload["layerGroup"]["abstractTxt"] = abstract
+        if workspace:
+            rawPayload["layerGroup"]["workspace"] = {"name": workspace}
+        if styles:
+            rawPayload["layerGroup"]["styles"] = {"style": []}
             for style in styles:
                 rawPayload["layerGroup"]["styles"]["style"].append({"name": style})
-        if keywords :
-            rawPayload["layerGroup"]["keywords"] = {
-                        "keyword": [] }
+        if keywords:
+            rawPayload["layerGroup"]["keywords"] = {"keyword": []}
             for keyword in keywords:
                 rawPayload["layerGroup"]["keywords"]["keyword"].append(keyword)
 
