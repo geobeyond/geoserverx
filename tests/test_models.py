@@ -263,7 +263,7 @@ def test_LayerGroupsModel_failure(bad_all_layer_group_connection):
         ds_connection = LayerGroupsModel(**bad_all_layer_group_connection)
 
 
-# single layer group
+# test - single layer group
 def test_SingleLayerGroupModel_connection(good_layer_group_connection):
     ds_connection = SingleLayerGroupModel(**good_layer_group_connection)
     assert ds_connection.layerGroup.name == "a"
