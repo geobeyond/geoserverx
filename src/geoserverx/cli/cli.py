@@ -340,31 +340,30 @@ def create_pg_store(
         typer.echo("Async support will be shortly")
 
 
-
 # get all layer groups in Geoserver
 @SyncGeoServerX.exception_handler
 @app.command(help="Get all layer groups in the Geoserver")
 def layer_groups(
     request: requestEnum = requestEnum._sync,
-     url: str = typer.Option(
+    url: str = typer.Option(
         "http://127.0.0.1:8080/geoserver/rest/", help="Geoserver REST URL"
     ),
     password: str = typer.Option("geoserver", help="Geoserver Password"),
     username: str = typer.Option("admin", help="Geoserver username"),
-
-) :
-        """
+):
+    """
     Get all layer groups  in the Geoserver
     """
-        if request.value == "sync":
-            client = SyncGeoServerX(username, password, url)
-            result = client.get_all_layer_groups().json()
-            if "code" in result:
-                typer.secho(result, fg=typer.colors.RED)
-            else:   
-                print(result)
+    if request.value == "sync":
+        client = SyncGeoServerX(username, password, url)
+        result = client.get_all_layer_groups().json()
+        if "code" in result:
+            typer.secho(result, fg=typer.colors.RED)
         else:
-            typer.echo("Async support will be shortly")
+            print(result)
+    else:
+        typer.echo("Async support will be shortly")
+
 
 # get single layer group in Geoserver
 @SyncGeoServerX.exception_handler
@@ -372,22 +371,21 @@ def layer_groups(
 def layer_group(
     request: requestEnum = requestEnum._sync,
     name: str = typer.Option(..., help="Layer group name"),
-     url: str = typer.Option(
+    url: str = typer.Option(
         "http://127.0.0.1:8080/geoserver/rest/", help="Geoserver REST URL"
     ),
     password: str = typer.Option("geoserver", help="Geoserver Password"),
     username: str = typer.Option("admin", help="Geoserver username"),
-
-) :
-        """
+):
+    """
     Get single layer group  in the Geoserver
     """
-        if request.value == "sync":
-            client = SyncGeoServerX(username, password, url)
-            result = client.get_layer_group(name).json()
-            if "code" in result:
-                typer.secho(result, fg=typer.colors.RED)
-            else:   
-                print(result)
+    if request.value == "sync":
+        client = SyncGeoServerX(username, password, url)
+        result = client.get_layer_group(name).json()
+        if "code" in result:
+            typer.secho(result, fg=typer.colors.RED)
         else:
-            typer.echo("Async support will be shortly")
+            print(result)
+    else:
+        typer.echo("Async support will be shortly")

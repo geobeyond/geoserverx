@@ -566,6 +566,7 @@ def good_new_pg_store_connection() -> dict:
     }
     return item
 
+
 @pytest.fixture
 def good_all_layer_group_connection() -> dict:
     item = {
@@ -573,11 +574,11 @@ def good_all_layer_group_connection() -> dict:
             "layerGroup": [
                 {
                     "name": "a",
-                    "href": "http://localhost:8080/geoserver/rest/layergroups/a.json"
+                    "href": "http://localhost:8080/geoserver/rest/layergroups/a.json",
                 }
             ]
         }
-        }
+    }
     return item
 
 
@@ -599,13 +600,13 @@ def good_layer_group_connection() -> dict:
                 "published": {
                     "@type": "layer",
                     "name": "aai:3D_VerticalPointStructure",
-                    "href": "http://localhost:8080/geoserver/rest/workspaces/aai/layers/3D_VerticalPointStructure.json"
+                    "href": "http://localhost:8080/geoserver/rest/workspaces/aai/layers/3D_VerticalPointStructure.json",
                 }
             },
             "styles": {
                 "style": {
                     "name": "point",
-                    "href": "http://localhost:8080/geoserver/rest/styles/point.json"
+                    "href": "http://localhost:8080/geoserver/rest/styles/point.json",
                 }
             },
             "bounds": {
@@ -613,9 +614,9 @@ def good_layer_group_connection() -> dict:
                 "maxx": 73.91334477033121,
                 "miny": 24.61418206729651,
                 "maxy": 24.624727043566768,
-                "crs": "EPSG:4326"
+                "crs": "EPSG:4326",
             },
-            "dateCreated": "2023-07-04 13:04:42.523 UTC"
+            "dateCreated": "2023-07-04 13:04:42.523 UTC",
         }
     }
     return item

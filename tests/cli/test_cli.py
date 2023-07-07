@@ -336,5 +336,5 @@ def test_get_all_layer_groups_success(good_all_layer_group_connection, respx_moc
 
 def test_get_all_layer_groups_NetworkError(respx_mock):
     respx_mock.get(f"{baseUrl}layergroups").mock(side_effect=httpx.ConnectError)
-    result = runner.invoke(app,["layer-groups"])
+    result = runner.invoke(app, ["layer-groups"])
     assert "Error in connecting to Geoserver" in result.stdout

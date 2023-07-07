@@ -5,13 +5,10 @@ import respx
 from pytest import mark as pytest_mark
 from respx.fixtures import session_event_loop as event_loop  # noqa: F401
 
-from geoserverx._async.gsx import (AsyncGeoServerX, GeoServerXAuth,
-                                   GeoServerXError)
+from geoserverx._async.gsx import AsyncGeoServerX, GeoServerXAuth, GeoServerXError
 from geoserverx.models.workspace import WorkspaceInBulk
 
 baseUrl = "http://127.0.0.1:8080/geoserver/rest/"
-
-from respx.fixtures import session_event_loop as event_loop  # noqa: F401
 
 
 @pytest_asyncio.fixture(scope="session")
@@ -380,13 +377,13 @@ async def test_create_pg_store_ConnectError(create_a_client, respx_mock):
         assert response.response == "Error in connecting to Geoserver"
 
 
-# Test - get_all_workspaces
+# Test - get_all_layer_group
 @pytest_mark.anyio
 async def test_get_all_layer_groups_validation(
-    create_a_client, bad_layer_group_connection, respx_mock
+    create_a_client, bad_all_layer_group_connection, respx_mock
 ):
-    respx_mock.post(f"{baseUrl}layergroups").mock(
-        return_value=httpx.Response(404, json=bad_layer_group_connection)
+    respx_mock.get(f"{baseUrl}layergroups").mock(
+        return_value=httpx.Response(404, json=bad_all_layer_group_connection)
     )
     response = await create_a_client.get_all_layer_groups()
     assert response.code == 404
@@ -396,7 +393,7 @@ async def test_get_all_layer_groups_validation(
 async def test_get_all_layer_groups_success(
     create_a_client, good_all_layer_group_connection, respx_mock
 ):
-    respx_mock.post(f"{baseUrl}layergroups").mock(
+    respx_mock.get(f"{baseUrl}layergroups").mock(
         return_value=httpx.Response(200, json=good_all_layer_group_connection)
     )
     response = await create_a_client.get_all_layer_groups()
@@ -405,7 +402,38 @@ async def test_get_all_layer_groups_success(
 
 @pytest_mark.anyio
 async def test_get_all_layer_groups_NetworkError(create_a_client, respx_mock):
-    respx_mock.post(f"{baseUrl}layergroups").mock(side_effect=httpx.ConnectError)
+    respx_mock.get(f"{baseUrl}layergroups").mock(side_effect=httpx.ConnectError)
     with pytest.raises(httpx.ConnectError):
         response = await create_a_client.get_all_layer_groups()
+        assert response.response == "Error in connecting to Geoserver"
+
+
+# Test - get_layer_group
+@pytest_mark.anyio
+async def test_get_all_layer_group_validation(
+    create_a_client, bad_layer_group_connection, respx_mock
+):
+    respx_mock.get(f"{baseUrl}layergroups/a").mock(
+        return_value=httpx.Response(404, json=bad_layer_group_connection)
+    )
+    response = await create_a_client.get_layer_group("a")
+    assert response.code == 404
+
+
+@pytest_mark.anyio
+async def test_get_all_layer_group_success(
+    create_a_client, good_layer_group_connection, respx_mock
+):
+    respx_mock.get(f"{baseUrl}layergroups/a").mock(
+        return_value=httpx.Response(200, json=good_layer_group_connection)
+    )
+    response = await create_a_client.get_layer_group("a")
+    assert response.layerGroup.name == "a"
+
+
+@pytest_mark.anyio
+async def test_get_all_layer_group_NetworkError(create_a_client, respx_mock):
+    respx_mock.get(f"{baseUrl}layergroups/a").mock(side_effect=httpx.ConnectError)
+    with pytest.raises(httpx.ConnectError):
+        response = await create_a_client.get_layer_group("a")
         assert response.response == "Error in connecting to Geoserver"

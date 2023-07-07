@@ -3,8 +3,7 @@ import pytest
 from pytest import fixture
 from pytest import mark as pytest_mark
 
-from geoserverx._sync.gsx import (GeoServerXAuth, GeoServerXError,
-                                  SyncGeoServerX)
+from geoserverx._sync.gsx import GeoServerXAuth, GeoServerXError, SyncGeoServerX
 from geoserverx.models.workspace import WorkspaceInBulk
 
 baseUrl = "http://127.0.0.1:8080/geoserver/rest/"
@@ -336,7 +335,7 @@ def test_create_pg_store_ConnectError(client: SyncGeoServerX, respx_mock):
     assert response.response == "Error in connecting to Geoserver"
 
 
-# Test - get_all_workspaces
+# Test - get_all_layer_groups
 def test_get_all_layer_groups_validation(
     client: SyncGeoServerX, bad_layer_group_connection, respx_mock
 ):
@@ -360,4 +359,31 @@ def test_get_all_layer_groups_success(
 def test_get_all_layer_groups_NetworkError(client: SyncGeoServerX, respx_mock):
     respx_mock.get(f"{baseUrl}layergroups").mock(side_effect=httpx.ConnectError)
     response = client.get_all_layer_groups()
+    assert response.response == "Error in connecting to Geoserver"
+
+
+# Test - get_layer_group
+def test_get_layer_group_validation(
+    client: SyncGeoServerX, bad_layer_group_connection, respx_mock
+):
+    respx_mock.get(f"{baseUrl}layergroups/a").mock(
+        return_value=httpx.Response(404, json=bad_layer_group_connection)
+    )
+    response = client.get_layer_group("a")
+    assert response.code == 404
+
+
+def test_get_layer_group_success(
+    client: SyncGeoServerX, good_layer_group_connection, respx_mock
+):
+    respx_mock.get(f"{baseUrl}layergroups/a").mock(
+        return_value=httpx.Response(200, json=good_layer_group_connection)
+    )
+    response = client.get_layer_group("a")
+    assert response.layerGroup.name == "a"
+
+
+def test_get_layer_group_NetworkError(client: SyncGeoServerX, respx_mock):
+    respx_mock.get(f"{baseUrl}layergroups/a").mock(side_effect=httpx.ConnectError)
+    response = client.get_layer_group("a")
     assert response.response == "Error in connecting to Geoserver"
