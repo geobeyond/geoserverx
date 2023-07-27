@@ -21,6 +21,10 @@ from geoserverx.models.data_store import (
     CreateStoreItem,
     MainCreateDataStoreModel,
 )
+from geoserverx.models.layers import (
+    LayersModel,
+    LayerModel
+)
 from geoserverx.models.coverages_store import CoveragesStoreModel, CoveragesStoresModel
 from geoserverx.models.gs_response import GSResponse
 from geoserverx.utils.services.async_datastore import (
@@ -278,3 +282,23 @@ class AsyncGeoServerX:
         else:
             raise ValueError(f"Service type {service_type} not supported")
         await service.addFile(self.http_client, workspace, store)
+
+    # Get all layers
+    async def get_all_layers(self) -> Union[LayersModel, GSResponse]:
+        Client = self.http_client
+        responses = await Client.get(f"layers")
+        if responses.status_code == 200:
+            return LayersModel.parse_obj(responses.json())
+        else:
+            results = self.response_recognise(responses.status_code)
+            return results
+
+    # Get specific layer
+    async def get_layer(self, workspace: str,layer:str) -> Union[LayerModel, GSResponse]:
+        Client = self.http_client
+        responses = await Client.get(f"layers/{workspace}:{layer}")
+        if responses.status_code == 200:
+            return LayerModel.parse_obj(responses.json())
+        else:
+            results = self.response_recognise(responses.status_code)
+            return results

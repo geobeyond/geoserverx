@@ -338,3 +338,55 @@ def create_pg_store(
             typer.secho(result, fg=typer.colors.RED)
     else:
         typer.echo("Async support will be shortly")
+
+
+# get all layers
+@SyncGeoServerX.exception_handler
+@app.command(help="Get all layers in the Geoserver")
+def layers(
+    request: requestEnum = requestEnum._sync,
+    url: str = typer.Option(
+        "http://127.0.0.1:8080/geoserver/rest/", help="Geoserver REST URL"
+    ),
+    password: str = typer.Option("geoserver", help="Geoserver Password"),
+    username: str = typer.Option("admin", help="Geoserver username"),
+):
+    """
+    Get all layers in the Geoserver
+    """
+    if request.value == "sync":
+        client = SyncGeoServerX(username, password, url)
+        result = client.get_all_layers().json()
+        if "code" in result:
+            typer.secho(result, fg=typer.colors.RED)
+        else:
+            print(result)
+    else:
+        typer.echo("Async support will be shortly")
+
+
+# get layer
+@SyncGeoServerX.exception_handler
+@app.command(help="Get layer in the Geoserver")
+def layer(
+    request: requestEnum = requestEnum._sync,
+    workspace: str = typer.Option(..., help="Workspace name"),
+    layer: str = typer.Option(..., help="Layer name"),
+    url: str = typer.Option(
+        "http://127.0.0.1:8080/geoserver/rest/", help="Geoserver REST URL"
+    ),
+    password: str = typer.Option("geoserver", help="Geoserver Password"),
+    username: str = typer.Option("admin", help="Geoserver username"),
+):
+    """
+    Get workspace in the Geoserver
+    """
+    if request.value == "sync":
+        client = SyncGeoServerX(username, password, url)
+        result = client.get_layer(workspace, layer).json()
+        if "code" in result:
+            typer.secho(result, fg=typer.colors.RED)
+        else:
+            print(result)
+    else:
+        typer.echo("Async support will be shortly")

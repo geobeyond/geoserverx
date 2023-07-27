@@ -565,3 +565,81 @@ def good_new_pg_store_connection() -> dict:
         }
     }
     return item
+
+
+@pytest.fixture
+def good_layers_connection() -> dict:
+    item = {
+       
+  "layers": {
+    "layer": [
+      {
+        "name": "tiger:giant_polygon",
+        "href": "http://localhost:8080/geoserver/rest/layers/tiger%3Agiant_polygon.json"
+      },
+      {
+        "name": "tiger:poi",
+        "href": "http://localhost:8080/geoserver/rest/layers/tiger%3Apoi.json"
+      },
+      {
+        "name": "tiger:poly_landmarks",
+        "href": "http://localhost:8080/geoserver/rest/layers/tiger%3Apoly_landmarks.json"
+      }]
+    }
+    }
+    return item
+
+
+@pytest.fixture
+def bad_layers_connection() -> dict:
+    item = {"code": 502}
+    return item
+
+@pytest.fixture
+def good_layer_connection() -> dict:
+    item = {
+  "layer": {
+    "name": "poi",
+    "path": "/",
+    "type": "VECTOR",
+    "defaultStyle": {
+      "name": "poi",
+      "href": "http://localhost:8080/geoserver/rest/styles/poi.json"
+    },
+    "styles": {
+      "@class": "linked-hash-set",
+      "style": [
+        {
+          "name": "burg",
+          "href": "http://localhost:8080/geoserver/rest/styles/burg.json"
+        },
+        {
+          "name": "point",
+          "href": "http://localhost:8080/geoserver/rest/styles/point.json"
+        }
+      ]
+    },
+    "resource": {
+      "@class": "featureType",
+      "name": "tiger:poi",
+      "href": "http://localhost:8080/geoserver/rest/workspaces/tiger/datastores/nyc/featuretypes/poi.json"
+    },
+    "attribution": {
+      "logoWidth": 0,
+      "logoHeight": 0
+    }
+  }
+}
+    return item
+
+
+@pytest.fixture
+def bad_layer_connection() -> dict:
+    item = {"code": 404, "response": "Result not found"}
+    return item
+
+
+@pytest.fixture
+def networkbad_layer_connection() -> dict:
+    item = {"code": 503, "response": "Geoserver unavailable"}
+    return item

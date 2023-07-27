@@ -375,3 +375,64 @@ async def test_create_pg_store_ConnectError(create_a_client, respx_mock):
             database="postgres",
         )
         assert response.response == "Error in connecting to Geoserver"
+
+
+# Test - get_all_layers
+@pytest.mark.asyncio
+async def test_get_all_layers_validation(
+    create_a_client, respx_mock, bad_layers_connection, event_loop
+):
+    respx_mock.get(f"{baseUrl}layers").mock(
+        return_value=httpx.Response(404, json=bad_layers_connection)
+    )
+    response = await create_a_client.get_all_layers()
+    assert response.code == 404
+
+
+@pytest.mark.asyncio
+async def test_get_all_layers_success(
+    create_a_client, respx_mock, good_layers_connection, event_loop
+):
+    respx_mock.get(f"{baseUrl}layers").mock(
+        return_value=httpx.Response(200, json=good_layers_connection)
+    )
+    response = await create_a_client.get_all_layers()
+    assert response.layers.layer[0].name == "tiger:giant_polygon"
+
+
+@pytest.mark.asyncio
+async def test_get_all_layers_NetworkError(create_a_client, respx_mock):
+    respx.get(f"{baseUrl}layers").mock(side_effect=httpx.ConnectError)
+    with pytest.raises(httpx.ConnectError):
+        response = await create_a_client.get_all_layers()
+        assert response.response == "Error in connecting to Geoserver"
+
+# Test - get_layer
+@pytest.mark.asyncio
+async def test_get_layer_validation(
+    create_a_client, respx_mock, bad_layer_connection, event_loop
+):
+    respx_mock.get(f"{baseUrl}layers/tiger:poi").mock(
+        return_value=httpx.Response(404, json=bad_layer_connection)
+    )
+    response = await create_a_client.get_layer(workspace="tiger", layer="poi")
+    assert response.code == 404
+
+
+@pytest.mark.asyncio
+async def test_get_layer_success(
+    create_a_client, respx_mock, good_layer_connection, event_loop
+):
+    respx_mock.get(f"{baseUrl}layers/tiger:poi").mock(
+        return_value=httpx.Response(200, json=good_layer_connection)
+    )
+    response = await create_a_client.get_layer(workspace="tiger", layer="poi")
+    assert response.layer.name == "poi"
+
+
+@pytest.mark.asyncio
+async def test_get_layer_NetworkError(create_a_client, respx_mock):
+    respx.get(f"{baseUrl}layers/tiger:poi").mock(side_effect=httpx.ConnectError)
+    with pytest.raises(httpx.ConnectError):
+        response = await create_a_client.get_layer(workspace="tiger", layer="poi")
+        assert response.response == "Error in connecting to Geoserver"
