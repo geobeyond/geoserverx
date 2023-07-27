@@ -91,6 +91,8 @@ class SyncGeoServerX:
             resp = GSResponseEnum._201.value
         elif r == 409:
             resp = GSResponseEnum._409.value
+        elif r == 200:
+            resp = GSResponseEnum._200.value
         return GSResponse.parse_obj(resp)
 
     def exception_handler(func):
@@ -290,3 +292,11 @@ class SyncGeoServerX:
         else:
             results = self.response_recognise(responses.status_code)
             return results
+
+    # Delete specific layer
+    @exception_handler
+    def delete_layer(self, workspace: str, layer: str) -> GSResponse:
+        Client = self.http_client
+        responses = Client.delete(f"layers/{workspace}:{layer}")
+        results = self.response_recognise(responses.status_code)
+        return results

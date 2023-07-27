@@ -86,6 +86,8 @@ class AsyncGeoServerX:
             resp = GSResponseEnum._403.value
         elif r == 201:
             resp = GSResponseEnum._201.value
+        elif r == 200:
+            resp = GSResponseEnum._200.value
         elif r == 409:
             resp = GSResponseEnum._409.value
         return GSResponse.parse_obj(resp)
@@ -306,3 +308,10 @@ class AsyncGeoServerX:
         else:
             results = self.response_recognise(responses.status_code)
             return results
+
+    # Delete specific layer
+    async def delete_layer(self, workspace: str, layer: str) -> GSResponse:
+        Client = self.http_client
+        responses = await Client.delete(f"layers/{workspace}:{layer}")
+        results = self.response_recognise(responses.status_code)
+        return results
