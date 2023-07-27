@@ -1,4 +1,4 @@
-from typing import List, Optional
+from typing import List, Optional, Union
 from pydantic import BaseModel, Field
 
 
@@ -12,7 +12,7 @@ class LayerDict(BaseModel):
 
 
 class LayersModel(BaseModel):
-    layers: LayerDict = ""
+    layers: Union[LayerDict, str] = ""
 
 
 class DefaultStyleOfLayer(BaseModel):

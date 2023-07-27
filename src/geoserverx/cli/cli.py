@@ -348,6 +348,7 @@ def layers(
     url: str = typer.Option(
         "http://127.0.0.1:8080/geoserver/rest/", help="Geoserver REST URL"
     ),
+    workspace: str = typer.Option(None, help="Workspace name"),
     password: str = typer.Option("geoserver", help="Geoserver Password"),
     username: str = typer.Option("admin", help="Geoserver username"),
 ):
@@ -356,7 +357,7 @@ def layers(
     """
     if request.value == "sync":
         client = SyncGeoServerX(username, password, url)
-        result = client.get_all_layers().json()
+        result = client.get_all_layers(workspace).json()
         if "code" in result:
             typer.secho(result, fg=typer.colors.RED)
         else:

@@ -1,5 +1,5 @@
 from dataclasses import dataclass
-from typing import Union
+from typing import Union, Optional
 from geoserverx.utils.logger import std_out_logger
 import logging
 
@@ -266,9 +266,14 @@ class SyncGeoServerX:
 
     # Get all layers
     @exception_handler
-    def get_all_layers(self) -> Union[LayersModel, GSResponse]:
+    def get_all_layers(
+        self, workspace: Optional[str] = None
+    ) -> Union[LayersModel, GSResponse]:
         Client = self.http_client
-        responses = Client.get(f"layers")
+        if workspace:
+            responses = Client.get(f"/workspaces/{workspace}/layers")
+        else:
+            responses = Client.get(f"layers")
         if responses.status_code == 200:
             return LayersModel.parse_obj(responses.json())
         else:
