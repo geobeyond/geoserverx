@@ -339,6 +339,7 @@ def test_get_all_layers_NetworkError(respx_mock):
     result = runner.invoke(app, ["layers"])
     assert "Error in connecting to Geoserver" in result.stdout
 
+
 # Test - get_layer
 def test_get_layer_validation(bad_layer_connection, respx_mock):
     respx_mock.get(f"{baseUrl}layers/tiger:poi").mock(

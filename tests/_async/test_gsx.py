@@ -407,6 +407,7 @@ async def test_get_all_layers_NetworkError(create_a_client, respx_mock):
         response = await create_a_client.get_all_layers()
         assert response.response == "Error in connecting to Geoserver"
 
+
 # Test - get_layer
 @pytest.mark.asyncio
 async def test_get_layer_validation(

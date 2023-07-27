@@ -21,10 +21,7 @@ from geoserverx.models.data_store import (
     MainCreateDataStoreModel,
 )
 
-from geoserverx.models.layers import (
-    LayersModel,
-    LayerModel
-)
+from geoserverx.models.layers import LayersModel, LayerModel
 from geoserverx.models.coverages_store import CoveragesStoreModel, CoveragesStoresModel
 
 from geoserverx.models.gs_response import GSResponse, HttpxError
@@ -280,7 +277,7 @@ class SyncGeoServerX:
 
     # Get specific layer
     @exception_handler
-    def get_layer(self, workspace: str,layer:str) -> Union[LayerModel, GSResponse]:
+    def get_layer(self, workspace: str, layer: str) -> Union[LayerModel, GSResponse]:
         Client = self.http_client
         responses = Client.get(f"layers/{workspace}:{layer}")
         if responses.status_code == 200:

@@ -1,5 +1,5 @@
 from typing import List, Optional
-from pydantic import BaseModel,Field
+from pydantic import BaseModel, Field
 
 
 class LayerInBulk(BaseModel):
@@ -14,21 +14,27 @@ class LayerDict(BaseModel):
 class LayersModel(BaseModel):
     layers: LayerDict = ""
 
+
 class DefaultStyleOfLayer(BaseModel):
     name: str = ...
     href: str = ...
+
 
 class ExtraStyles(BaseModel):
     _class: str = Field(..., alias="@class")
     style: List[DefaultStyleOfLayer]
 
+
 class LayerResource(BaseModel):
     _class: str = Field(..., alias="@class")
     name: str = ...
     href: str = ...
+
+
 class LayerAttribution(BaseModel):
     logoWidth: float = ...
     logoHeight: float = ...
+
 
 class SingleLayer(BaseModel):
     name: str = ...
@@ -37,8 +43,9 @@ class SingleLayer(BaseModel):
     defaultStyle: DefaultStyleOfLayer = ...
     styles: Optional[ExtraStyles] = None
     resource: LayerResource = ...
-    attribution : LayerAttribution
+    attribution: LayerAttribution
     dateCreated: Optional[str] = None
+
 
 class LayerModel(BaseModel):
     layer: SingleLayer = ...

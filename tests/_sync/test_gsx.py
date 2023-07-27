@@ -334,7 +334,6 @@ def test_create_pg_store_ConnectError(client: SyncGeoServerX, respx_mock):
     assert response.response == "Error in connecting to Geoserver"
 
 
-
 # Test - get_all_layers
 def test_get_all_layers_validation(
     client: SyncGeoServerX, bad_layers_connection, respx_mock
@@ -363,9 +362,7 @@ def test_get_all_layers_NetworkError(client: SyncGeoServerX, respx_mock):
 
 
 # Test - get_layer
-def test_get_layer_validation(
-    client: SyncGeoServerX, bad_layer_connection, respx_mock
-):
+def test_get_layer_validation(client: SyncGeoServerX, bad_layer_connection, respx_mock):
     respx_mock.get(f"{baseUrl}layers/tiger:poi").mock(
         return_value=httpx.Response(404, json=bad_layer_connection)
     )
@@ -373,9 +370,7 @@ def test_get_layer_validation(
     assert response.response == "Result not found"
 
 
-def test_get_layer_success(
-    client: SyncGeoServerX, good_layer_connection, respx_mock
-):
+def test_get_layer_success(client: SyncGeoServerX, good_layer_connection, respx_mock):
     respx_mock.get(f"{baseUrl}layers/tiger:poi").mock(
         return_value=httpx.Response(200, json=good_layer_connection)
     )
