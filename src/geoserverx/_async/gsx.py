@@ -1,7 +1,5 @@
-import asyncio
-import json
 from dataclasses import dataclass
-from typing import List, Literal, Optional, Union
+from typing import List, Optional, Union
 
 from geoserverx.models.coverages_store import CoveragesStoreModel, CoveragesStoresModel
 from geoserverx.models.data_store import (
@@ -12,7 +10,17 @@ from geoserverx.models.data_store import (
     MainCreateDataStoreModel,
 )
 from geoserverx.models.gs_response import GSResponse
-from geoserverx.models.layer_group import LayerGroupsModel, SingleLayerGroupModel
+from geoserverx.models.layer_group import (
+    LayerGroupsModel,
+    BaseLayerGroup,
+    LayerGroupModel,
+    SingleLayerGroupModel,
+    LayerGroupPayload,
+    LayerListModel,
+    LayerGroupStylesModel,
+    LayerGroupKeywordsModel,
+    ModeEnum,
+)
 from geoserverx.models.style import AllStylesModel, StyleModel
 from geoserverx.models.workspace import (
     NewWorkspace,
@@ -265,8 +273,7 @@ class AsyncGeoServerX:
         responses = await service.addFile(self.http_client, workspace, store)
         return self.response_recognise(responses)
 
-        # Get all layer groups
-
+    # Get all layer groups
     async def get_all_layer_groups(self) -> Union[LayerGroupsModel, GSResponse]:
         Client = self.http_client
         responses = await Client.get(f"layergroups")
@@ -277,7 +284,6 @@ class AsyncGeoServerX:
             return results
 
     # Get single layer groups
-
     async def get_layer_group(
         self, name: str
     ) -> Union[SingleLayerGroupModel, GSResponse]:
@@ -293,9 +299,7 @@ class AsyncGeoServerX:
         self,
         layers: List[str],
         name: str,
-        mode: Literal[
-            "SINGLE", "OPAQUE_CONTAINER", "NAMED", "CONTAINER", "EO"
-        ] = "SINGLE",
+        mode:  ModeEnum = ModeEnum.single,
         abstract: Optional[str] = None,
         keywords: Optional[List[str]] = None,
         styles: Optional[List[str]] = None,
@@ -303,33 +307,32 @@ class AsyncGeoServerX:
         title: Optional[str] = None,
     ) -> GSResponse:
         Client = self.http_client
-        rawPayload = {
-            "layerGroup": {
-                "name": name,
-                "mode": mode,
-                "title": title if title else name,
-                "layers": {"layer": []},
-            }
-        }
+        payload = LayerGroupPayload(
+            layerGroup=LayerGroupModel(
+                name=name,
+                mode=mode.value,
+                title=title if title else name,
+                layers=LayerListModel(layer=[]),
+            )
+        )
         if abstract:
-            rawPayload["layerGroup"]["abstractTxt"] = abstract
+            payload.layerGroup.abstractTxt = abstract
         if workspace:
-            rawPayload["layerGroup"]["workspace"] = {"name": workspace}
+            payload.layerGroup.workspace = WorkspaceModel(name=workspace)
         if styles:
-            rawPayload["layerGroup"]["styles"] = {"style": []}
+            payload.layerGroup.styles = LayerGroupStylesModel(style=[])
             for style in styles:
-                rawPayload["layerGroup"]["styles"]["style"].append({"name": style})
+                payload.layerGroup.styles.style.append(style)
         if keywords:
-            rawPayload["layerGroup"]["keywords"] = {"keyword": []}
+            payload.layerGroup.keywords = LayerGroupKeywordsModel(keyword=[])
             for keyword in keywords:
-                rawPayload["layerGroup"]["keywords"]["keyword"].append(keyword)
+                payload.layerGroup.keywords.keyword.append(keyword)
 
         for layername in layers:
-            rawPayload["layerGroup"]["layers"]["layer"].append({"name": layername})
-        payload = json.dumps(rawPayload)
+            payload.layerGroup.layers.layer.append(BaseLayerGroup(name=layername))
         res = await Client.post(
             f"layergroups",
-            content=payload,
+            content=payload.json(),
             headers=self.head,
         )
         return self.response_recognise(res.status_code)

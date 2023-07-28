@@ -2,7 +2,10 @@
 name = "geoserverx"
 version = "0.0.1"
 description = ""
-authors = ["krishnaglodha <krishnaglodha@gmail.com>"]
+authors = [
+    "krishnaglodha <krishnaglodha@gmail.com>",
+    "Francesco Bartoli <francesco.bartoli@geobeyond.it>",
+]
 
 [tool.poetry.scripts]
 gsx = "geoserverx.cli.cli:app"
@@ -10,7 +13,7 @@ gsx = "geoserverx.cli.cli:app"
 [tool.poetry.dependencies]
 python = "^3.9"
 httpx = "^0.24.1"
-pydantic = "^1.9.1"
+pydantic = "<2.0"
 typer = "^0.4.1"
 rich = "^12.5.1"
 mkdocs-material = "^9.0.14"

@@ -1,7 +1,5 @@
-import json
-import logging
 from dataclasses import dataclass
-from typing import List, Literal, Optional, Union
+from typing import List, Optional, Union
 
 import httpx
 
@@ -14,7 +12,17 @@ from geoserverx.models.data_store import (
     MainCreateDataStoreModel,
 )
 from geoserverx.models.gs_response import GSResponse, HttpxError
-from geoserverx.models.layer_group import LayerGroupsModel, SingleLayerGroupModel
+from geoserverx.models.layer_group import (
+    LayerGroupsModel,
+    BaseLayerGroup,
+    LayerGroupModel,
+    SingleLayerGroupModel,
+    LayerGroupPayload,
+    LayerListModel,
+    LayerGroupStylesModel,
+    LayerGroupKeywordsModel,
+    ModeEnum,
+)
 from geoserverx.models.style import AllStylesModel, StyleModel
 from geoserverx.models.workspace import (
     NewWorkspace,
@@ -290,9 +298,7 @@ class SyncGeoServerX:
         self,
         layers: List[str],
         name: str,
-        mode: Literal[
-            "SINGLE", "OPAQUE_CONTAINER", "NAMED", "CONTAINER", "EO"
-        ] = "SINGLE",
+        mode: ModeEnum = ModeEnum.single,
         abstract: Optional[str] = None,
         keywords: Optional[List[str]] = None,
         styles: Optional[List[str]] = None,
@@ -300,33 +306,32 @@ class SyncGeoServerX:
         title: Optional[str] = None,
     ) -> GSResponse:
         Client = self.http_client
-        rawPayload = {
-            "layerGroup": {
-                "name": name,
-                "mode": mode,
-                "title": title if title else name,
-                "layers": {"layer": []},
-            }
-        }
+        payload = LayerGroupPayload(
+            layerGroup=LayerGroupModel(
+                name=name,
+                mode=mode.value,
+                title=title if title else name,
+                layers=LayerListModel(layer=[]),
+            )
+        )
         if abstract:
-            rawPayload["layerGroup"]["abstractTxt"] = abstract
+            payload.layerGroup.abstractTxt = abstract
         if workspace:
-            rawPayload["layerGroup"]["workspace"] = {"name": workspace}
+            payload.layerGroup.workspace = WorkspaceModel(name=workspace)
         if styles:
-            rawPayload["layerGroup"]["styles"] = {"style": []}
+            payload.layerGroup.styles = LayerGroupStylesModel(style=[])
             for style in styles:
-                rawPayload["layerGroup"]["styles"]["style"].append({"name": style})
+                payload.layerGroup.styles.style.append(style)
         if keywords:
-            rawPayload["layerGroup"]["keywords"] = {"keyword": []}
+            payload.layerGroup.keywords = LayerGroupKeywordsModel(keyword=[])
             for keyword in keywords:
-                rawPayload["layerGroup"]["keywords"]["keyword"].append(keyword)
+                payload.layerGroup.keywords.keyword.append(keyword)
 
         for layername in layers:
-            rawPayload["layerGroup"]["layers"]["layer"].append({"name": layername})
-        payload = json.dumps(rawPayload)
+            payload.layerGroup.layers.layer.append(BaseLayerGroup(name=layername))
         res = Client.post(
             f"layergroups",
-            content=payload,
+            content=payload.json(),
             headers=self.head,
         )
         return self.response_recognise(res.status_code)
