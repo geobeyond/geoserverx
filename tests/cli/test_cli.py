@@ -315,3 +315,26 @@ def test_pg_store_ConnectError(respx_mock):
         ],
     )
     assert "Error in connecting to Geoserver" in result.stdout
+
+
+# Test - get_all_layer_groups
+def test_get_all_layer_groups_validation(bad_layer_group_connection, respx_mock):
+    respx_mock.get(f"{baseUrl}layergroups").mock(
+        return_value=httpx.Response(404, json=bad_layer_group_connection)
+    )
+    result = runner.invoke(app, ["layer-groups"])
+    assert "404" in result.stdout
+
+
+def test_get_all_layer_groups_success(good_all_layer_group_connection, respx_mock):
+    respx_mock.get(f"{baseUrl}layergroups").mock(
+        return_value=httpx.Response(200, json=good_all_layer_group_connection)
+    )
+    result = runner.invoke(app, ["layer-groups"])
+    assert "a" in result.stdout
+
+
+def test_get_all_layer_groups_NetworkError(respx_mock):
+    respx_mock.get(f"{baseUrl}layergroups").mock(side_effect=httpx.ConnectError)
+    result = runner.invoke(app, ["layer-groups"])
+    assert "Error in connecting to Geoserver" in result.stdout

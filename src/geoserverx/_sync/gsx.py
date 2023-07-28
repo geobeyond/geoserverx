@@ -1,37 +1,46 @@
 from dataclasses import dataclass
-from typing import Union
-from geoserverx.utils.logger import std_out_logger
-import logging
+from typing import List, Optional, Union
 
-from geoserverx.utils.errors import GeoServerXError
-from geoserverx.utils.enums import GSResponseEnum, HTTPXErrorEnum
+import httpx
 
-from geoserverx.models.style import StyleModel, AllStylesModel
+from geoserverx.models.coverages_store import CoveragesStoreModel, CoveragesStoresModel
+from geoserverx.models.data_store import (
+    CreateDataStoreModel,
+    CreateStoreItem,
+    DataStoreModel,
+    DataStoresModel,
+    MainCreateDataStoreModel,
+)
+from geoserverx.models.gs_response import GSResponse, HttpxError
+from geoserverx.models.layer_group import (
+    LayerGroupsModel,
+    BaseLayerGroup,
+    LayerGroupModel,
+    SingleLayerGroupModel,
+    LayerGroupPayload,
+    LayerListModel,
+    LayerGroupStylesModel,
+    LayerGroupKeywordsModel,
+    ModeEnum,
+)
+from geoserverx.models.style import AllStylesModel, StyleModel
 from geoserverx.models.workspace import (
     NewWorkspace,
     NewWorkspaceInfo,
     WorkspaceModel,
     WorkspacesModel,
 )
-from geoserverx.models.data_store import (
-    DataStoreModel,
-    DataStoresModel,
-    CreateDataStoreModel,
-    CreateStoreItem,
-    MainCreateDataStoreModel,
-)
-from geoserverx.models.coverages_store import CoveragesStoreModel, CoveragesStoresModel
-
-from geoserverx.models.gs_response import GSResponse, HttpxError
+from geoserverx.utils.auth import GeoServerXAuth
+from geoserverx.utils.enums import GSResponseEnum, HTTPXErrorEnum
+from geoserverx.utils.errors import GeoServerXError
+from geoserverx.utils.http_client import SyncClient
+from geoserverx.utils.logger import std_out_logger
 from geoserverx.utils.services.datastore import (
     AddDataStoreProtocol,
     CreateFileStore,
-    ShapefileStore,
     GPKGfileStore,
+    ShapefileStore,
 )
-from geoserverx.utils.http_client import SyncClient
-from geoserverx.utils.auth import GeoServerXAuth
-import httpx, json
 
 
 @dataclass
@@ -261,3 +270,68 @@ class SyncGeoServerX:
         )
         results = self.response_recognise(responses.status_code)
         return results
+
+    # Get all layer groups
+    @exception_handler
+    def get_all_layer_groups(self) -> Union[LayerGroupsModel, GSResponse]:
+        Client = self.http_client
+        responses = Client.get(f"layergroups")
+        if responses.status_code == 200:
+            return LayerGroupsModel.parse_obj(responses.json())
+        else:
+            results = self.response_recognise(responses.status_code)
+            return results
+
+    # Get single layer groups
+    @exception_handler
+    def get_layer_group(self, name: str) -> Union[SingleLayerGroupModel, GSResponse]:
+        Client = self.http_client
+        responses = Client.get(f"layergroups/{name}")
+        if responses.status_code == 200:
+            return SingleLayerGroupModel.parse_obj(responses.json())
+        else:
+            results = self.response_recognise(responses.status_code)
+            return results
+
+    @exception_handler
+    def create_layer_group(
+        self,
+        layers: List[str],
+        name: str,
+        mode: ModeEnum = ModeEnum.single,
+        abstract: Optional[str] = None,
+        keywords: Optional[List[str]] = None,
+        styles: Optional[List[str]] = None,
+        workspace: Optional[str] = None,
+        title: Optional[str] = None,
+    ) -> GSResponse:
+        Client = self.http_client
+        payload = LayerGroupPayload(
+            layerGroup=LayerGroupModel(
+                name=name,
+                mode=mode.value,
+                title=title if title else name,
+                layers=LayerListModel(layer=[]),
+            )
+        )
+        if abstract:
+            payload.layerGroup.abstractTxt = abstract
+        if workspace:
+            payload.layerGroup.workspace = WorkspaceModel(name=workspace)
+        if styles:
+            payload.layerGroup.styles = LayerGroupStylesModel(style=[])
+            for style in styles:
+                payload.layerGroup.styles.style.append(style)
+        if keywords:
+            payload.layerGroup.keywords = LayerGroupKeywordsModel(keyword=[])
+            for keyword in keywords:
+                payload.layerGroup.keywords.keyword.append(keyword)
+
+        for layername in layers:
+            payload.layerGroup.layers.layer.append(BaseLayerGroup(name=layername))
+        res = Client.post(
+            f"layergroups",
+            content=payload.json(),
+            headers=self.head,
+        )
+        return self.response_recognise(res.status_code)

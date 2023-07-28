@@ -1,35 +1,37 @@
 import pytest
 from pydantic import ValidationError
-from geoserverx.models.data_store import (
-    DataStoreInBulk,
-    DataStoreDict,
-    DatastoreConnection,
-    EntryItem,
-    DatastoreItem,
-    DataStoreModel,
-    DataStoresModel,
-)
+
 from geoserverx.models.coverages_store import (
     CoveragesStoreInBulk,
     CoveragesStoreModel,
     CoveragesStoresDict,
     CoveragesStoresModel,
 )
+from geoserverx.models.data_store import (
+    DatastoreConnection,
+    DataStoreDict,
+    DataStoreInBulk,
+    DatastoreItem,
+    DataStoreModel,
+    DataStoresModel,
+    EntryItem,
+)
+from geoserverx.models.layer_group import LayerGroupsModel, SingleLayerGroupModel
 from geoserverx.models.style import (
+    AllStylesModel,
     SingleStyleDict,
     StyleModel,
-    allStyleList,
     allStyleDict,
-    AllStylesModel,
+    allStyleList,
 )
 from geoserverx.models.workspace import (
-    WorkspaceInBulk,
-    workspaceDict,
-    WorkspaceModel,
-    WorkspacesModel,
     NewWorkspace,
     NewWorkspaceInfo,
     SingleWorkspace,
+    WorkspaceInBulk,
+    WorkspaceModel,
+    WorkspacesModel,
+    workspaceDict,
 )
 
 
@@ -264,3 +266,25 @@ def test_NewWorkspace_connection(good_new_workspace_connection):
 def test_NewWorkspace_failure(bad_new_workspace_connection):
     with pytest.raises(ValidationError):
         ds_connection = NewWorkspace(**bad_new_workspace_connection)
+
+
+# all layer groups
+def test_LayerGroupsModel_connection(good_all_layer_group_connection):
+    ds_connection = LayerGroupsModel(**good_all_layer_group_connection)
+    assert ds_connection.layerGroups.layerGroup[0].name == "a"
+
+
+def test_LayerGroupsModel_failure(bad_all_layer_group_connection):
+    with pytest.raises(ValidationError):
+        ds_connection = LayerGroupsModel(**bad_all_layer_group_connection)
+
+
+# test - single layer group
+def test_SingleLayerGroupModel_connection(good_layer_group_connection):
+    ds_connection = SingleLayerGroupModel(**good_layer_group_connection)
+    assert ds_connection.layerGroup.name == "a"
+
+
+def test_SingleLayerGroupModel_failure(bad_layer_group_connection):
+    with pytest.raises(ValidationError):
+        ds_connection = SingleLayerGroupModel(**bad_layer_group_connection)
