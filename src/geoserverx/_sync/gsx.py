@@ -1,5 +1,5 @@
 from dataclasses import dataclass
-from typing import Union
+from typing import Union, Optional
 from geoserverx.utils.logger import std_out_logger
 import logging
 
@@ -20,6 +20,8 @@ from geoserverx.models.data_store import (
     CreateStoreItem,
     MainCreateDataStoreModel,
 )
+
+from geoserverx.models.layers import LayersModel, LayerModel
 from geoserverx.models.coverages_store import CoveragesStoreModel, CoveragesStoresModel
 
 from geoserverx.models.gs_response import GSResponse, HttpxError
@@ -89,6 +91,8 @@ class SyncGeoServerX:
             resp = GSResponseEnum._201.value
         elif r == 409:
             resp = GSResponseEnum._409.value
+        elif r == 200:
+            resp = GSResponseEnum._200.value
         return GSResponse.parse_obj(resp)
 
     def exception_handler(func):
@@ -259,5 +263,40 @@ class SyncGeoServerX:
             data=payload.json(),
             headers=self.head,
         )
+        results = self.response_recognise(responses.status_code)
+        return results
+
+    # Get all layers
+    @exception_handler
+    def get_all_layers(
+        self, workspace: Optional[str] = None
+    ) -> Union[LayersModel, GSResponse]:
+        Client = self.http_client
+        if workspace:
+            responses = Client.get(f"/workspaces/{workspace}/layers")
+        else:
+            responses = Client.get(f"layers")
+        if responses.status_code == 200:
+            return LayersModel.parse_obj(responses.json())
+        else:
+            results = self.response_recognise(responses.status_code)
+            return results
+
+    # Get specific layer
+    @exception_handler
+    def get_layer(self, workspace: str, layer: str) -> Union[LayerModel, GSResponse]:
+        Client = self.http_client
+        responses = Client.get(f"layers/{workspace}:{layer}")
+        if responses.status_code == 200:
+            return LayerModel.parse_obj(responses.json())
+        else:
+            results = self.response_recognise(responses.status_code)
+            return results
+
+    # Delete specific layer
+    @exception_handler
+    def delete_layer(self, workspace: str, layer: str) -> GSResponse:
+        Client = self.http_client
+        responses = Client.delete(f"layers/{workspace}:{layer}")
         results = self.response_recognise(responses.status_code)
         return results
