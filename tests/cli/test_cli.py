@@ -315,3 +315,49 @@ def test_pg_store_ConnectError(respx_mock):
         ],
     )
     assert "Error in connecting to Geoserver" in result.stdout
+
+
+# Test - get_all_layers
+def test_get_all_layers_validation(bad_layers_connection, respx_mock):
+    respx_mock.get(f"{baseUrl}layers").mock(
+        return_value=httpx.Response(404, json=bad_layers_connection)
+    )
+    result = runner.invoke(app, ["layers"])
+    assert "404" in result.stdout
+
+
+def test_get_all_layers_success(good_layers_connection, respx_mock):
+    respx_mock.get(f"{baseUrl}layers").mock(
+        return_value=httpx.Response(200, json=good_layers_connection)
+    )
+    result = runner.invoke(app, ["layers"])
+    assert "tiger:giant_polygon" in result.stdout
+
+
+def test_get_all_layers_NetworkError(respx_mock):
+    respx_mock.get(f"{baseUrl}layers").mock(side_effect=httpx.ConnectError)
+    result = runner.invoke(app, ["layers"])
+    assert "Error in connecting to Geoserver" in result.stdout
+
+
+# Test - get_layer
+def test_get_layer_validation(bad_layer_connection, respx_mock):
+    respx_mock.get(f"{baseUrl}layers/tiger:poi").mock(
+        return_value=httpx.Response(404, json=bad_layer_connection)
+    )
+    result = runner.invoke(app, ["layer", "--workspace", "tiger", "--layer", "poi"])
+    assert "404" in result.stdout
+
+
+def test_get_layer_success(good_layer_connection, respx_mock):
+    respx_mock.get(f"{baseUrl}layers/tiger:poi").mock(
+        return_value=httpx.Response(200, json=good_layer_connection)
+    )
+    result = runner.invoke(app, ["layer", "--workspace", "tiger", "--layer", "poi"])
+    assert "poi" in result.stdout
+
+
+def test_get_layer_NetworkError(respx_mock):
+    respx_mock.get(f"{baseUrl}layers/tiger:poi").mock(side_effect=httpx.ConnectError)
+    result = runner.invoke(app, ["layer", "--workspace", "tiger", "--layer", "poi"])
+    assert "Error in connecting to Geoserver" in result.stdout
