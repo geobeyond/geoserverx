@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "geoserverx"
-version = "0.0.1"
+version = "0.0.2"
 description = ""
 authors = ["krishnaglodha <krishnaglodha@gmail.com>"]
 
