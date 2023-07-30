@@ -179,6 +179,18 @@ class SyncGeoServerX:
             results = self.response_recognise(responses.status_code)
             return results
 
+    # create vector store in specific workspaces
+    @exception_handler
+    def create_vector_store(self, workspace: str, store: DataStoresModel) -> GSResponse:
+        Client = self.http_client
+        responses = Client.post(
+            f"workspaces/{workspace}/datastores",
+            content=store.json(),
+            headers=self.head,
+        )
+        results = self.response_recognise(responses.status_code)
+        return results
+    
     # Get raster  store information in specific workspaces
     @exception_handler
     def get_raster_store(self, workspace: str, store: str) -> CoveragesStoreModel:
@@ -190,6 +202,18 @@ class SyncGeoServerX:
         else:
             results = self.response_recognise(responses.status_code)
             return results
+
+    # Get raster  store information in specific workspaces
+    @exception_handler
+    def create_raster_store(self, workspace: str, store: CoveragesStoreModel) ->  GSResponse:
+        Client = self.http_client
+        responses = Client.post(
+            f"workspaces/{workspace}/coveragestores",
+            content=store.json(),
+            headers=self.head,
+        )
+        results = self.response_recognise(responses.status_code)
+        return results
 
     # Get all styles in GS
     @exception_handler
@@ -284,7 +308,21 @@ class SyncGeoServerX:
 
     # Get specific layer
     @exception_handler
-    def get_layer(self, workspace: str, layer: str) -> Union[LayerModel, GSResponse]:
+    def get_layer(
+        self, workspace: str, layer: str, detail: bool = True
+    ) -> Union[LayerModel, GSResponse]:
+        Client = self.http_client
+        responses = Client.get(f"layers/{workspace}:{layer}")
+        if responses.status_code == 200:
+            return LayerModel.parse_obj(responses.json())
+        else:
+            results = self.response_recognise(responses.status_code)
+            return results
+
+    @exception_handler
+    def get_vector_layer(
+        self, workspace: str, layer: str
+    ) -> Union[LayerModel, GSResponse]:
         Client = self.http_client
         responses = Client.get(f"layers/{workspace}:{layer}")
         if responses.status_code == 200:
