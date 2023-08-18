@@ -191,7 +191,7 @@ class SyncGeoServerX:
         )
         results = self.response_recognise(responses.status_code)
         return results
-    
+
     # Get raster  store information in specific workspaces
     @exception_handler
     def get_raster_store(self, workspace: str, store: str) -> CoveragesStoreModel:
@@ -206,7 +206,9 @@ class SyncGeoServerX:
 
     # Get raster  store information in specific workspaces
     @exception_handler
-    def create_raster_store(self, workspace: str, store: CoveragesStoreModel) ->  GSResponse:
+    def create_raster_store(
+        self, workspace: str, store: CoveragesStoreModel
+    ) -> GSResponse:
         Client = self.http_client
         responses = Client.post(
             f"workspaces/{workspace}/coveragestores",
@@ -215,15 +217,21 @@ class SyncGeoServerX:
         )
         results = self.response_recognise(responses.status_code)
         return results
-    
+
     # delete store in specific workspaces
     @exception_handler
-    def delete_store(self, workspace: str, store: str, type:str) ->  GSResponse: #TODO : add enum for type 
+    def delete_store(
+        self, workspace: str, store: str, type: str
+    ) -> GSResponse:  # TODO : add enum for type
         Client = self.http_client
-        if type == 'raster':
-            responses = Client.delete(f"/workspaces/{workspace}/coveragestores/{store}",headers=self.head)
-        elif type == 'vector':
-            responses = Client.delete(f"/workspaces/{workspace}/datastores/{store}",headers=self.head)
+        if type == "raster":
+            responses = Client.delete(
+                f"/workspaces/{workspace}/coveragestores/{store}", headers=self.head
+            )
+        elif type == "vector":
+            responses = Client.delete(
+                f"/workspaces/{workspace}/datastores/{store}", headers=self.head
+            )
         results = self.response_recognise(responses.status_code)
         return results
 
@@ -317,12 +325,15 @@ class SyncGeoServerX:
         else:
             results = self.response_recognise(responses.status_code)
             return results
+
     @exception_handler
     def get_vector_layer(
-        self, workspace: str,store:str, layer: str
+        self, workspace: str, store: str, layer: str
     ) -> Union[FeatureTypesModel, GSResponse]:
         Client = self.http_client
-        responses = Client.get(f"/workspaces/{workspace}/datastores/{store}/featuretypes/{layer}.json")
+        responses = Client.get(
+            f"/workspaces/{workspace}/datastores/{store}/featuretypes/{layer}.json"
+        )
         if responses.status_code == 200:
             try:
                 return FeatureTypesModel.parse_obj(responses.json())
@@ -335,43 +346,54 @@ class SyncGeoServerX:
 
     @exception_handler
     def get_raster_layer(
-        self, workspace: str,store:str, layer: str
+        self, workspace: str, store: str, layer: str
     ) -> Union[CoverageModel, GSResponse]:
         Client = self.http_client
-        responses = Client.get(f"/workspaces/{workspace}/coveragestores/{store}/coverages/{layer}.json")
+        responses = Client.get(
+            f"/workspaces/{workspace}/coveragestores/{store}/coverages/{layer}.json"
+        )
         if responses.status_code == 200:
             return CoverageModel.parse_obj(responses.json())
         else:
             results = self.response_recognise(responses.status_code)
             return results
+
     # Get specific layer
     @exception_handler
     def get_layer(
         self, workspace: str, layer: str, detail: bool = False
-    ) -> Union[LayerModel,FeatureTypesModel, GSResponse]:
+    ) -> Union[LayerModel, FeatureTypesModel, GSResponse]:
         Client = self.http_client
         responses = Client.get(f"layers/{workspace}:{layer}")
         if responses.status_code == 200:
-            if detail : 
+            if detail:
                 res = responses.json()
-                if res['layer']['type'] == 'VECTOR':
-                    result = self.get_vector_layer(workspace,res['layer']['resource']['href'].split('/')[-3],layer)
+                if res["layer"]["type"] == "VECTOR":
+                    result = self.get_vector_layer(
+                        workspace,
+                        res["layer"]["resource"]["href"].split("/")[-3],
+                        layer,
+                    )
                     return FeatureTypesModel.parse_obj(result.dict())
-                elif res['layer']['type'] == 'RASTER':
-                    result = self.get_raster_layer(workspace,res['layer']['resource']['name'].split(':')[1],layer)
+                elif res["layer"]["type"] == "RASTER":
+                    result = self.get_raster_layer(
+                        workspace, res["layer"]["resource"]["name"].split(":")[1], layer
+                    )
                     return CoverageModel.parse_obj(result.dict())
-            else : 
+            else:
                 return LayerModel.parse_obj(responses.json())
         else:
             results = self.response_recognise(responses.status_code)
             return results
 
     @exception_handler
-    def create_vector_layer(self, workspace: str, layer: FeatureTypesModel) -> GSResponse:
+    def create_vector_layer(
+        self, workspace: str, layer: FeatureTypesModel
+    ) -> GSResponse:
         Client = self.http_client
         responses = Client.post(
             f"/workspaces/{workspace}/featuretypes",
-            data=layer.model_dump(by_alias=True,exclude_none=True),
+            data=layer.model_dump(by_alias=True, exclude_none=True),
             headers=self.head,
         )
         results = self.response_recognise(responses.status_code)
@@ -395,4 +417,3 @@ class SyncGeoServerX:
         responses = Client.delete(f"layers/{workspace}:{layer}")
         results = self.response_recognise(responses.status_code)
         return results
-
