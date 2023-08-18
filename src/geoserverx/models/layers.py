@@ -38,13 +38,15 @@ class LayerAttribution(BaseModel):
 
 class SingleLayer(BaseModel):
     name: str = ...
-    path: str = ...
+    path: Optional[str]
     type: str = ...
     defaultStyle: DefaultStyleOfLayer = ...
     styles: Optional[ExtraStyles] = None
     resource: LayerResource = ...
     attribution: LayerAttribution
     dateCreated: Optional[str] = None
+    opaque: Optional[bool]
+    queryable: Optional[bool]
 
 
 class LayerModel(BaseModel):
