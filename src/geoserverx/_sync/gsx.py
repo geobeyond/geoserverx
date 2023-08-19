@@ -349,7 +349,7 @@ class SyncGeoServerX:
     # Get specific layer
     @exception_handler
     def get_layer(
-        self, workspace: str, layer: str, detail: bool = True
+        self, workspace: str, layer: str, detail: bool = False
     ) -> Union[LayerModel,FeatureTypesModel, GSResponse]:
         Client = self.http_client
         responses = Client.get(f"layers/{workspace}:{layer}")

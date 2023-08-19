@@ -373,6 +373,7 @@ def layer(
     request: requestEnum = requestEnum._sync,
     workspace: str = typer.Option(..., help="Workspace name"),
     layer: str = typer.Option(..., help="Layer name"),
+    detail:bool = typer.Option(False, help="Detail Info"),
     url: str = typer.Option(
         "http://127.0.0.1:8080/geoserver/rest/", help="Geoserver REST URL"
     ),
@@ -384,7 +385,7 @@ def layer(
     """
     if request.value == "sync":
         client = SyncGeoServerX(username, password, url)
-        result = client.get_layer(workspace, layer).json()
+        result = client.get_layer(workspace, layer, detail).json()
         if "code" in result:
             typer.secho(result, fg=typer.colors.RED)
         else:
