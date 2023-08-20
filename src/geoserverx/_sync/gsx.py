@@ -373,7 +373,7 @@ class SyncGeoServerX:
         Client = self.http_client
         responses = Client.post(
             f"/workspaces/{workspace}/featuretypes",
-            data=layer.json(),
+            data=json.dumps(layer.dict(by_alias=True,exclude_none=True)),
             headers=self.head,
         )
         results = self.response_recognise(responses.status_code)
