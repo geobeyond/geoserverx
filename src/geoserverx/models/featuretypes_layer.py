@@ -47,6 +47,9 @@ class CRSentry(BaseModel):
     dollar: Optional[str] = Field(..., alias="$")
 
 
+class CRSetnryDict(BaseModel):
+    entry: CRSentry
+
 class NativeBoundingBox(BaseModel):
     minx: Optional[float] = Field(None, description='The min x coordinate')
     maxx: Optional[float] = Field(None, description='The max x coordinate')
