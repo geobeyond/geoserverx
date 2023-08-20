@@ -1,6 +1,6 @@
 
 from enum import Enum
-from typing import Any, List, Optional
+from typing import Any, List, Optional, Dict, Union
 
 from pydantic import BaseModel, Field
 
@@ -40,14 +40,22 @@ class DataLinks(BaseModel):
     metadataLink: Optional[List[MetadataLinkItem1]] = Field(
         None, description='A collection of data links for the resource.'
     )
+class CRSetnry(BaseModel):
+    class Config:
+        allow_population_by_field_name = True
+    key: Optional[str] = Field(alias="@class")
+    dollar: Optional[str] = Field(..., alias="$")
 
+
+class CRSetnryDict(BaseModel):
+    entry: CRSetnry
 
 class NativeBoundingBox(BaseModel):
     minx: Optional[float] = Field(None, description='The min x coordinate')
     maxx: Optional[float] = Field(None, description='The max x coordinate')
     miny: Optional[float] = Field(None, description='The min y coordinate')
     maxy: Optional[float] = Field(None, description='The max y coordinate')
-    crs: Optional[str] = Field(
+    crs: Optional[Union[str, CRSetnry]] = Field(
         None, description='The coordinate reference system object of the bounding box.'
     )
 
@@ -65,7 +73,7 @@ class LatLonBoundingBox(BaseModel):
 class Store(BaseModel):
     class Config:
         allow_population_by_field_name = True
-    _class: Optional[str] = Field(alias="@class")
+    key: Optional[str] = Field(alias="@class")
     name: Optional[str] = Field(None, description='The name of the store')
     href: Optional[str] = Field(None, description='URL to the data store')
 
@@ -107,15 +115,10 @@ class _Key(Enum):
     dirName = 'dirName'
 
 
-class MetadataEntry(BaseModel):
-    class Config:
-        allow_population_by_field_name = True
-    key: Optional[str] = Field(alias="@key")
-    dollar: Optional[str] = Field(..., alias="$")
-    
+
 
 class MetadataEntryList(BaseModel):
-    entry:List[MetadataEntry]
+    entry: Dict
 
 
 class FeatureTypeInfo(BaseModel):
@@ -161,7 +164,10 @@ class FeatureTypeInfo(BaseModel):
         None, description='A list of key/value metadata pairs.'
     )
     store: Optional[Store] = Field(
-        None, description='The store the resource is a part of.'
+        None, description='The store the resource is a part of.' 
+    )
+    nativeCRS:Optional[Union[str, CRSetnry]] = Field(
+        None, description='String for Native CRS'
     )
     cqlFilter: Optional[str] = Field(
         None, description='The ECQL string used as default feature type filter'
@@ -170,7 +176,7 @@ class FeatureTypeInfo(BaseModel):
         None,
         description='A cap on the number of features that a query against this type can return.',
     )
-    numDecimals: Optional[float] = Field(
+    numDecimals: Optional[int] = Field(
         None,
         description='The number of decimal places to use when encoding floating point numbers from data of this feature type.',
     )
