@@ -410,11 +410,11 @@ def good_all_styles_model_connection() -> dict:
             "style": [
                 {
                     "name": "CUSD 2020 Census Blocks",
-                    "href": "http://localhost:8080/geoserver/rest/styles/CUSD+2020+Census+Blocks.json",
+                    "href": "http://localhost:8080/geoserver/rest/styles/CUSD.json",
                 },
                 {
                     "name": "Default Styler",
-                    "href": "http://localhost:8080/geoserver/rest/styles/Default+Styler.json",
+                    "href": "http://localhost:8080/geoserver/rest/styles/Default.json",
                 },
             ]
         }
