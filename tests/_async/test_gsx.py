@@ -30,7 +30,7 @@ async def test_error():
 
 @pytest.mark.asyncio
 async def test_get_all_workspaces_validation(
-    create_a_client, respx_mock, bad_workspaces_connection, event_loop
+    create_a_client, respx_mock, bad_workspaces_connection
 ):
     respx_mock.get(f"{baseUrl}workspaces").mock(
         return_value=httpx.Response(404, json=bad_workspaces_connection)
@@ -41,7 +41,7 @@ async def test_get_all_workspaces_validation(
 
 @pytest.mark.asyncio
 async def test_get_all_workspaces_success(
-    create_a_client, respx_mock, good_workspaces_connection, event_loop
+    create_a_client, respx_mock, good_workspaces_connection
 ):
     respx_mock.get(f"{baseUrl}workspaces").mock(
         return_value=httpx.Response(200, json=good_workspaces_connection)
@@ -378,9 +378,9 @@ async def test_create_pg_store_ConnectError(create_a_client, respx_mock):
 
 
 # Test - get_all_layers
-@pytest.mark.asyncio
+@pytest_mark.anyio
 async def test_get_all_layers_validation(
-    create_a_client, respx_mock, bad_layers_connection, event_loop
+    create_a_client, respx_mock, bad_layers_connection
 ):
     respx_mock.get(f"{baseUrl}layers").mock(
         return_value=httpx.Response(404, json=bad_layers_connection)
@@ -389,9 +389,9 @@ async def test_get_all_layers_validation(
     assert response.code == 404
 
 
-@pytest.mark.asyncio
+@pytest_mark.anyio
 async def test_get_all_layers_success(
-    create_a_client, respx_mock, good_layers_connection, event_loop
+    create_a_client, respx_mock, good_layers_connection
 ):
     respx_mock.get(f"{baseUrl}layers").mock(
         return_value=httpx.Response(200, json=good_layers_connection)
@@ -400,7 +400,7 @@ async def test_get_all_layers_success(
     assert response.layers.layer[0].name == "tiger:giant_polygon"
 
 
-@pytest.mark.asyncio
+@pytest_mark.anyio
 async def test_get_all_layers_NetworkError(create_a_client, respx_mock):
     respx.get(f"{baseUrl}layers").mock(side_effect=httpx.ConnectError)
     with pytest.raises(httpx.ConnectError):
@@ -409,9 +409,9 @@ async def test_get_all_layers_NetworkError(create_a_client, respx_mock):
 
 
 # Test - get_layer
-@pytest.mark.asyncio
+@pytest_mark.anyio
 async def test_get_layer_validation(
-    create_a_client, respx_mock, bad_layer_connection, event_loop
+    create_a_client, bad_layer_connection, respx_mock
 ):
     respx_mock.get(f"{baseUrl}layers/tiger:poi").mock(
         return_value=httpx.Response(404, json=bad_layer_connection)
@@ -420,9 +420,9 @@ async def test_get_layer_validation(
     assert response.code == 404
 
 
-@pytest.mark.asyncio
+@pytest_mark.anyio
 async def test_get_layer_success(
-    create_a_client, respx_mock, good_layer_connection, event_loop
+    create_a_client, good_layer_connection, respx_mock
 ):
     respx_mock.get(f"{baseUrl}layers/tiger:poi").mock(
         return_value=httpx.Response(200, json=good_layer_connection)
@@ -431,7 +431,7 @@ async def test_get_layer_success(
     assert response.layer.name == "poi"
 
 
-@pytest.mark.asyncio
+@pytest_mark.anyio
 async def test_get_layer_NetworkError(create_a_client, respx_mock):
     respx.get(f"{baseUrl}layers/tiger:poi").mock(side_effect=httpx.ConnectError)
     with pytest.raises(httpx.ConnectError):
