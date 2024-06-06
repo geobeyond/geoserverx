@@ -45,7 +45,7 @@ jobs:
             print(f"VIRTUALENV_PIP={pip.__version__}", file=io)
     - name: Install Poetry
       run: |
-        pipx install   poetry
+        pip install poetry
         poetry --version
     - name: Install dependencies
       run: poetry install

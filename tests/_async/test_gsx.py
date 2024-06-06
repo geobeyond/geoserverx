@@ -410,9 +410,7 @@ async def test_get_all_layers_NetworkError(create_a_client, respx_mock):
 
 # Test - get_layer
 @pytest_mark.anyio
-async def test_get_layer_validation(
-    create_a_client, bad_layer_connection, respx_mock
-):
+async def test_get_layer_validation(create_a_client, bad_layer_connection, respx_mock):
     respx_mock.get(f"{baseUrl}layers/tiger:poi").mock(
         return_value=httpx.Response(404, json=bad_layer_connection)
     )
@@ -421,9 +419,7 @@ async def test_get_layer_validation(
 
 
 @pytest_mark.anyio
-async def test_get_layer_success(
-    create_a_client, good_layer_connection, respx_mock
-):
+async def test_get_layer_success(create_a_client, good_layer_connection, respx_mock):
     respx_mock.get(f"{baseUrl}layers/tiger:poi").mock(
         return_value=httpx.Response(200, json=good_layer_connection)
     )
