@@ -25,10 +25,10 @@ jobs:
 
     steps:
     - name: Check out the repository
-      uses: actions/checkout@v3.3.0
+      uses: actions/checkout@v4
 
     - name: Set up Python ${{ matrix.python }}
-      uses: actions/setup-python@v4.5.0
+      uses: actions/setup-python@v5
       with:
         python-version: ${{ matrix.python }}
     
@@ -44,9 +44,9 @@ jobs:
         with open(os.environ["GITHUB_ENV"], mode="a") as io:
             print(f"VIRTUALENV_PIP={pip.__version__}", file=io)
     - name: Install Poetry
-      run: |
-        pipx install --pip-args=--constraint=.github/workflows/constraints.txt poetry
-        poetry --version
+      uses: snok/install-poetry@v1
+      with:
+        version: 1.5.1
     - name: Install dependencies
       run: poetry install
     - name: Run tests
