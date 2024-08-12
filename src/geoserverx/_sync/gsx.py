@@ -1,5 +1,7 @@
 from dataclasses import dataclass
-from typing import List, Optional, Union
+from typing import Union, Optional
+from geoserverx.utils.logger import std_out_logger
+import logging
 
 import httpx
 
@@ -30,11 +32,18 @@ from geoserverx.models.workspace import (
     WorkspaceModel,
     WorkspacesModel,
 )
-from geoserverx.utils.auth import GeoServerXAuth
-from geoserverx.utils.enums import GSResponseEnum, HTTPXErrorEnum
-from geoserverx.utils.errors import GeoServerXError
-from geoserverx.utils.http_client import SyncClient
-from geoserverx.utils.logger import std_out_logger
+from geoserverx.models.data_store import (
+    DataStoreModel,
+    DataStoresModel,
+    CreateDataStoreModel,
+    CreateStoreItem,
+    MainCreateDataStoreModel,
+)
+
+from geoserverx.models.layers import LayersModel, LayerModel
+from geoserverx.models.coverages_store import CoveragesStoreModel, CoveragesStoresModel
+
+from geoserverx.models.gs_response import GSResponse, HttpxError
 from geoserverx.utils.services.datastore import (
     AddDataStoreProtocol,
     CreateFileStore,
@@ -98,7 +107,9 @@ class SyncGeoServerX:
             resp = GSResponseEnum._201.value
         elif r == 409:
             resp = GSResponseEnum._409.value
-        return GSResponse.parse_obj(resp)
+        elif r == 200:
+            resp = GSResponseEnum._200.value
+        return GSResponse.model_validate(resp)
 
     def exception_handler(func):
         def inner_function(*args, **kwargs):
@@ -117,7 +128,7 @@ class SyncGeoServerX:
         Client = self.http_client
         responses = Client.get(f"workspaces")
         if responses.status_code == 200:
-            return WorkspacesModel.parse_obj(responses.json())
+            return WorkspacesModel.model_validate(responses.json())
         else:
             results = self.response_recognise(responses.status_code)
             return results
@@ -128,7 +139,7 @@ class SyncGeoServerX:
         Client = self.http_client
         responses = Client.get(f"workspaces/{workspace}")
         if responses.status_code == 200:
-            return WorkspaceModel.parse_obj(responses.json())
+            return WorkspaceModel.model_validate(responses.json())
         else:
             results = self.response_recognise(responses.status_code)
             return results
@@ -144,7 +155,7 @@ class SyncGeoServerX:
         Client = self.http_client
         responses = Client.post(
             f"workspaces?default={default}",
-            content=payload.json(),
+            content=payload.model_dump_json(),
             headers=self.head,
         )
         results = self.response_recognise(responses.status_code)
@@ -156,7 +167,7 @@ class SyncGeoServerX:
         Client = self.http_client
         responses = Client.get(f"workspaces/{workspace}/datastores")
         if responses.status_code == 200:
-            return DataStoresModel.parse_obj(responses.json())
+            return DataStoresModel.model_validate(responses.json())
         else:
             results = self.response_recognise(responses.status_code)
             return results
@@ -167,7 +178,7 @@ class SyncGeoServerX:
         Client = self.http_client
         responses = Client.get(f"workspaces/{workspace}/coveragestores")
         if responses.status_code == 200:
-            return CoveragesStoresModel.parse_obj(responses.json())
+            return CoveragesStoresModel.model_validate(responses.json())
         else:
             results = self.response_recognise(responses.status_code)
             return results
@@ -179,7 +190,7 @@ class SyncGeoServerX:
         Client = self.http_client
         responses = Client.get(url)
         if responses.status_code == 200:
-            return DataStoreModel.parse_obj(responses.json())
+            return DataStoreModel.model_validate(responses.json())
         else:
             results = self.response_recognise(responses.status_code)
             return results
@@ -191,7 +202,7 @@ class SyncGeoServerX:
         Client = self.http_client
         responses = Client.get(url)
         if responses.status_code == 200:
-            return CoveragesStoreModel.parse_obj(responses.json())
+            return CoveragesStoreModel.model_validate(responses.json())
         else:
             results = self.response_recognise(responses.status_code)
             return results
@@ -202,7 +213,7 @@ class SyncGeoServerX:
         Client = self.http_client
         responses = Client.get(f"styles")
         if responses.status_code == 200:
-            return AllStylesModel.parse_obj(responses.json())
+            return AllStylesModel.model_validate(responses.json())
         else:
             results = self.response_recognise(responses.status_code)
             return results
@@ -213,7 +224,7 @@ class SyncGeoServerX:
         Client = self.http_client
         responses = Client.get(f"styles/{style}.json")
         if responses.status_code == 200:
-            return StyleModel.parse_obj(responses.json())
+            return StyleModel.model_validate(responses.json())
         else:
             results = self.response_recognise(responses.status_code)
             return results
@@ -259,79 +270,49 @@ class SyncGeoServerX:
                     user=username,
                     passwd=password,
                     dbtype="postgis",
-                ).dict(exclude_none=True),
+                ).model_dump(exclude_none=True),
             )
         )
         Client = self.http_client
         responses = Client.post(
             f"workspaces/{workspace}/datastores/",
-            data=payload.json(),
+            data=payload.model_dump_json(),
             headers=self.head,
         )
         results = self.response_recognise(responses.status_code)
         return results
 
-    # Get all layer groups
+    # Get all layers
     @exception_handler
-    def get_all_layer_groups(self) -> Union[LayerGroupsModel, GSResponse]:
+    def get_all_layers(
+        self, workspace: Optional[str] = None
+    ) -> Union[LayersModel, GSResponse]:
         Client = self.http_client
-        responses = Client.get(f"layergroups")
-        if responses.status_code == 200:
-            return LayerGroupsModel.parse_obj(responses.json())
-        else:
-            results = self.response_recognise(responses.status_code)
-            return results
-
-    # Get single layer groups
-    @exception_handler
-    def get_layer_group(self, name: str) -> Union[SingleLayerGroupModel, GSResponse]:
-        Client = self.http_client
-        responses = Client.get(f"layergroups/{name}")
-        if responses.status_code == 200:
-            return SingleLayerGroupModel.parse_obj(responses.json())
-        else:
-            results = self.response_recognise(responses.status_code)
-            return results
-
-    @exception_handler
-    def create_layer_group(
-        self,
-        layers: List[str],
-        name: str,
-        mode: ModeEnum = ModeEnum.single,
-        abstract: Optional[str] = None,
-        keywords: Optional[List[str]] = None,
-        styles: Optional[List[str]] = None,
-        workspace: Optional[str] = None,
-        title: Optional[str] = None,
-    ) -> GSResponse:
-        Client = self.http_client
-        payload = LayerGroupPayload(
-            layerGroup=LayerGroupModel(
-                name=name,
-                mode=mode.value,
-                title=title if title else name,
-                layers=LayerListModel(layer=[]),
-            )
-        )
-        if abstract:
-            payload.layerGroup.abstractTxt = abstract
         if workspace:
-            payload.layerGroup.workspace = WorkspaceModel(name=workspace)
-        if styles:
-            payload.layerGroup.styles = LayerGroupStylesModel(style=[])
-            for style in styles:
-                payload.layerGroup.styles.style.append(style)
-        if keywords:
-            payload.layerGroup.keywords = LayerGroupKeywordsModel(keyword=[])
-            for keyword in keywords:
-                payload.layerGroup.keywords.keyword.append(keyword)
+            responses = Client.get(f"/workspaces/{workspace}/layers")
+        else:
+            responses = Client.get(f"layers")
+        if responses.status_code == 200:
+            return LayersModel.model_validate(responses.json())
+        else:
+            results = self.response_recognise(responses.status_code)
+            return results
 
-        for layername in layers:
-            payload.layerGroup.layers.layer.append(BaseLayerGroup(name=layername))
-        res = Client.post(
-            f"layergroups",
-            content=payload.json(),
-            headers=self.head,
-        )
-        return self.response_recognise(res.status_code)
+    # Get specific layer
+    @exception_handler
+    def get_layer(self, workspace: str, layer: str) -> Union[LayerModel, GSResponse]:
+        Client = self.http_client
+        responses = Client.get(f"layers/{workspace}:{layer}")
+        if responses.status_code == 200:
+            return LayerModel.model_validate(responses.json())
+        else:
+            results = self.response_recognise(responses.status_code)
+            return results
+
+    # Delete specific layer
+    @exception_handler
+    def delete_layer(self, workspace: str, layer: str) -> GSResponse:
+        Client = self.http_client
+        responses = Client.delete(f"layers/{workspace}:{layer}")
+        results = self.response_recognise(responses.status_code)
+        return results

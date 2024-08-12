@@ -340,23 +340,24 @@ def create_pg_store(
         typer.echo("Async support will be shortly")
 
 
-# get all layer groups in Geoserver
+# get all layers
 @SyncGeoServerX.exception_handler
-@app.command(help="Get all layer groups in the Geoserver")
-def layer_groups(
+@app.command(help="Get all layers in the Geoserver")
+def layers(
     request: requestEnum = requestEnum._sync,
     url: str = typer.Option(
         "http://127.0.0.1:8080/geoserver/rest/", help="Geoserver REST URL"
     ),
+    workspace: str = typer.Option(None, help="Workspace name"),
     password: str = typer.Option("geoserver", help="Geoserver Password"),
     username: str = typer.Option("admin", help="Geoserver username"),
 ):
     """
-    Get all layer groups  in the Geoserver
+    Get all layers in the Geoserver
     """
     if request.value == "sync":
         client = SyncGeoServerX(username, password, url)
-        result = client.get_all_layer_groups().json()
+        result = client.get_all_layers(workspace).json()
         if "code" in result:
             typer.secho(result, fg=typer.colors.RED)
         else:
@@ -365,12 +366,13 @@ def layer_groups(
         typer.echo("Async support will be shortly")
 
 
-# get single layer group in Geoserver
+# get layer
 @SyncGeoServerX.exception_handler
-@app.command(help="Get single layer group in the Geoserver")
-def layer_group(
+@app.command(help="Get layer in the Geoserver")
+def layer(
     request: requestEnum = requestEnum._sync,
-    name: str = typer.Option(..., help="Layer group name"),
+    workspace: str = typer.Option(..., help="Workspace name"),
+    layer: str = typer.Option(..., help="Layer name"),
     url: str = typer.Option(
         "http://127.0.0.1:8080/geoserver/rest/", help="Geoserver REST URL"
     ),
@@ -378,11 +380,11 @@ def layer_group(
     username: str = typer.Option("admin", help="Geoserver username"),
 ):
     """
-    Get single layer group  in the Geoserver
+    Get workspace in the Geoserver
     """
     if request.value == "sync":
         client = SyncGeoServerX(username, password, url)
-        result = client.get_layer_group(name).json()
+        result = client.get_layer(workspace, layer).json()
         if "code" in result:
             typer.secho(result, fg=typer.colors.RED)
         else:

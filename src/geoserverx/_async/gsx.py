@@ -94,16 +94,18 @@ class AsyncGeoServerX:
             resp = GSResponseEnum._403.value
         elif r == 201:
             resp = GSResponseEnum._201.value
+        elif r == 200:
+            resp = GSResponseEnum._200.value
         elif r == 409:
             resp = GSResponseEnum._409.value
-        return GSResponse.parse_obj(resp)
+        return GSResponse.model_validate(resp)
 
     # Get all workspaces
     async def get_all_workspaces(self) -> Union[WorkspacesModel, GSResponse]:
         Client = self.http_client
         responses = await Client.get(f"workspaces")
         if responses.status_code == 200:
-            return WorkspacesModel.parse_obj(responses.json())
+            return WorkspacesModel.model_validate(responses.json())
         else:
             results = self.response_recognise(responses.status_code)
             return results
@@ -113,7 +115,7 @@ class AsyncGeoServerX:
         Client = self.http_client
         responses = await Client.get(f"workspaces/{workspace}")
         if responses.status_code == 200:
-            return WorkspaceModel.parse_obj(responses.json())
+            return WorkspaceModel.model_validate(responses.json())
         else:
             results = self.response_recognise(responses.status_code)
             return results
@@ -128,7 +130,7 @@ class AsyncGeoServerX:
         )
         responses = await Client.post(
             f"workspaces?default={default}",
-            data=payload.json(),
+            data=payload.model_dump_json(),
             headers=self.head,
         )
         results = self.response_recognise(responses.status_code)
@@ -139,7 +141,7 @@ class AsyncGeoServerX:
         Client = self.http_client
         responses = await Client.get(f"workspaces/{workspace}/datastores")
         if responses.status_code == 200:
-            return DataStoresModel.parse_obj(responses.json())
+            return DataStoresModel.model_validate(responses.json())
         else:
             results = self.response_recognise(responses.status_code)
             return results
@@ -151,7 +153,7 @@ class AsyncGeoServerX:
         Client = self.http_client
         responses = await Client.get(f"workspaces/{workspace}/coveragestores")
         if responses.status_code == 200:
-            return CoveragesStoresModel.parse_obj(responses.json())
+            return CoveragesStoresModel.model_validate(responses.json())
         else:
             results = self.response_recognise(responses.status_code)
             return results
@@ -162,7 +164,7 @@ class AsyncGeoServerX:
         Client = self.http_client
         responses = await Client.get(url)
         if responses.status_code == 200:
-            return DataStoreModel.parse_obj(responses.json())
+            return DataStoreModel.model_validate(responses.json())
         else:
             results = self.response_recognise(responses.status_code)
             return results
@@ -173,7 +175,7 @@ class AsyncGeoServerX:
         Client = self.http_client
         responses = await Client.get(url)
         if responses.status_code == 200:
-            return CoveragesStoreModel.parse_obj(responses.json())
+            return CoveragesStoreModel.model_validate(responses.json())
         else:
             results = self.response_recognise(responses.status_code)
             return results
@@ -183,7 +185,7 @@ class AsyncGeoServerX:
         Client = self.http_client
         responses = await Client.get(f"styles")
         if responses.status_code == 200:
-            return AllStylesModel.parse_obj(responses.json())
+            return AllStylesModel.model_validate(responses.json())
         else:
             results = self.response_recognise(responses.status_code)
             return results
@@ -193,7 +195,7 @@ class AsyncGeoServerX:
         Client = self.http_client
         responses = await Client.get(f"styles/{style}.json")
         if responses.status_code == 200:
-            return StyleModel.parse_obj(responses.json())
+            return StyleModel.model_validate(responses.json())
         else:
             results = self.response_recognise(responses.status_code)
             return results
@@ -219,13 +221,13 @@ class AsyncGeoServerX:
                     user=username,
                     passwd=password,
                     dbtype="postgis",
-                ).dict(exclude_none=True),
+                ).model_dump(exclude_none=True),
             )
         )
         Client = self.http_client
         responses = await Client.post(
             f"workspaces/{workspace}/datastores/",
-            data=payload.json(),
+            data=payload.model_dump_json(),
             headers=self.head,
         )
         results = self.response_recognise(responses.status_code)
@@ -236,7 +238,7 @@ class AsyncGeoServerX:
         Client = self.http_client
         responses = await Client.get(f"styles")
         if responses.status_code == 200:
-            return AllStylesModel.parse_obj(responses.json())
+            return AllStylesModel.model_validate(responses.json())
         else:
             results = self.response_recognise(responses.status_code)
             return results
@@ -246,7 +248,7 @@ class AsyncGeoServerX:
         Client = self.http_client
         responses = await Client.get(f"styles/{style}.json")
         if responses.status_code == 200:
-            return StyleModel.parse_obj(responses.json())
+            return StyleModel.model_validate(responses.json())
         else:
             results = self.response_recognise(responses.status_code)
             return results
@@ -280,59 +282,39 @@ class AsyncGeoServerX:
         if responses.status_code == 200:
             return LayerGroupsModel.parse_obj(responses.json())
         else:
-            results = self.response_recognise(responses.status_code)
-            return results
+            raise ValueError(f"Service type {service_type} not supported")
+        await service.addFile(self.http_client, workspace, store)
 
-    # Get single layer groups
-    async def get_layer_group(
-        self, name: str
-    ) -> Union[SingleLayerGroupModel, GSResponse]:
+    # Get all layers
+    async def get_all_layers(
+        self, workspace: Optional[str] = None
+    ) -> Union[LayersModel, GSResponse]:
         Client = self.http_client
-        responses = await Client.get(f"layergroups/{name}")
+        if workspace:
+            responses = await Client.get(f"/workspaces/{workspace}/layers")
+        else:
+            responses = await Client.get(f"layers")
         if responses.status_code == 200:
-            return SingleLayerGroupModel.parse_obj(responses.json())
+            return LayersModel.model_validate(responses.json())
         else:
             results = self.response_recognise(responses.status_code)
             return results
 
-    async def create_layer_group(
-        self,
-        layers: List[str],
-        name: str,
-        mode:  ModeEnum = ModeEnum.single,
-        abstract: Optional[str] = None,
-        keywords: Optional[List[str]] = None,
-        styles: Optional[List[str]] = None,
-        workspace: Optional[str] = None,
-        title: Optional[str] = None,
-    ) -> GSResponse:
+    # Get specific layer
+    async def get_layer(
+        self, workspace: str, layer: str
+    ) -> Union[LayerModel, GSResponse]:
         Client = self.http_client
-        payload = LayerGroupPayload(
-            layerGroup=LayerGroupModel(
-                name=name,
-                mode=mode.value,
-                title=title if title else name,
-                layers=LayerListModel(layer=[]),
-            )
-        )
-        if abstract:
-            payload.layerGroup.abstractTxt = abstract
-        if workspace:
-            payload.layerGroup.workspace = WorkspaceModel(name=workspace)
-        if styles:
-            payload.layerGroup.styles = LayerGroupStylesModel(style=[])
-            for style in styles:
-                payload.layerGroup.styles.style.append(style)
-        if keywords:
-            payload.layerGroup.keywords = LayerGroupKeywordsModel(keyword=[])
-            for keyword in keywords:
-                payload.layerGroup.keywords.keyword.append(keyword)
+        responses = await Client.get(f"layers/{workspace}:{layer}")
+        if responses.status_code == 200:
+            return LayerModel.model_validate(responses.json())
+        else:
+            results = self.response_recognise(responses.status_code)
+            return results
 
-        for layername in layers:
-            payload.layerGroup.layers.layer.append(BaseLayerGroup(name=layername))
-        res = await Client.post(
-            f"layergroups",
-            content=payload.json(),
-            headers=self.head,
-        )
-        return self.response_recognise(res.status_code)
+    # Delete specific layer
+    async def delete_layer(self, workspace: str, layer: str) -> GSResponse:
+        Client = self.http_client
+        responses = await Client.delete(f"layers/{workspace}:{layer}")
+        results = self.response_recognise(responses.status_code)
+        return results

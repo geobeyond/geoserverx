@@ -410,11 +410,11 @@ def good_all_styles_model_connection() -> dict:
             "style": [
                 {
                     "name": "CUSD 2020 Census Blocks",
-                    "href": "http://localhost:8080/geoserver/rest/styles/CUSD+2020+Census+Blocks.json",
+                    "href": "http://localhost:8080/geoserver/rest/styles/CUSD.json",
                 },
                 {
                     "name": "Default Styler",
-                    "href": "http://localhost:8080/geoserver/rest/styles/Default+Styler.json",
+                    "href": "http://localhost:8080/geoserver/rest/styles/Default.json",
                 },
             ]
         }
@@ -568,14 +568,22 @@ def good_new_pg_store_connection() -> dict:
 
 
 @pytest.fixture
-def good_all_layer_group_connection() -> dict:
+def good_layers_connection() -> dict:
     item = {
-        "layerGroups": {
-            "layerGroup": [
+        "layers": {
+            "layer": [
                 {
-                    "name": "a",
-                    "href": "http://localhost:8080/geoserver/rest/layergroups/a.json",
-                }
+                    "name": "tiger:giant_polygon",
+                    "href": "http://localhost:8080/geoserver/rest/layers/tiger%3Agiant_polygon.json",
+                },
+                {
+                    "name": "tiger:poi",
+                    "href": "http://localhost:8080/geoserver/rest/layers/tiger%3Apoi.json",
+                },
+                {
+                    "name": "tiger:poly_landmarks",
+                    "href": "http://localhost:8080/geoserver/rest/layers/tiger%3Apoly_landmarks.json",
+                },
             ]
         }
     }
@@ -583,46 +591,53 @@ def good_all_layer_group_connection() -> dict:
 
 
 @pytest.fixture
-def bad_all_layer_group_connection() -> dict:
-    item = {"code": 404, "response": "Result not found"}
+def bad_layers_connection() -> dict:
+    item = {"code": 502}
     return item
 
 
 @pytest.fixture
-def good_layer_group_connection() -> dict:
+def good_layer_connection() -> dict:
     item = {
-        "layerGroup": {
-            "name": "a",
-            "mode": "SINGLE",
-            "internationalTitle": "",
-            "internationalAbstract": "",
-            "publishables": {
-                "published": {
-                    "@type": "layer",
-                    "name": "aai:3D_VerticalPointStructure",
-                    "href": "http://localhost:8080/geoserver/rest/workspaces/aai/layers/3D_VerticalPointStructure.json",
-                }
+        "layer": {
+            "name": "poi",
+            "path": "/",
+            "type": "VECTOR",
+            "defaultStyle": {
+                "name": "poi",
+                "href": "http://localhost:8080/geoserver/rest/styles/poi.json",
             },
             "styles": {
-                "style": {
-                    "name": "point",
-                    "href": "http://localhost:8080/geoserver/rest/styles/point.json",
-                }
+                "@class": "linked-hash-set",
+                "style": [
+                    {
+                        "name": "burg",
+                        "href": "http://localhost:8080/geoserver/rest/styles/burg.json",
+                    },
+                    {
+                        "name": "point",
+                        "href": "http://localhost:8080/geoserver/rest/styles/point.json",
+                    },
+                ],
             },
-            "bounds": {
-                "minx": 73.88021690990662,
-                "maxx": 73.91334477033121,
-                "miny": 24.61418206729651,
-                "maxy": 24.624727043566768,
-                "crs": "EPSG:4326",
+            "resource": {
+                "@class": "featureType",
+                "name": "tiger:poi",
+                "href": "http://localhost:8080/geoserver/rest/workspaces/tiger/datastores/nyc/featuretypes/poi.json",
             },
-            "dateCreated": "2023-07-04 13:04:42.523 UTC",
+            "attribution": {"logoWidth": 0, "logoHeight": 0},
         }
     }
     return item
 
 
 @pytest.fixture
-def bad_layer_group_connection() -> dict:
+def bad_layer_connection() -> dict:
     item = {"code": 404, "response": "Result not found"}
+    return item
+
+
+@pytest.fixture
+def networkbad_layer_connection() -> dict:
+    item = {"code": 503, "response": "Geoserver unavailable"}
     return item
