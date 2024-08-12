@@ -47,9 +47,6 @@ jobs:
       uses: snok/install-poetry@v1
       with:
         version: 1.5.1
-      # run: |
-      #   pipx install --pip-args=--constraint=.github/workflows/constraints.txt poetry
-      #   poetry --version
     - name: Install dependencies
       run: poetry install
     - name: Run tests
