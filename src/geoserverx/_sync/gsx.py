@@ -95,7 +95,7 @@ class SyncGeoServerX:
             resp = GSResponseEnum._409.value
         elif r == 200:
             resp = GSResponseEnum._200.value
-        return GSResponse.parse_obj(resp)
+        return GSResponse.model_validate(resp)
 
     def exception_handler(func):
         def inner_function(*args, **kwargs):
@@ -114,7 +114,7 @@ class SyncGeoServerX:
         Client = self.http_client
         responses = Client.get(f"workspaces")
         if responses.status_code == 200:
-            return WorkspacesModel.parse_obj(responses.json())
+            return WorkspacesModel.model_validate(responses.json())
         else:
             results = self.response_recognise(responses.status_code)
             return results
@@ -125,7 +125,7 @@ class SyncGeoServerX:
         Client = self.http_client
         responses = Client.get(f"workspaces/{workspace}")
         if responses.status_code == 200:
-            return WorkspaceModel.parse_obj(responses.json())
+            return WorkspaceModel.model_validate(responses.json())
         else:
             results = self.response_recognise(responses.status_code)
             return results
@@ -153,7 +153,7 @@ class SyncGeoServerX:
         Client = self.http_client
         responses = Client.get(f"workspaces/{workspace}/datastores")
         if responses.status_code == 200:
-            return DataStoresModel.parse_obj(responses.json())
+            return DataStoresModel.model_validate(responses.json())
         else:
             results = self.response_recognise(responses.status_code)
             return results
@@ -164,7 +164,7 @@ class SyncGeoServerX:
         Client = self.http_client
         responses = Client.get(f"workspaces/{workspace}/coveragestores")
         if responses.status_code == 200:
-            return CoveragesStoresModel.parse_obj(responses.json())
+            return CoveragesStoresModel.model_validate(responses.json())
         else:
             results = self.response_recognise(responses.status_code)
             return results
@@ -176,7 +176,7 @@ class SyncGeoServerX:
         Client = self.http_client
         responses = Client.get(url)
         if responses.status_code == 200:
-            return DataStoreModel.parse_obj(responses.json())
+            return DataStoreModel.model_validate(responses.json())
         else:
             results = self.response_recognise(responses.status_code)
             return results
@@ -200,7 +200,7 @@ class SyncGeoServerX:
         Client = self.http_client
         responses = Client.get(url)
         if responses.status_code == 200:
-            return CoveragesStoreModel.parse_obj(responses.json())
+            return CoveragesStoreModel.model_validate(responses.json())
         else:
             results = self.response_recognise(responses.status_code)
             return results
@@ -234,7 +234,7 @@ class SyncGeoServerX:
         Client = self.http_client
         responses = Client.get(f"styles")
         if responses.status_code == 200:
-            return AllStylesModel.parse_obj(responses.json())
+            return AllStylesModel.model_validate(responses.json())
         else:
             results = self.response_recognise(responses.status_code)
             return results
@@ -246,7 +246,7 @@ class SyncGeoServerX:
         Client = self.http_client
         responses = Client.get(f"styles/{style}.json")
         if responses.status_code == 200:
-            return StyleModel.parse_obj(responses.json())
+            return StyleModel.model_validate(responses.json())
         else:
             results = self.response_recognise(responses.status_code)
             return results
@@ -315,7 +315,7 @@ class SyncGeoServerX:
         else:
             responses = Client.get(f"layers")
         if responses.status_code == 200:
-            return LayersModel.parse_obj(responses.json())
+            return LayersModel.model_validate(responses.json())
         else:
             results = self.response_recognise(responses.status_code)
             return results
@@ -326,11 +326,7 @@ class SyncGeoServerX:
         Client = self.http_client
         responses = Client.get(f"/workspaces/{workspace}/datastores/{store}/featuretypes/{layer}.json")
         if responses.status_code == 200:
-            try:
-                return FeatureTypesModel.parse_obj(responses.json())
-            except ValidationError as validation_error:
-                print("Pydantic Validation Error:")
-                print(validation_error)
+            return LayerModel.model_validate(responses.json())
         else:
             results = self.response_recognise(responses.status_code)
             return results

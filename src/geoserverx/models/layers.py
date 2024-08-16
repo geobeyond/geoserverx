@@ -21,12 +21,12 @@ class DefaultStyleOfLayer(BaseModel):
 
 
 class ExtraStyles(BaseModel):
-    _class: str = Field(..., alias="@class")
+    class_name: str = Field(..., alias="@class")
     style: List[DefaultStyleOfLayer]
 
 
 class LayerResource(BaseModel):
-    _class: str = Field(..., alias="@class")
+    class_name: str = Field(..., alias="@class")
     name: str = ...
     href: str = ...
 

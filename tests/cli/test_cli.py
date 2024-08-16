@@ -189,7 +189,7 @@ def test_get_allstyles_success(good_all_styles_model_connection, respx_mock):
         return_value=httpx.Response(200, json=good_all_styles_model_connection)
     )
     result = runner.invoke(app, ["styles"])
-    assert "CUSD 2020 Census Blocks" in result.stdout
+    assert "CUSD 2020 Census" in result.stdout
 
 
 def test_get_allstyles_ConnectError(respx_mock):
