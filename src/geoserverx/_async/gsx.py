@@ -90,14 +90,14 @@ class AsyncGeoServerX:
             resp = GSResponseEnum._200.value
         elif r == 409:
             resp = GSResponseEnum._409.value
-        return GSResponse.parse_obj(resp)
+        return GSResponse.model_validate(resp)
 
     # Get all workspaces
     async def get_all_workspaces(self) -> Union[WorkspacesModel, GSResponse]:
         Client = self.http_client
         responses = await Client.get(f"workspaces")
         if responses.status_code == 200:
-            return WorkspacesModel.parse_obj(responses.json())
+            return WorkspacesModel.model_validate(responses.json())
         else:
             results = self.response_recognise(responses.status_code)
             return results
@@ -107,7 +107,7 @@ class AsyncGeoServerX:
         Client = self.http_client
         responses = await Client.get(f"workspaces/{workspace}")
         if responses.status_code == 200:
-            return WorkspaceModel.parse_obj(responses.json())
+            return WorkspaceModel.model_validate(responses.json())
         else:
             results = self.response_recognise(responses.status_code)
             return results
@@ -122,7 +122,7 @@ class AsyncGeoServerX:
         )
         responses = await Client.post(
             f"workspaces?default={default}",
-            data=payload.json(),
+            data=payload.model_dump_json(),
             headers=self.head,
         )
         results = self.response_recognise(responses.status_code)
@@ -133,7 +133,7 @@ class AsyncGeoServerX:
         Client = self.http_client
         responses = await Client.get(f"workspaces/{workspace}/datastores")
         if responses.status_code == 200:
-            return DataStoresModel.parse_obj(responses.json())
+            return DataStoresModel.model_validate(responses.json())
         else:
             results = self.response_recognise(responses.status_code)
             return results
@@ -145,7 +145,7 @@ class AsyncGeoServerX:
         Client = self.http_client
         responses = await Client.get(f"workspaces/{workspace}/coveragestores")
         if responses.status_code == 200:
-            return CoveragesStoresModel.parse_obj(responses.json())
+            return CoveragesStoresModel.model_validate(responses.json())
         else:
             results = self.response_recognise(responses.status_code)
             return results
@@ -156,7 +156,7 @@ class AsyncGeoServerX:
         Client = self.http_client
         responses = await Client.get(url)
         if responses.status_code == 200:
-            return DataStoreModel.parse_obj(responses.json())
+            return DataStoreModel.model_validate(responses.json())
         else:
             results = self.response_recognise(responses.status_code)
             return results
@@ -167,7 +167,7 @@ class AsyncGeoServerX:
         Client = self.http_client
         responses = await Client.get(url)
         if responses.status_code == 200:
-            return CoveragesStoreModel.parse_obj(responses.json())
+            return CoveragesStoreModel.model_validate(responses.json())
         else:
             results = self.response_recognise(responses.status_code)
             return results
@@ -177,7 +177,7 @@ class AsyncGeoServerX:
         Client = self.http_client
         responses = await Client.get(f"styles")
         if responses.status_code == 200:
-            return AllStylesModel.parse_obj(responses.json())
+            return AllStylesModel.model_validate(responses.json())
         else:
             results = self.response_recognise(responses.status_code)
             return results
@@ -187,7 +187,7 @@ class AsyncGeoServerX:
         Client = self.http_client
         responses = await Client.get(f"styles/{style}.json")
         if responses.status_code == 200:
-            return StyleModel.parse_obj(responses.json())
+            return StyleModel.model_validate(responses.json())
         else:
             results = self.response_recognise(responses.status_code)
             return results
@@ -213,13 +213,13 @@ class AsyncGeoServerX:
                     user=username,
                     passwd=password,
                     dbtype="postgis",
-                ).dict(exclude_none=True),
+                ).model_dump(exclude_none=True),
             )
         )
         Client = self.http_client
         responses = await Client.post(
             f"workspaces/{workspace}/datastores/",
-            data=payload.json(),
+            data=payload.model_dump_json(),
             headers=self.head,
         )
         results = self.response_recognise(responses.status_code)
@@ -230,7 +230,7 @@ class AsyncGeoServerX:
         Client = self.http_client
         responses = await Client.get(f"styles")
         if responses.status_code == 200:
-            return AllStylesModel.parse_obj(responses.json())
+            return AllStylesModel.model_validate(responses.json())
         else:
             results = self.response_recognise(responses.status_code)
             return results
@@ -240,7 +240,7 @@ class AsyncGeoServerX:
         Client = self.http_client
         responses = await Client.get(f"styles/{style}.json")
         if responses.status_code == 200:
-            return StyleModel.parse_obj(responses.json())
+            return StyleModel.model_validate(responses.json())
         else:
             results = self.response_recognise(responses.status_code)
             return results
@@ -292,7 +292,7 @@ class AsyncGeoServerX:
         else:
             responses = await Client.get(f"layers")
         if responses.status_code == 200:
-            return LayersModel.parse_obj(responses.json())
+            return LayersModel.model_validate(responses.json())
         else:
             results = self.response_recognise(responses.status_code)
             return results
@@ -304,7 +304,7 @@ class AsyncGeoServerX:
         Client = self.http_client
         responses = await Client.get(f"layers/{workspace}:{layer}")
         if responses.status_code == 200:
-            return LayerModel.parse_obj(responses.json())
+            return LayerModel.model_validate(responses.json())
         else:
             results = self.response_recognise(responses.status_code)
             return results
