@@ -1,4 +1,4 @@
-from dataclasses import dataclass, field
+from dataclasses import dataclass
 
 from geoserverx.utils.errors import GeoServerXError
 

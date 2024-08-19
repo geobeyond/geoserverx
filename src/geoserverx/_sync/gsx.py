@@ -1,10 +1,9 @@
 from dataclasses import dataclass
 from typing import Union, Optional
 from geoserverx.utils.logger import std_out_logger
-import logging
 
 from geoserverx.utils.errors import GeoServerXError
-from geoserverx.utils.enums import GSResponseEnum, HTTPXErrorEnum
+from geoserverx.utils.enums import GSResponseEnum
 
 from geoserverx.models.style import StyleModel, AllStylesModel
 from geoserverx.models.workspace import (
@@ -24,7 +23,7 @@ from geoserverx.models.featuretypes_layer import FeatureTypesModel
 from geoserverx.models.layers import LayersModel, LayerModel
 from geoserverx.models.coverages_store import CoveragesStoreModel, CoveragesStoresModel
 from geoserverx.models.coverages_layer import CoverageModel
-from geoserverx.models.gs_response import GSResponse, HttpxError
+from geoserverx.models.gs_response import GSResponse
 from geoserverx.utils.services.datastore import (
     AddDataStoreProtocol,
     CreateFileStore,
@@ -33,7 +32,7 @@ from geoserverx.utils.services.datastore import (
 )
 from geoserverx.utils.http_client import SyncClient
 from geoserverx.utils.auth import GeoServerXAuth
-import httpx, json
+import httpx
 from pydantic import ValidationError
 
 
@@ -100,9 +99,9 @@ class SyncGeoServerX:
         def inner_function(*args, **kwargs):
             try:
                 return func(*args, **kwargs)
-            except httpx.ConnectError as exc:
+            except httpx.ConnectError:
                 return GSResponse(code=503, response="Error in connecting to Geoserver")
-            except httpx.TimeoutException as exc:
+            except httpx.TimeoutException:
                 return GSResponse(code=504, response="Timeout Error in connection")
 
         return inner_function
@@ -111,7 +110,7 @@ class SyncGeoServerX:
     @exception_handler
     def get_all_workspaces(self) -> Union[WorkspacesModel, GSResponse]:
         Client = self.http_client
-        responses = Client.get(f"workspaces")
+        responses = Client.get("workspaces")
         if responses.status_code == 200:
             return WorkspacesModel.model_validate(responses.json())
         else:
@@ -237,9 +236,9 @@ class SyncGeoServerX:
 
     # Get all styles in GS
     @exception_handler
-    def get_allstyles(self) -> AllStylesModel:
+    def get_all_styles(self) -> AllStylesModel:
         Client = self.http_client
-        responses = Client.get(f"styles")
+        responses = Client.get("styles")
         if responses.status_code == 200:
             return AllStylesModel.model_validate(responses.json())
         else:
@@ -319,7 +318,7 @@ class SyncGeoServerX:
         if workspace:
             responses = Client.get(f"/workspaces/{workspace}/layers")
         else:
-            responses = Client.get(f"layers")
+            responses = Client.get("layers")
         if responses.status_code == 200:
             return LayersModel.model_validate(responses.json())
         else:
