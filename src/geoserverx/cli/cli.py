@@ -230,7 +230,7 @@ def styles(
     """
     if request.value == "sync":
         client = SyncGeoServerX(username, password, url)
-        result = client.get_allstyles().model_dump_json()
+        result = client.get_all_styles().model_dump_json()
         if "code" in result:
             typer.secho(result, fg=typer.colors.RED)
         else:
@@ -294,7 +294,7 @@ def create_file(
                 typer.secho(result, fg=typer.colors.GREEN)
             else:
                 typer.secho(result, fg=typer.colors.RED)
-        except:
+        except Exception:
             typer.secho("File path is incorrect", fg=typer.colors.YELLOW)
     else:
         typer.echo("Async support will be shortly")

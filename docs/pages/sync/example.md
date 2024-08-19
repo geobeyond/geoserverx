@@ -225,7 +225,7 @@ def get_all_styles(url, username, password):
     print("-------------start-----------------")
 
     client = SyncGeoServerX(username, password,url)
-    return client.get_allstyles()
+    return client.get_all_styles()
 
 result = get_all_styles(url='http://localhost:8080/geoserver/rest/',username='admin', password='geoserver' )
 print(result.json())
