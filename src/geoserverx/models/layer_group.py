@@ -13,22 +13,22 @@ class LayerGroupList(BaseModel):
 class LayerGroupsModel(BaseModel):
     layerGroups: Union[LayerGroupList, Literal[""]]
 
-class PublishedDict(BaseModel):
+class Published(BaseModel):
     type: str = Field(..., alias="@type")
     name: str = ...
     href: str = ...
 
-class PublishablesDict(BaseModel):
-    published: PublishedDict = ...
+class Publishables(BaseModel):
+    published: Published = ...
 
-class StyleDict(BaseModel):
+class Style(BaseModel):
     name: str = ...
     href: str = ...
 
-class StylesDict(BaseModel):
-    style: StyleDict = ...
+class Styles(BaseModel):
+    style: Style = ...
 
-class BoundsDict(BaseModel):
+class Bounds(BaseModel):
     minx: float = ...
     miny: float = ...
     maxx: float = ...
@@ -52,9 +52,9 @@ class SingleLayerGroup(BaseLayerGroup):
     mode: ModeEnum
     internationalTitle: str = ""
     internationalAbstract: str = ""
-    publishables: PublishablesDict
-    styles: StylesDict
-    bounds: BoundsDict
+    publishables: Publishables
+    styles: Styles
+    bounds: Bounds
     dateCreated: str = ...
 
 class SingleLayerGroupModel(BaseModel):
