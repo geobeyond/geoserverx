@@ -40,22 +40,19 @@ class DataLinks(BaseModel):
     metadataLink: Optional[List[MetadataLinkItem1]] = Field(
         None, description='A collection of data links for the resource.'
     )
-class CRSetnry(BaseModel):
+class CRSentry(BaseModel):
     class Config:
         allow_population_by_field_name = True
     key: Optional[str] = Field(alias="@class")
     dollar: Optional[str] = Field(..., alias="$")
 
 
-class CRSetnryDict(BaseModel):
-    entry: CRSetnry
-
 class NativeBoundingBox(BaseModel):
     minx: Optional[float] = Field(None, description='The min x coordinate')
     maxx: Optional[float] = Field(None, description='The max x coordinate')
     miny: Optional[float] = Field(None, description='The min y coordinate')
     maxy: Optional[float] = Field(None, description='The max y coordinate')
-    crs: Optional[Union[str, CRSetnry]] = Field(
+    crs: Optional[Union[str, CRSentry]] = Field(
         None, description='The coordinate reference system object of the bounding box.'
     )
 
@@ -104,21 +101,15 @@ class Attributes(BaseModel):
         None, description='The derived set of attributes for the feature type.'
     )
 
-
-class _Key(Enum):
-    regionateStrategy = 'regionateStrategy'
-    regionateFeatureLimit = 'regionateFeatureLimit'
-    cacheAgeMax = 'cacheAgeMax'
-    cachingEnabled = 'cachingEnabled'
-    regionateAttribute = 'regionateAttribute'
-    indexingEnabled = 'indexingEnabled'
-    dirName = 'dirName'
-
-
+class MetadataEntryItem(BaseModel):
+    class Config:
+        allow_population_by_field_name = True
+    key: Optional[str] = Field(alias="@key")
+    dollar: Optional[str] = Field(..., alias="$")
 
 
 class MetadataEntryList(BaseModel):
-    entry: Dict
+    entry: List[MetadataEntryItem]
 
 
 class FeatureTypeInfo(BaseModel):
@@ -166,7 +157,7 @@ class FeatureTypeInfo(BaseModel):
     store: Optional[Store] = Field(
         None, description='The store the resource is a part of.' 
     )
-    nativeCRS:Optional[Union[str, CRSetnry]] = Field(
+    nativeCRS:Optional[Union[str, CRSentry]] = Field(
         None, description='String for Native CRS'
     )
     cqlFilter: Optional[str] = Field(

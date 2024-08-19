@@ -1,19 +1,9 @@
 from enum import Enum
 from typing import Any, List, Optional,Union
-
 from pydantic import BaseModel, Field
 
 
-class _Key(Enum):
-    regionateStrategy = 'regionateStrategy'
-    regionateFeatureLimit = 'regionateFeatureLimit'
-    cacheAgeMax = 'cacheAgeMax'
-    cachingEnabled = 'cachingEnabled'
-    regionateAttribute = 'regionateAttribute'
-    indexingEnabled = 'indexingEnabled'
-    dirName = 'dirName'
-
-class CRSDict(BaseModel):
+class NativeCRS(BaseModel):
     class Config:
         allow_population_by_field_name = True
     crsclass: Optional[str] = Field(..., alias="@class")
@@ -61,7 +51,7 @@ class NativeBoundingBox(BaseModel):
     maxx: Optional[float] = Field(None, description='The max x coordinate')
     miny: Optional[float] = Field(None, description='The min y coordinate')
     maxy: Optional[float] = Field(None, description='The max y coordinate')
-    crs: Optional[CRSDict] 
+    crs: Optional[NativeCRS] 
 
 
 class LatLonBoundingBox(BaseModel):
@@ -148,15 +138,15 @@ class Transform(BaseModel):
 class InterpolationMethods(BaseModel):
     string: Optional[List[str]] = None
 
-class supportedFormatsString(BaseModel):
+class SupportedFormatsString(BaseModel):
     string: Optional[List[str]] = None
 
-class requestSRSString(BaseModel):
+class RequestSRSString(BaseModel):
     string: Optional[List[str]] = None
 
-
-class interpolationMethodsString(BaseModel):
+class InterpolationMethodsString(BaseModel):
     string: Optional[List[str]] = None
+
 class Grid(BaseModel):
     class Config:
         allow_population_by_field_name = True
@@ -170,14 +160,16 @@ class Grid(BaseModel):
         None, description='available interpolations methods for this coverage'
     )
 
-
-
+class DimensionInfo(BaseModel):
+    defaultValue : Optional[str]
+    enabled : Optional[bool]
 
 class MetadataEntry(BaseModel):
     class Config:
         allow_population_by_field_name = True
     key: Optional[str] = Field(alias="@key")
     dollar: Optional[str] = Field(..., alias="$")
+    dimensionInfo : Optional[DimensionInfo]
 
 class EntryParameters(BaseModel):
     entry: List
@@ -219,7 +211,7 @@ class CoverageInfo(BaseModel):
     dataLinks: Optional[DataLinks] = Field(
         None, description='Wraps a collection of data links for the resource.'
     )
-    nativeCRS: Optional[CRSDict]
+    nativeCRS: Optional[NativeCRS]
     srs: Optional[str] = Field(
         None,
         description='Returns the identifier of coordinate reference system of the resource.',
@@ -275,9 +267,9 @@ class CoverageInfo(BaseModel):
         None,
         description='contains information about how to translate from the raster plan to a coordinate reference system',
     )
-    supportedFormats: Optional[supportedFormatsString]
-    interpolationMethods: Optional[interpolationMethodsString]
-    requestSRS: Optional[requestSRSString]
+    supportedFormats: Optional[SupportedFormatsString]
+    interpolationMethods: Optional[InterpolationMethodsString]
+    requestSRS: Optional[RequestSRSString]
     parameters: EntryParameters 
     serviceConfiguration: Optional[bool]
     simpleConversionEnabled: Optional[bool]
