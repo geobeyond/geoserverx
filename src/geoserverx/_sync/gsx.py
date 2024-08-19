@@ -21,7 +21,6 @@ from geoserverx.models.data_store import (
     MainCreateDataStoreModel,
 )
 from geoserverx.models.featuretypes_layer import FeatureTypesModel
-
 from geoserverx.models.layers import LayersModel, LayerModel
 from geoserverx.models.coverages_store import CoveragesStoreModel, CoveragesStoresModel
 from geoserverx.models.coverages_layer import CoverageModel
@@ -240,9 +239,8 @@ class SyncGeoServerX:
             return results
 
     # Get specific style in GS
-
     @exception_handler
-    def get_style(self,  style: str) -> StyleModel:
+    def get_style(self, style: str) -> StyleModel:
         Client = self.http_client
         responses = Client.get(f"styles/{style}.json")
         if responses.status_code == 200:
@@ -369,7 +367,7 @@ class SyncGeoServerX:
         Client = self.http_client
         responses = Client.post(
             f"/workspaces/{workspace}/featuretypes",
-            data=json.dumps(layer.dict(by_alias=True,exclude_none=True)),
+            data=layer.model_dump(by_alias=True,exclude_none=True),
             headers=self.head,
         )
         results = self.response_recognise(responses.status_code)

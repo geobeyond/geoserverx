@@ -385,7 +385,7 @@ def layer(
     """
     if request.value == "sync":
         client = SyncGeoServerX(username, password, url)
-        result = client.get_layer(workspace, layer, detail).json()
+        result = client.get_layer(workspace, layer, detail).model_dump_json()
         if "code" in result:
             typer.secho(result, fg=typer.colors.RED)
         else:
