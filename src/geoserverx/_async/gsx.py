@@ -122,7 +122,7 @@ class AsyncGeoServerX:
         )
         responses = await Client.post(
             f"workspaces?default={default}",
-            data=payload.json(),
+            data=payload.model_dump_json(),
             headers=self.head,
         )
         results = self.response_recognise(responses.status_code)
@@ -219,7 +219,7 @@ class AsyncGeoServerX:
         Client = self.http_client
         responses = await Client.post(
             f"workspaces/{workspace}/datastores/",
-            data=payload.json(),
+            data=payload.model_dump_json(),
             headers=self.head,
         )
         results = self.response_recognise(responses.status_code)

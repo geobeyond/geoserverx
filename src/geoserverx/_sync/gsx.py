@@ -139,7 +139,7 @@ class SyncGeoServerX:
         Client = self.http_client
         responses = Client.post(
             f"workspaces?default={default}",
-            content=payload.json(),
+            content=payload.model_dump_json(),
             headers=self.head,
         )
         results = self.response_recognise(responses.status_code)
@@ -260,7 +260,7 @@ class SyncGeoServerX:
         Client = self.http_client
         responses = Client.post(
             f"workspaces/{workspace}/datastores/",
-            data=payload.json(),
+            data=payload.model_dump_json(),
             headers=self.head,
         )
         results = self.response_recognise(responses.status_code)
