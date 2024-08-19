@@ -641,3 +641,30 @@ def bad_layer_connection() -> dict:
 def networkbad_layer_connection() -> dict:
     item = {"code": 503, "response": "Geoserver unavailable"}
     return item
+
+
+@pytest.fixture
+def good_layer_groups_connection() -> dict:
+    item = {
+        "layerGroups": {
+            "layerGroup": [
+                {
+                    "name": "tg",
+                    "href": "http://localhost:8080/geoserver/rest/workspaces/ne/layergroups/tg.json",
+                }
+            ]
+        }
+    }
+    return item
+
+
+@pytest.fixture
+def bad_layer_groups_connection() -> dict:
+    item = {"code": 404, "response": "Result not found"}
+    return item
+
+
+@pytest.fixture
+def networkbad_layer_groups_connection() -> dict:
+    item = {"code": 503, "response": "Geoserver unavailable"}
+    return item

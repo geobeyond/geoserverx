@@ -23,7 +23,7 @@ from geoserverx.models.data_store import (
 
 from geoserverx.models.layers import LayersModel, LayerModel
 from geoserverx.models.coverages_store import CoveragesStoreModel, CoveragesStoresModel
-
+from geoserverx.models.layer_group import LayerGroupsModel
 from geoserverx.models.gs_response import GSResponse, HttpxError
 from geoserverx.utils.services.datastore import (
     AddDataStoreProtocol,
@@ -300,3 +300,18 @@ class SyncGeoServerX:
         responses = Client.delete(f"layers/{workspace}:{layer}")
         results = self.response_recognise(responses.status_code)
         return results
+
+
+    # Get all layer groups
+    @exception_handler
+    def get_all_layer_groups(self,workspace: Optional[str] = None) -> Union[LayerGroupsModel, GSResponse]:
+        Client = self.http_client
+        if workspace:
+            responses = Client.get(f"workspaces/{workspace}/layergroups")
+        else :
+            responses = Client.get(f"layergroups")
+        if responses.status_code == 200:
+            return LayerGroupsModel.model_validate(responses.json())
+        else:
+            results = self.response_recognise(responses.status_code)
+            return results

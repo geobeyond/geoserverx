@@ -31,7 +31,7 @@ from geoserverx.models.workspace import (
     NewWorkspaceInfo,
     SingleWorkspace,
 )
-
+from geoserverx.models.layer_group import LayerGroupsModel
 
 # Testing DataStoreInBulk
 def test_DataStoreInBulk_connection(good_datastore_in_bulk_connection):
@@ -264,3 +264,25 @@ def test_NewWorkspace_connection(good_new_workspace_connection):
 def test_NewWorkspace_failure(bad_new_workspace_connection):
     with pytest.raises(ValidationError):
         ds_connection = NewWorkspace(**bad_new_workspace_connection)
+
+
+# Testing WorkspaceModel
+def test_WorkspaceModel_connection(good_workspace_model_connection):
+    ds_connection = WorkspaceModel(**good_workspace_model_connection)
+    assert ds_connection.workspace.name == "pydad"
+
+
+def test_WorkspaceModel_failure(bad_workspace_model_connection):
+    with pytest.raises(ValidationError):
+        ds_connection = WorkspaceModel(**bad_workspace_model_connection)
+
+
+
+# Testing LayerGroupsModel
+def test_LayerGroupsModel_connection(good_layer_groups_connection):
+    ds_connection = LayerGroupsModel(**good_layer_groups_connection)
+    assert ds_connection.layerGroups.layerGroup[0].name == "tg"
+
+def test_LayerGroupsModel_failure(bad_layer_groups_connection):
+    with pytest.raises(ValidationError):
+        ds_connection = LayerGroupsModel(**bad_layer_groups_connection)
