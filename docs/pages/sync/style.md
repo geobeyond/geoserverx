@@ -7,7 +7,7 @@ This command fetches all Styles available in geoserver.
 
 ```Python
 # Get all styles available in geoserver
-client.get_allstyles()
+client.get_all_styles()
 ```
 
 
