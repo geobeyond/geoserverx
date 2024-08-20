@@ -354,6 +354,7 @@ def test_get_layer_success(good_layer_connection, respx_mock):
         return_value=httpx.Response(200, json=good_layer_connection)
     )
     result = runner.invoke(app, ["layer", "--workspace", "tiger", "--layer", "poi"])
+    print(result)
     assert "poi" in result.stdout
 
 
