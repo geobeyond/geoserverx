@@ -19,6 +19,7 @@ from geoserverx.models.data_store import (
     CreateStoreItem,
     MainCreateDataStoreModel,
 )
+from geoserverx.models.geofence import RulesResponse
 from geoserverx.models.featuretypes_layer import FeatureTypesModel
 from geoserverx.models.layers import LayersModel, LayerModel
 from geoserverx.models.coverages_store import CoveragesStoreModel, CoveragesStoresModel
@@ -429,6 +430,18 @@ class SyncGeoServerX:
             responses = Client.get(f"layergroups")
         if responses.status_code == 200:
             return LayerGroupsModel.model_validate(responses.json())
+        else:
+            results = self.response_recognise(responses.status_code)
+            return results
+
+
+    # Get all geofence rules
+    @exception_handler
+    def get_all_geofence_rules(self) -> Union[RulesResponse, GSResponse]:
+        Client = self.http_client
+        responses = Client.get("geofence/rules/")
+        if responses.status_code == 200:
+            return RulesResponse.model_validate(responses.json())
         else:
             results = self.response_recognise(responses.status_code)
             return results

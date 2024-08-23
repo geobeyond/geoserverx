@@ -418,3 +418,28 @@ def layer_groups(
             print(result)
     else:
         typer.echo("Async support will be shortly")
+
+
+# get all geofence rules
+@SyncGeoServerX.exception_handler
+@app.command(help="Get all geofence rules in the Geoserver")
+def geofence_rules(
+    request: requestEnum = requestEnum._sync,
+    url: str = typer.Option(
+        "http://127.0.0.1:8080/geoserver/rest/", help="Geoserver REST URL"
+    ),
+    password: str = typer.Option("geoserver", help="Geoserver Password"),
+    username: str = typer.Option("admin", help="Geoserver username"),
+):
+    """
+    Get all geofence rules in the Geoserver
+    """
+    if request.value == "sync":
+        client = SyncGeoServerX(username, password, url)
+        result = client.get_all_geofence_rules().model_dump_json()
+        if "rules" in result:
+            typer.secho(result, fg=typer.colors.RED)
+        else:
+            print(result)
+    else:
+        typer.echo("Async support will be shortly")
