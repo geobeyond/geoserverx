@@ -5,7 +5,6 @@ from geoserverx.utils.enums import GSResponseEnum
 from geoserverx.models.gs_response import GSResponse
 from geoserverx.utils.errors import GeoServerXError
 from geoserverx.models.style import StyleModel, AllStylesModel
-import asyncio
 from geoserverx.utils.http_client import AsyncClient
 from geoserverx.utils.auth import GeoServerXAuth
 from geoserverx.models.workspace import (
@@ -24,14 +23,12 @@ from geoserverx.models.data_store import (
 from geoserverx.models.layer_group import LayerGroupsModel
 from geoserverx.models.layers import LayersModel, LayerModel
 from geoserverx.models.coverages_store import CoveragesStoreModel, CoveragesStoresModel
-from geoserverx.models.gs_response import GSResponse
 from geoserverx.utils.services.async_datastore import (
     AddDataStoreProtocol,
     CreateFileStore,
     ShapefileStore,
     GPKGfileStore,
 )
-import json
 
 
 @dataclass
@@ -96,7 +93,7 @@ class AsyncGeoServerX:
     # Get all workspaces
     async def get_all_workspaces(self) -> Union[WorkspacesModel, GSResponse]:
         Client = self.http_client
-        responses = await Client.get(f"workspaces")
+        responses = await Client.get("workspaces")
         if responses.status_code == 200:
             return WorkspacesModel.model_validate(responses.json())
         else:
@@ -123,7 +120,7 @@ class AsyncGeoServerX:
         )
         responses = await Client.post(
             f"workspaces?default={default}",
-            data=payload.json(),
+            data=payload.model_dump_json(),
             headers=self.head,
         )
         results = self.response_recognise(responses.status_code)
@@ -174,9 +171,9 @@ class AsyncGeoServerX:
             return results
 
     # Get all styles in GS
-    async def get_allstyles(self) -> AllStylesModel:
+    async def get_all_styles(self) -> AllStylesModel:
         Client = self.http_client
-        responses = await Client.get(f"styles")
+        responses = await Client.get("styles")
         if responses.status_code == 200:
             return AllStylesModel.model_validate(responses.json())
         else:
@@ -220,31 +217,11 @@ class AsyncGeoServerX:
         Client = self.http_client
         responses = await Client.post(
             f"workspaces/{workspace}/datastores/",
-            data=payload.json(),
+            data=payload.model_dump_json(),
             headers=self.head,
         )
         results = self.response_recognise(responses.status_code)
         return results
-
-    # Get all styles in GS
-    async def get_allstyles(self) -> AllStylesModel:
-        Client = self.http_client
-        responses = await Client.get(f"styles")
-        if responses.status_code == 200:
-            return AllStylesModel.model_validate(responses.json())
-        else:
-            results = self.response_recognise(responses.status_code)
-            return results
-
-    # Get specific style in GS
-    async def get_style(self, style: str) -> StyleModel:
-        Client = self.http_client
-        responses = await Client.get(f"styles/{style}.json")
-        if responses.status_code == 200:
-            return StyleModel.model_validate(responses.json())
-        else:
-            results = self.response_recognise(responses.status_code)
-            return results
 
     async def create_file_store(self, workspace: str, store: str, file, service_type):
         service: AddDataStoreProtocol = CreateFileStore()
@@ -291,7 +268,7 @@ class AsyncGeoServerX:
         if workspace:
             responses = await Client.get(f"/workspaces/{workspace}/layers")
         else:
-            responses = await Client.get(f"layers")
+            responses = await Client.get("layers")
         if responses.status_code == 200:
             return LayersModel.model_validate(responses.json())
         else:

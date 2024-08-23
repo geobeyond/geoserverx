@@ -230,7 +230,7 @@ import asyncio
 async def get_info_raster_workspaces(url, username, password):
     print("-------------start-----------------")
     client = AsyncGeoServerX(username, password,url)
-    print(await client.get_allstyles())
+    print(await client.get_all_styles())
 
 async def main():
     await asyncio.gather(get_info_raster_workspaces(

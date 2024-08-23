@@ -626,6 +626,9 @@ def good_layer_connection() -> dict:
                 "href": "http://localhost:8080/geoserver/rest/workspaces/tiger/datastores/nyc/featuretypes/poi.json",
             },
             "attribution": {"logoWidth": 0, "logoHeight": 0},
+            "opaque" : False,
+            "queryable" : True
+
         }
     }
     return item

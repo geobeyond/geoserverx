@@ -43,7 +43,7 @@ def workspaces(
     """
     if request.value == "sync":
         client = SyncGeoServerX(username, password, url)
-        result = client.get_all_workspaces().json()
+        result = client.get_all_workspaces().model_dump_json()
         if "code" in result:
             typer.secho(result, fg=typer.colors.RED)
         else:
@@ -69,7 +69,7 @@ def workspace(
     """
     if request.value == "sync":
         client = SyncGeoServerX(username, password, url)
-        result = client.get_workspace(workspace).json()
+        result = client.get_workspace(workspace).model_dump_json()
         if "code" in result:
             typer.secho(result, fg=typer.colors.RED)
         else:
@@ -98,7 +98,7 @@ def create_workspace(
     """
     if request.value == "sync":
         client = SyncGeoServerX(username, password, url)
-        result = client.create_workspace(workspace, default, isolated).json()
+        result = client.create_workspace(workspace, default, isolated).model_dump_json()
         if json.loads(result)["code"] == 201:
             typer.secho(result, fg=typer.colors.GREEN)
         else:
@@ -125,7 +125,7 @@ def vector_st_wp(
     """
     if request.value == "sync":
         client = SyncGeoServerX(username, password, url)
-        result = client.get_vector_stores_in_workspaces(workspace).json()
+        result = client.get_vector_stores_in_workspaces(workspace).model_dump_json()
         if "code" in result:
             typer.secho(result, fg=typer.colors.RED)
         else:
@@ -151,7 +151,7 @@ def raster_st_wp(
     """
     if request.value == "sync":
         client = SyncGeoServerX(username, password, url)
-        result = client.get_raster_stores_in_workspaces(workspace).json()
+        result = client.get_raster_stores_in_workspaces(workspace).model_dump_json()
         if "code" in result:
             typer.secho(result, fg=typer.colors.RED)
         else:
@@ -178,7 +178,7 @@ def vector_store(
     """
     if request.value == "sync":
         client = SyncGeoServerX(username, password, url)
-        result = client.get_vector_store(workspace, store).json()
+        result = client.get_vector_store(workspace, store).model_dump_json()
         if "code" in result:
             typer.secho(result, fg=typer.colors.RED)
         else:
@@ -205,7 +205,7 @@ def raster_store(
     """
     if request.value == "sync":
         client = SyncGeoServerX(username, password, url)
-        result = client.get_raster_store(workspace, store).json()
+        result = client.get_raster_store(workspace, store).model_dump_json()
         if "code" in result:
             typer.secho(result, fg=typer.colors.RED)
         else:
@@ -230,7 +230,7 @@ def styles(
     """
     if request.value == "sync":
         client = SyncGeoServerX(username, password, url)
-        result = client.get_allstyles().json()
+        result = client.get_all_styles().model_dump_json()
         if "code" in result:
             typer.secho(result, fg=typer.colors.RED)
         else:
@@ -256,7 +256,7 @@ def style(
     """
     if request.value == "sync":
         client = SyncGeoServerX(username, password, url)
-        result = client.get_style(style).json()
+        result = client.get_style(style).model_dump_json()
         if "code" in result:
             typer.secho(result, fg=typer.colors.RED)
         else:
@@ -294,7 +294,7 @@ def create_file(
                 typer.secho(result, fg=typer.colors.GREEN)
             else:
                 typer.secho(result, fg=typer.colors.RED)
-        except:
+        except Exception:
             typer.secho("File path is incorrect", fg=typer.colors.YELLOW)
     else:
         typer.echo("Async support will be shortly")
@@ -357,7 +357,7 @@ def layers(
     """
     if request.value == "sync":
         client = SyncGeoServerX(username, password, url)
-        result = client.get_all_layers(workspace).json()
+        result = client.get_all_layers(workspace).model_dump_json()
         if "code" in result:
             typer.secho(result, fg=typer.colors.RED)
         else:
@@ -373,6 +373,7 @@ def layer(
     request: requestEnum = requestEnum._sync,
     workspace: str = typer.Option(..., help="Workspace name"),
     layer: str = typer.Option(..., help="Layer name"),
+    detail:bool = typer.Option(False, help="Detail Info"),
     url: str = typer.Option(
         "http://127.0.0.1:8080/geoserver/rest/", help="Geoserver REST URL"
     ),
@@ -384,7 +385,7 @@ def layer(
     """
     if request.value == "sync":
         client = SyncGeoServerX(username, password, url)
-        result = client.get_layer(workspace, layer).json()
+        result = client.get_layer(workspace, layer, detail).model_dump_json()
         if "code" in result:
             typer.secho(result, fg=typer.colors.RED)
         else:

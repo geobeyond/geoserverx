@@ -1,7 +1,5 @@
 import httpx
 from pytest import fixture, mark as pytest_mark
-import pytest
-from geoserverx.models.workspace import WorkspaceInBulk
 from geoserverx._sync.gsx import SyncGeoServerX, GeoServerXAuth, GeoServerXError
 
 
@@ -18,7 +16,7 @@ def create_client():
 @pytest_mark.anyio
 def test_error():
     try:
-        client = SyncGeoServerX(url="", username="", password="")
+        SyncGeoServerX(url="", username="", password="")
         assert False
     except GeoServerXError:
         assert True
@@ -198,30 +196,30 @@ def test_get_raster_store_ConnectError(client: SyncGeoServerX, respx_mock):
     assert response.response == "Error in connecting to Geoserver"
 
 
-# Test - get_allstyles
-def test_get_allstyles_validation(
+# Test - get_all_styles
+def test_get_all_styles_validation(
     client: SyncGeoServerX, invalid_all_styles_model_connection, respx_mock
 ):
     respx_mock.get(f"{baseUrl}styles").mock(
         return_value=httpx.Response(404, json=invalid_all_styles_model_connection)
     )
-    response = client.get_allstyles()
+    response = client.get_all_styles()
     assert response.response == "Result not found"
 
 
-def test_get_allstyles_success(
+def test_get_all_styles_success(
     client: SyncGeoServerX, good_all_styles_model_connection, respx_mock
 ):
     respx_mock.get(f"{baseUrl}styles").mock(
         return_value=httpx.Response(200, json=good_all_styles_model_connection)
     )
-    response = client.get_allstyles()
+    response = client.get_all_styles()
     assert response.styles.style[0].name == "CUSD 2020 Census Blocks"
 
 
-def test_get_allstyles_ConnectError(client: SyncGeoServerX, respx_mock):
+def test_get_all_styles_ConnectError(client: SyncGeoServerX, respx_mock):
     respx_mock.get(f"{baseUrl}styles").mock(side_effect=httpx.ConnectError)
-    response = client.get_allstyles()
+    response = client.get_all_styles()
     assert response.response == "Error in connecting to Geoserver"
 
 

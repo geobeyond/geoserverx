@@ -175,8 +175,8 @@ def test_get_raster_store_ConnectError(respx_mock):
     assert "Error in connecting to Geoserver" in result.stdout
 
 
-# Test - get_allstyles
-def test_get_allstyles_validation(invalid_all_styles_model_connection, respx_mock):
+# Test - get_all_styles
+def test_get_all_styles_validation(invalid_all_styles_model_connection, respx_mock):
     respx_mock.get(f"{baseUrl}styles").mock(
         return_value=httpx.Response(404, json=invalid_all_styles_model_connection)
     )
@@ -184,7 +184,7 @@ def test_get_allstyles_validation(invalid_all_styles_model_connection, respx_moc
     assert "Result not found" in result.stdout
 
 
-def test_get_allstyles_success(good_all_styles_model_connection, respx_mock):
+def test_get_all_styles_success(good_all_styles_model_connection, respx_mock):
     respx_mock.get(f"{baseUrl}styles").mock(
         return_value=httpx.Response(200, json=good_all_styles_model_connection)
     )
@@ -192,7 +192,7 @@ def test_get_allstyles_success(good_all_styles_model_connection, respx_mock):
     assert "CUSD 2020 Census" in result.stdout
 
 
-def test_get_allstyles_ConnectError(respx_mock):
+def test_get_all_styles_ConnectError(respx_mock):
     respx_mock.get(f"{baseUrl}styles").mock(side_effect=httpx.ConnectError)
     result = runner.invoke(app, ["styles"])
     assert "Error in connecting to Geoserver" in result.stdout
@@ -354,6 +354,7 @@ def test_get_layer_success(good_layer_connection, respx_mock):
         return_value=httpx.Response(200, json=good_layer_connection)
     )
     result = runner.invoke(app, ["layer", "--workspace", "tiger", "--layer", "poi"])
+    print(result)
     assert "poi" in result.stdout
 
 

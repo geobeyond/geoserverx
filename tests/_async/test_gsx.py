@@ -1,14 +1,12 @@
-import httpx, respx
+import httpx
+import respx
 from pytest import mark as pytest_mark
-from geoserverx.models.workspace import WorkspaceInBulk
 from geoserverx._async.gsx import AsyncGeoServerX, GeoServerXAuth, GeoServerXError
 import pytest_asyncio
 import pytest
 from respx.fixtures import session_event_loop as event_loop  # noqa: F401
 
 baseUrl = "http://127.0.0.1:8080/geoserver/rest/"
-
-from respx.fixtures import session_event_loop as event_loop  # noqa: F401
 
 
 @pytest_asyncio.fixture(scope="session")
@@ -22,7 +20,7 @@ async def create_a_client():
 @pytest_mark.anyio
 async def test_error():
     try:
-        client = AsyncGeoServerX(url="", username="", password="")
+        AsyncGeoServerX(url="", username="", password="")
         assert False
     except GeoServerXError:
         assert True
@@ -30,7 +28,7 @@ async def test_error():
 
 @pytest.mark.asyncio
 async def test_get_all_workspaces_validation(
-    create_a_client, respx_mock, bad_workspaces_connection, event_loop
+    create_a_client, respx_mock, bad_workspaces_connection
 ):
     respx_mock.get(f"{baseUrl}workspaces").mock(
         return_value=httpx.Response(404, json=bad_workspaces_connection)
@@ -41,7 +39,7 @@ async def test_get_all_workspaces_validation(
 
 @pytest.mark.asyncio
 async def test_get_all_workspaces_success(
-    create_a_client, respx_mock, good_workspaces_connection, event_loop
+    create_a_client, respx_mock, good_workspaces_connection
 ):
     respx_mock.get(f"{baseUrl}workspaces").mock(
         return_value=httpx.Response(200, json=good_workspaces_connection)
@@ -225,34 +223,34 @@ async def test_get_raster_store_ConnectError(create_a_client, respx_mock):
         assert response.response == "Error in connecting to Geoserver"
 
 
-# Test - get_allstyles
+# Test - get_all_styles
 @pytest_mark.anyio
-async def test_get_allstyles_validation(
+async def test_get_all_styles_validation(
     create_a_client, invalid_all_styles_model_connection, respx_mock
 ):
     respx_mock.get(f"{baseUrl}styles").mock(
         return_value=httpx.Response(404, json=invalid_all_styles_model_connection)
     )
-    response = await create_a_client.get_allstyles()
+    response = await create_a_client.get_all_styles()
     assert response.response == "Result not found"
 
 
 @pytest_mark.anyio
-async def test_get_allstyles_success(
+async def test_get_all_styles_success(
     create_a_client, good_all_styles_model_connection, respx_mock
 ):
     respx_mock.get(f"{baseUrl}styles").mock(
         return_value=httpx.Response(200, json=good_all_styles_model_connection)
     )
-    response = await create_a_client.get_allstyles()
+    response = await create_a_client.get_all_styles()
     assert response.styles.style[0].name == "CUSD 2020 Census Blocks"
 
 
 @pytest_mark.anyio
-async def test_get_allstyles_ConnectError(create_a_client, respx_mock):
+async def test_get_all_styles_ConnectError(create_a_client, respx_mock):
     respx_mock.get(f"{baseUrl}styles").mock(side_effect=httpx.ConnectError)
     with pytest.raises(httpx.ConnectError):
-        response = await create_a_client.get_allstyles()
+        response = await create_a_client.get_all_styles()
         assert response.response == "Error in connecting to Geoserver"
 
 
@@ -380,7 +378,7 @@ async def test_create_pg_store_ConnectError(create_a_client, respx_mock):
 # Test - get_all_layers
 @pytest.mark.asyncio
 async def test_get_all_layers_validation(
-    create_a_client, respx_mock, bad_layers_connection, event_loop
+    create_a_client, respx_mock, bad_layers_connection
 ):
     respx_mock.get(f"{baseUrl}layers").mock(
         return_value=httpx.Response(404, json=bad_layers_connection)
@@ -391,7 +389,7 @@ async def test_get_all_layers_validation(
 
 @pytest.mark.asyncio
 async def test_get_all_layers_success(
-    create_a_client, respx_mock, good_layers_connection, event_loop
+    create_a_client, respx_mock, good_layers_connection
 ):
     respx_mock.get(f"{baseUrl}layers").mock(
         return_value=httpx.Response(200, json=good_layers_connection)
@@ -410,9 +408,7 @@ async def test_get_all_layers_NetworkError(create_a_client, respx_mock):
 
 # Test - get_layer
 @pytest.mark.asyncio
-async def test_get_layer_validation(
-    create_a_client, respx_mock, bad_layer_connection, event_loop
-):
+async def test_get_layer_validation(create_a_client, respx_mock, bad_layer_connection):
     respx_mock.get(f"{baseUrl}layers/tiger:poi").mock(
         return_value=httpx.Response(404, json=bad_layer_connection)
     )
@@ -421,9 +417,7 @@ async def test_get_layer_validation(
 
 
 @pytest.mark.asyncio
-async def test_get_layer_success(
-    create_a_client, respx_mock, good_layer_connection, event_loop
-):
+async def test_get_layer_success(create_a_client, respx_mock, good_layer_connection):
     respx_mock.get(f"{baseUrl}layers/tiger:poi").mock(
         return_value=httpx.Response(200, json=good_layer_connection)
     )

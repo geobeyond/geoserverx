@@ -28,8 +28,6 @@ from geoserverx.models.workspace import (
     WorkspaceModel,
     WorkspacesModel,
     NewWorkspace,
-    NewWorkspaceInfo,
-    SingleWorkspace,
 )
 from geoserverx.models.layer_group import LayerGroupsModel
 
@@ -42,7 +40,7 @@ def test_datastoreinbulk_connection(good_datastore_in_bulk_connection):
 
 def test_datastoreinbulk_failure(bad_datastore_in_bulk_connection):
     with pytest.raises(ValidationError):
-        ds_connection = DataStoreInBulk(**bad_datastore_in_bulk_connection)
+        DataStoreInBulk(**bad_datastore_in_bulk_connection)
 
 
 # Testing DataStoreDict
@@ -53,7 +51,7 @@ def test_datastoredict_connection(good_datastore_dict_connection):
 
 def test_datastoredict_failure(bad_datastore_dict_connection):
     with pytest.raises(ValidationError):
-        ds_connection = DataStoreDict(**bad_datastore_dict_connection)
+        DataStoreDict(**bad_datastore_dict_connection)
 
 
 # Testing DataStoresModel
@@ -64,7 +62,7 @@ def test_datastoresmodel_connection(good_datastores_model_connection):
 
 def test_datastoresmodel_failure(bad_datastores_model_connection):
     with pytest.raises(ValidationError):
-        ds_connection = DataStoresModel(**bad_datastores_model_connection)
+        DataStoresModel(**bad_datastores_model_connection)
 
 
 # Testing DatastoreConnection
@@ -75,7 +73,7 @@ def test_datastoreconnection_connection(good_datastore_connection_connection):
 
 def test_datastoreconnection_failure(bad_datastore_connection_connection):
     with pytest.raises(ValidationError):
-        ds_connection = DatastoreConnection(**bad_datastore_connection_connection)
+        DatastoreConnection(**bad_datastore_connection_connection)
 
 
 # Testing EntryItem
@@ -86,7 +84,7 @@ def test_entryitem_connection(good_entry_item_connection):
 
 def test_entryitem_failure(bad_entry_item_connection):
     with pytest.raises(ValidationError):
-        ds_connection = EntryItem(**bad_entry_item_connection)
+        EntryItem(**bad_entry_item_connection)
 
 
 # Testing DatastoreItem
@@ -97,7 +95,7 @@ def test_datastoreitem_connection(good_datastore_item_connection):
 
 def test_datastoreitem_failure(bad_datastore_item_connection):
     with pytest.raises(ValidationError):
-        ds_connection = DatastoreItem(**bad_datastore_item_connection)
+        DatastoreItem(**bad_datastore_item_connection)
 
 
 # Testing DataStoreModel
@@ -108,7 +106,7 @@ def test_datastoremodel_connection(good_datastore_model_connection):
 
 def test_datastoremodel_failure(bad_datastore_model_connection):
     with pytest.raises(ValidationError):
-        ds_connection = DataStoreModel(**bad_datastore_model_connection)
+        DataStoreModel(**bad_datastore_model_connection)
 
 
 # Testing CoveragesStoreInBulk
@@ -120,7 +118,7 @@ def test_coveragesstoreinbulk_connection(good_coverages_store_in_bulk_connection
 
 def test_coveragesstoreinbulk_failure(bad_coverages_store_in_bulk_connection):
     with pytest.raises(ValidationError):
-        ds_connection = CoveragesStoreInBulk(**bad_coverages_store_in_bulk_connection)
+        CoveragesStoreInBulk(**bad_coverages_store_in_bulk_connection)
 
 
 # Testing CoveragesStoresDict
@@ -131,7 +129,7 @@ def test_coveragesstoresdict_connection(good_coverages_stores_dict_connection):
 
 def test_coveragesstoresdict_failure(bad_coverages_stores_dict_connection):
     with pytest.raises(ValidationError):
-        ds_connection = CoveragesStoresDict(**bad_coverages_stores_dict_connection)
+        CoveragesStoresDict(**bad_coverages_stores_dict_connection)
 
 
 # Testing CoveragesStoresModel
@@ -142,7 +140,7 @@ def test_coveragesstoresmodel_connection(good_coverages_stores_model_connection)
 
 def test_coveragesstoresmodel_failure(bad_coverages_stores_model_connection):
     with pytest.raises(ValidationError):
-        ds_connection = CoveragesStoresModel(**bad_coverages_stores_model_connection)
+        CoveragesStoresModel(**bad_coverages_stores_model_connection)
 
 
 # Testing CoveragesStoreModel
@@ -153,7 +151,7 @@ def test_coveragesstoremodel_connection(good_coverages_store_model_connection):
 
 def test_coveragesstoremodel_failure(bad_coverages_store_model_connection):
     with pytest.raises(ValidationError):
-        ds_connection = CoveragesStoreModel(**bad_coverages_store_model_connection)
+        CoveragesStoreModel(**bad_coverages_store_model_connection)
 
 
 # Testing SingleStyle
@@ -164,7 +162,7 @@ def test_singlestyle_connection(good_single_style_dict_connection):
 
 def test_singlestyle_failure(bad_single_style_dict_connection):
     with pytest.raises(ValidationError):
-        ds_connection = SingleStyle(**bad_single_style_dict_connection)
+        SingleStyle(**bad_single_style_dict_connection)
 
 
 # Testing StyleModel
@@ -175,7 +173,7 @@ def test_stylemodel_connection(good_style_model_connection):
 
 def test_stylemodel_failure(bad_style_model_connection):
     with pytest.raises(ValidationError):
-        ds_connection = StyleModel(**bad_style_model_connection)
+        StyleModel(**bad_style_model_connection)
 
 
 # Testing allStyleList
@@ -186,7 +184,7 @@ def test_allstylelist_connection(good_all_style_list_connection):
 
 def test_allstylelist_failure(bad_all_style_list_connection):
     with pytest.raises(ValidationError):
-        ds_connection = allStyleList(**bad_all_style_list_connection)
+        allStyleList(**bad_all_style_list_connection)
 
 
 # Testing allStyle
@@ -197,7 +195,7 @@ def test_allstyle_connection(good_all_style_dict_connection):
 
 def test_allstyle_failure(bad_all_style_dict_connection):
     with pytest.raises(ValidationError):
-        ds_connection = allStyle(**bad_all_style_dict_connection)
+        allStyle(**bad_all_style_dict_connection)
 
 
 # Testing AllStylesModel
@@ -208,7 +206,7 @@ def test_allstylesmodel_connection(good_all_styles_model_connection):
 
 def test_allstylesmodel_failure(bad_all_styles_model_connection):
     with pytest.raises(ValidationError):
-        ds_connection = AllStylesModel(**bad_all_styles_model_connection)
+        AllStylesModel(**bad_all_styles_model_connection)
 
 
 # Testing WorkspaceInBulk
@@ -219,7 +217,7 @@ def test_workspaceinbulk_connection(good_workspace_in_bulk_connection):
 
 def test_workspaceinbulk_failure(bad_workspace_in_bulk_connection):
     with pytest.raises(ValidationError):
-        ds_connection = WorkspaceInBulk(**bad_workspace_in_bulk_connection)
+        WorkspaceInBulk(**bad_workspace_in_bulk_connection)
 
 
 # Testing workspaceDict
@@ -230,7 +228,7 @@ def test_workspacedict_connection(good_workspace_dict_connection):
 
 def test_workspacedict_failure(bad_workspace_dict_connection):
     with pytest.raises(ValidationError):
-        ds_connection = workspaceDict(**bad_workspace_dict_connection)
+        workspaceDict(**bad_workspace_dict_connection)
 
 
 # Testing WorkspacesModel
@@ -241,7 +239,7 @@ def test_workspacesmodel_connection(good_workspaces_model_connection):
 
 def test_workspacesmodel_failure(bad_workspaces_model_connection):
     with pytest.raises(ValidationError):
-        ds_connection = WorkspacesModel(**bad_workspaces_model_connection)
+        WorkspacesModel(**bad_workspaces_model_connection)
 
 
 # Testing WorkspaceModel
@@ -252,7 +250,7 @@ def test_workspacemodel_connection(good_workspace_model_connection):
 
 def test_workspacemodel_failure(bad_workspace_model_connection):
     with pytest.raises(ValidationError):
-        ds_connection = WorkspaceModel(**bad_workspace_model_connection)
+        WorkspaceModel(**bad_workspace_model_connection)
 
 
 # Testing NewWorkspace
@@ -263,26 +261,4 @@ def test_newworkspace_connection(good_new_workspace_connection):
 
 def test_newworkspace_failure(bad_new_workspace_connection):
     with pytest.raises(ValidationError):
-        ds_connection = NewWorkspace(**bad_new_workspace_connection)
-
-
-# Testing WorkspaceModel
-def test_workspacemodel_connection(good_workspace_model_connection):
-    ds_connection = WorkspaceModel(**good_workspace_model_connection)
-    assert ds_connection.workspace.name == "pydad"
-
-
-def test_workspacemodel_failure(bad_workspace_model_connection):
-    with pytest.raises(ValidationError):
-        ds_connection = WorkspaceModel(**bad_workspace_model_connection)
-
-
-
-# Testing LayerGroupsModel
-def test_layergroupsmodel_connection(good_layer_groups_connection):
-    ds_connection = LayerGroupsModel(**good_layer_groups_connection)
-    assert ds_connection.layerGroups.layerGroup[0].name == "tg"
-
-def test_layergroupsmodel_failure(bad_layer_groups_connection):
-    with pytest.raises(ValidationError):
-        ds_connection = LayerGroupsModel(**bad_layer_groups_connection)
+        NewWorkspace(**bad_new_workspace_connection)
