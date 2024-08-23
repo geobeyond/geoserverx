@@ -6,7 +6,7 @@ class langVersion(BaseModel):
     version: str = ...
 
 
-class SingleStyleDict(BaseModel):
+class SingleStyle(BaseModel):
     name: str = ...
     format: str = ...
     languageVersion: langVersion = ...
@@ -14,7 +14,7 @@ class SingleStyleDict(BaseModel):
 
 
 class StyleModel(BaseModel):
-    style: SingleStyleDict
+    style: SingleStyle
 
 
 class allStyleList(BaseModel):
@@ -22,9 +22,9 @@ class allStyleList(BaseModel):
     href: str
 
 
-class allStyleDict(BaseModel):
+class allStyle(BaseModel):
     style: List[allStyleList]
 
 
 class AllStylesModel(BaseModel):
-    styles: allStyleDict
+    styles: allStyle

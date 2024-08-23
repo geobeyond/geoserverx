@@ -20,6 +20,7 @@ from geoserverx.models.data_store import (
     CreateStoreItem,
     MainCreateDataStoreModel,
 )
+from geoserverx.models.layer_group import LayerGroupsModel
 from geoserverx.models.layers import LayersModel, LayerModel
 from geoserverx.models.coverages_store import CoveragesStoreModel, CoveragesStoresModel
 from geoserverx.utils.services.async_datastore import (
@@ -292,3 +293,17 @@ class AsyncGeoServerX:
         responses = await Client.delete(f"layers/{workspace}:{layer}")
         results = self.response_recognise(responses.status_code)
         return results
+
+
+    # Get all layer groups
+    async def get_all_layer_groups(self,workspace: Optional[str] = None) -> Union[LayerGroupsModel, GSResponse]:
+        Client = self.http_client
+        if workspace:
+            responses = await Client.get(f"workspaces/{workspace}/layergroups")
+        else :
+            responses = await Client.get(f"layergroups")
+        if responses.status_code == 200:
+            return LayerGroupsModel.model_validate(responses.json())
+        else:
+            results = self.response_recognise(responses.status_code)
+            return results

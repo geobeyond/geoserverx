@@ -380,3 +380,26 @@ def test_get_layer_ConnectError(client: SyncGeoServerX, respx_mock):
     respx_mock.get(f"{baseUrl}layers/tiger:poi").mock(side_effect=httpx.ConnectError)
     response = client.get_layer(workspace="tiger", layer="poi")
     assert response.response == "Error in connecting to Geoserver"
+
+
+# Test - get_all_layer_groups
+def test_get_all_layer_groups_validation(client: SyncGeoServerX, bad_layer_groups_connection, respx_mock):
+    respx_mock.get(f"{baseUrl}workspaces/ne/layergroups").mock(
+        return_value=httpx.Response(404, json=bad_layer_groups_connection)
+    )
+    response = client.get_all_layer_groups(workspace="ne")
+    assert response.response == "Result not found"
+
+
+def test_get_all_layer_groups_success(client: SyncGeoServerX, good_layer_groups_connection, respx_mock):
+    respx_mock.get(f"{baseUrl}workspaces/ne/layergroups").mock(
+        return_value=httpx.Response(200, json=good_layer_groups_connection)
+    )
+    response = client.get_all_layer_groups(workspace="ne")
+    assert response.layerGroups.layerGroup[0].name == "tg"
+
+
+def test_get_all_layer_groups_ConnectError(client: SyncGeoServerX, respx_mock):
+    respx_mock.get(f"{baseUrl}workspaces/ne/layergroups").mock(side_effect=httpx.ConnectError)
+    response = client.get_all_layer_groups(workspace="ne")
+    assert response.response == "Error in connecting to Geoserver"

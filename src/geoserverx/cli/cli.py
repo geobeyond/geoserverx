@@ -392,3 +392,29 @@ def layer(
             print(result)
     else:
         typer.echo("Async support will be shortly")
+
+
+# get layer groups
+@SyncGeoServerX.exception_handler
+@app.command(help="Get layer groups in the Geoserver")
+def layer_groups(
+    request: requestEnum = requestEnum._sync,
+    workspace: str = typer.Option( default=None,help="Workspace name"),
+    url: str = typer.Option(
+        "http://127.0.0.1:8080/geoserver/rest/", help="Geoserver REST URL"
+    ),
+    password: str = typer.Option("geoserver", help="Geoserver Password"),
+    username: str = typer.Option("admin", help="Geoserver username"),
+):
+    """
+    Get layer groups in the Geoserver
+    """
+    if request.value == "sync":
+        client = SyncGeoServerX(username, password, url)
+        result = client.get_all_layer_groups(workspace).json()
+        if "layerGroups" in result:
+            typer.secho(result, fg=typer.colors.RED)
+        else:
+            print(result)
+    else:
+        typer.echo("Async support will be shortly")
