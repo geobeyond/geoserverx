@@ -186,7 +186,7 @@ class SyncGeoServerX:
         Client = self.http_client
         responses = Client.post(
             f"workspaces/{workspace}/datastores",
-            content=store.json(),
+            content=store.model_dump_json(),
             headers=self.head,
         )
         results = self.response_recognise(responses.status_code)
@@ -212,7 +212,7 @@ class SyncGeoServerX:
         Client = self.http_client
         responses = Client.post(
             f"workspaces/{workspace}/coveragestores",
-            content=store.json(),
+            content=store.model_dump_json(),
             headers=self.head,
         )
         results = self.response_recognise(responses.status_code)
@@ -404,7 +404,7 @@ class SyncGeoServerX:
         Client = self.http_client
         responses = Client.post(
             f"/workspaces/{workspace}/coverages",
-            data=layer.json(),
+            data=layer.model_dump_json(),
             headers=self.head,
         )
         results = self.response_recognise(responses.status_code)

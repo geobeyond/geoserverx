@@ -5,7 +5,7 @@ from pydantic import BaseModel, Field
 
 class NativeCRS(BaseModel):
     class Config:
-        allow_population_by_field_name = True
+        populate_by_name = True
     crsclass: Optional[str] = Field(..., alias="@class")
     dollar: Optional[str] = Field(..., alias="$")
 
@@ -66,7 +66,7 @@ class LatLonBoundingBox(BaseModel):
 
 class Store(BaseModel):
     class Config:
-        allow_population_by_field_name = True
+        populate_by_name = True
     storeclass: Optional[str] = Field(alias="@class")
     name: Optional[str] = Field(None, description='The name of the store')
     href: Optional[str] = Field(None, description='URL to the data store')
@@ -149,7 +149,7 @@ class InterpolationMethodsString(BaseModel):
 
 class Grid(BaseModel):
     class Config:
-        allow_population_by_field_name = True
+        populate_by_name = True
     dimension: Optional[str] = Field(alias="@dimension")
     crs: Optional[str] = Field(None, description='target coordinate system')
     range: Optional[Range1] = Field(None, description='range of the raster plan')
@@ -166,7 +166,7 @@ class DimensionInfo(BaseModel):
 
 class MetadataEntry(BaseModel):
     class Config:
-        allow_population_by_field_name = True
+        populate_by_name = True
     key: Optional[str] = Field(alias="@key")
     dollar: Optional[str] = Field(..., alias="$")
     dimensionInfo : Optional[DimensionInfo]

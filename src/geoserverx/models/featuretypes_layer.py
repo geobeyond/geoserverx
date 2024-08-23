@@ -42,7 +42,7 @@ class DataLinks(BaseModel):
     )
 class CRSentry(BaseModel):
     class Config:
-        allow_population_by_field_name = True
+        populate_by_name = True
     key: Optional[str] = Field(alias="@class")
     dollar: Optional[str] = Field(..., alias="$")
 
@@ -72,7 +72,7 @@ class LatLonBoundingBox(BaseModel):
 
 class Store(BaseModel):
     class Config:
-        allow_population_by_field_name = True
+        populate_by_name = True
     key: Optional[str] = Field(alias="@class")
     name: Optional[str] = Field(None, description='The name of the store')
     href: Optional[str] = Field(None, description='URL to the data store')
@@ -106,7 +106,7 @@ class Attributes(BaseModel):
 
 class MetadataEntryItem(BaseModel):
     class Config:
-        allow_population_by_field_name = True
+        populate_by_name = True
     key: Optional[str] = Field(alias="@key")
     dollar: Optional[str] = Field(..., alias="$")
 
