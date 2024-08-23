@@ -262,3 +262,13 @@ def test_newworkspace_connection(good_new_workspace_connection):
 def test_newworkspace_failure(bad_new_workspace_connection):
     with pytest.raises(ValidationError):
         NewWorkspace(**bad_new_workspace_connection)
+
+
+# Testing LayerGroupsModel
+def test_layergroupsmodel_connection(good_layer_groups_connection):
+    ds_connection = LayerGroupsModel(**good_layer_groups_connection)
+    assert ds_connection.layerGroups.layerGroup[0].name == "tg"
+
+def test_layergroupsmodel_failure(bad_layer_groups_connection):
+    with pytest.raises(ValidationError):
+        LayerGroupsModel(**bad_layer_groups_connection)
