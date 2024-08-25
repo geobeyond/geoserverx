@@ -22,6 +22,7 @@ from geoserverx.models.style import (
     allStyle,
     AllStylesModel,
 )
+from geoserverx.models.geofence import RulesResponse
 from geoserverx.models.workspace import (
     WorkspaceInBulk,
     workspaceDict,
@@ -272,3 +273,13 @@ def test_layergroupsmodel_connection(good_layer_groups_connection):
 def test_layergroupsmodel_failure(bad_layer_groups_connection):
     with pytest.raises(ValidationError):
         LayerGroupsModel(**bad_layer_groups_connection)
+
+
+# Testing LayerGroupsModel
+def test_RulesResponse_connection(good_all_geofence_rules_connection):
+    ds_connection = RulesResponse(**good_all_geofence_rules_connection)
+    assert ds_connection.count == 2
+
+def test_RulesResponse_failure(bad_all_geofence_rules_connection):
+    with pytest.raises(ValidationError):
+        RulesResponse(**bad_all_geofence_rules_connection)

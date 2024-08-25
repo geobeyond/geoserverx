@@ -403,3 +403,26 @@ def test_get_all_layer_groups_ConnectError(client: SyncGeoServerX, respx_mock):
     respx_mock.get(f"{baseUrl}workspaces/ne/layergroups").mock(side_effect=httpx.ConnectError)
     response = client.get_all_layer_groups(workspace="ne")
     assert response.response == "Error in connecting to Geoserver"
+
+
+# Test - all_geofence_rules
+def test_all_geofence_rules_validation(client: SyncGeoServerX, bad_all_geofence_rules_connection, respx_mock):
+    respx_mock.get(f"{baseUrl}geofence/rules/", headers={'Accept': "application/json"}).mock(
+        return_value=httpx.Response(404, json=bad_all_geofence_rules_connection)
+    )
+    response = client.get_all_geofence_rules()
+    assert response.response == "Result not found"
+
+
+def test_all_geofence_rules_success(client: SyncGeoServerX, good_all_geofence_rules_connection, respx_mock):
+    respx_mock.get(f"{baseUrl}geofence/rules/", headers={'Accept': "application/json"}).mock(
+        return_value=httpx.Response(200, json=good_all_geofence_rules_connection)
+    )
+    response = client.get_all_geofence_rules()
+    assert response.count == 2
+
+
+def test_all_geofence_rules_ConnectError(client: SyncGeoServerX, respx_mock):
+    respx_mock.get(f"{baseUrl}geofence/rules/", headers={'Accept': "application/json"}).mock(side_effect=httpx.ConnectError)
+    response = client.get_all_geofence_rules()
+    assert response.response == "Error in connecting to Geoserver"
