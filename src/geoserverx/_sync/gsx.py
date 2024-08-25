@@ -439,7 +439,7 @@ class SyncGeoServerX:
     @exception_handler
     def get_all_geofence_rules(self) -> Union[RulesResponse, GSResponse]:
         Client = self.http_client
-        responses = Client.get("geofence/rules/")
+        responses = Client.get("geofence/rules/", headers={'Accept': "application/json"})
         if responses.status_code == 200:
             return RulesResponse.model_validate(responses.json())
         else:
