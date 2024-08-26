@@ -20,7 +20,7 @@ from geoserverx.models.data_store import (
     CreateStoreItem,
     MainCreateDataStoreModel,
 )
-from geoserverx.models.geofence import RulesResponse
+from geoserverx.models.geofence import RulesResponse,Rule
 from geoserverx.models.layer_group import LayerGroupsModel
 from geoserverx.models.layers import LayersModel, LayerModel
 from geoserverx.models.coverages_store import CoveragesStoreModel, CoveragesStoresModel
@@ -318,3 +318,23 @@ class AsyncGeoServerX:
         else:
             results = self.response_recognise(responses.status_code)
             return results
+        
+    # Get geofence rule by id
+    async def get_geofence_rule(self,id:int) -> Union[Rule, GSResponse]:
+        Client = self.http_client
+        responses = await Client.get(f"geofence/rules/id/{id}", headers={'Accept': "application/json"})
+        if responses.status_code == 200:
+            return Rule.model_validate(responses.json())
+        else:
+            results = self.response_recognise(responses.status_code)
+            return results
+        
+
+def check_extension(client,name):
+    res = client.get("about/status.json")
+    plugins = res.statuss.status
+    for plugin_name,href in plugins:
+        if plugin_name.contains(name):
+            return True 
+        
+    return False
