@@ -427,7 +427,7 @@ class SyncGeoServerX:
         if workspace:
             responses = Client.get(f"workspaces/{workspace}/layergroups")
         else :
-            responses = Client.get(f"layergroups")
+            responses = Client.get("layergroups")
         if responses.status_code == 200:
             return LayerGroupsModel.model_validate(responses.json())
         else:
