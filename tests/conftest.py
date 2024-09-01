@@ -819,3 +819,21 @@ def bad_all_geofence_rules_connection() -> dict:
 def networkbad_all_geofence_rules_connection() -> dict:
     item = {"code": 503, "response": "Geoserver unavailable"}
     return item
+
+
+@pytest.fixture
+def good_new_geofence_rule_connection() -> dict:
+    item = {"Rule":{"priority":3,"userName":None,"roleName":"ROLE_AUTHENTICATED","addressRange":None,"workspace":"*","layer":"ne","service":"GWC","request":None,"subfield":None,"access":"ALLOW","limits":None,"layerDetails":None}}
+    return item
+
+
+@pytest.fixture
+def bad_new_geofence_rule_connection() -> dict:
+    item = {"Rule": ""}
+    return item
+
+
+@pytest.fixture
+def invalid_new_geofence_rule_connection() -> dict:
+    item = {"code": 404, "response": "Result not found"}
+    return item

@@ -20,7 +20,7 @@ from geoserverx.models.data_store import (
     CreateStoreItem,
     MainCreateDataStoreModel,
 )
-from geoserverx.models.geofence import RulesResponse,Rule
+from geoserverx.models.geofence import RulesResponse,Rule,NewRule
 from geoserverx.models.layer_group import LayerGroupsModel
 from geoserverx.models.layers import LayersModel, LayerModel
 from geoserverx.models.coverages_store import CoveragesStoreModel, CoveragesStoresModel
@@ -330,11 +330,17 @@ class AsyncGeoServerX:
             return results
         
 
-def check_extension(client,name):
-    res = client.get("about/status.json")
-    plugins = res.statuss.status
-    for plugin_name,href in plugins:
-        if plugin_name.contains(name):
-            return True 
-        
-    return False
+    # Create geofence on geoserver
+    async def create_geofence(
+        self, rule:Rule
+    ) -> GSResponse:
+        PostingRule = NewRule(Rule=rule)
+        print(PostingRule.model_dump_json())
+        Client = self.http_client
+        responses = await Client.post(
+            "geofence/rules",
+            content=PostingRule.model_dump_json(),
+            headers=self.head,
+        )        
+        results = self.response_recognise(responses.status_code)
+        return results

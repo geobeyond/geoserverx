@@ -5,6 +5,7 @@ from geoserverx._async.gsx import AsyncGeoServerX, GeoServerXAuth, GeoServerXErr
 import pytest_asyncio
 import pytest
 from respx.fixtures import session_event_loop as event_loop  # noqa: F401
+from geoserverx.models.geofence import Rule
 
 baseUrl = "http://127.0.0.1:8080/geoserver/rest/"
 
@@ -491,4 +492,54 @@ async def test_all_geofence_rules_NetworkError(create_a_client, respx_mock):
     respx.get(f"{baseUrl}geofence/rules/", headers={'Accept': "application/json"}).mock(side_effect=httpx.ConnectError)
     with pytest.raises(httpx.ConnectError):
         response = await create_a_client.get_all_geofence_rules()
+        assert response.response == "Error in connecting to Geoserver"
+
+# Test - create_geofence
+@pytest_mark.anyio
+async def test_create_geofence_validation(
+    create_a_client, invalid_new_geofence_rule_connection, respx_mock
+):
+    respx_mock.post(f"{baseUrl}geofence/rules").mock(
+        return_value=httpx.Response(404, json=invalid_new_geofence_rule_connection)
+    )
+    response = await create_a_client.create_geofence(rule=Rule(priority=3,
+                                    userName=None,
+                                    roleName='ROLE_AUTHENTICATED',
+                                    workspace='*',
+                                    service='GWC',
+                                    layer='ne',
+                                    access='ALLOW'))
+    assert response.response == "Result not found"
+
+
+@pytest_mark.anyio
+async def test_create_geofence_success(
+    create_a_client, good_all_geofence_rules_connection, respx_mock
+):
+    respx_mock.post(f"{baseUrl}geofence/rules").mock(
+        return_value=httpx.Response(201, json=good_all_geofence_rules_connection)
+    )
+    response = await create_a_client.create_geofence(rule=Rule(priority=3,
+                                    userName=None,
+                                    roleName='ROLE_AUTHENTICATED',
+                                    workspace='*',
+                                    service='GWC',
+                                    layer='ne',
+                                    access='ALLOW'))
+    assert response.response == "Data added successfully"
+
+
+@pytest_mark.anyio
+async def test_create_geofence_ConnectError(create_a_client, respx_mock):
+    respx_mock.post(f"{baseUrl}geofence/rules").mock(
+        side_effect=httpx.ConnectError
+    )
+    with pytest.raises(httpx.ConnectError):
+        response = await create_a_client.create_geofence(rule=Rule(priority=3,
+                                    userName=None,
+                                    roleName='ROLE_AUTHENTICATED',
+                                    workspace='*',
+                                    service='GWC',
+                                    layer='ne',
+                                    access='ALLOW'))
         assert response.response == "Error in connecting to Geoserver"

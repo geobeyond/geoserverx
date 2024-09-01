@@ -19,7 +19,7 @@ from geoserverx.models.data_store import (
     CreateStoreItem,
     MainCreateDataStoreModel,
 )
-from geoserverx.models.geofence import RulesResponse,Rule
+from geoserverx.models.geofence import RulesResponse,Rule,NewRule,GetRule
 from geoserverx.models.featuretypes_layer import FeatureTypesModel
 from geoserverx.models.layers import LayersModel, LayerModel
 from geoserverx.models.coverages_store import CoveragesStoreModel, CoveragesStoresModel
@@ -448,7 +448,7 @@ class SyncGeoServerX:
         
     # Get geofence rule by id
     @exception_handler
-    def get_geofence_rule(self,id:int) -> Union[Rule, GSResponse]:
+    def get_geofence_rule(self,id:int) -> Union[GetRule, GSResponse]:
         Client = self.http_client
         responses = Client.get(f"geofence/rules/id/{id}", headers={'Accept': "application/json"})
         if responses.status_code == 200:
@@ -456,3 +456,19 @@ class SyncGeoServerX:
         else:
             results = self.response_recognise(responses.status_code)
             return results
+    
+    # Create geofence on geoserver
+    @exception_handler
+    def create_geofence(
+        self, rule:Rule
+    ) -> GSResponse:
+        PostingRule = NewRule(Rule=rule)
+        print(PostingRule.model_dump_json())
+        Client = self.http_client
+        responses = Client.post(
+            "geofence/rules",
+            content=PostingRule.model_dump_json(),
+            headers=self.head,
+        )        
+        results = self.response_recognise(responses.status_code)
+        return results
