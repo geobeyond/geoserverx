@@ -373,7 +373,7 @@ def layer(
     request: requestEnum = requestEnum._sync,
     workspace: str = typer.Option(..., help="Workspace name"),
     layer: str = typer.Option(..., help="Layer name"),
-    detail:bool = typer.Option(False, help="Detail Info"),
+    detail: bool = typer.Option(False, help="Detail Info"),
     url: str = typer.Option(
         "http://127.0.0.1:8080/geoserver/rest/", help="Geoserver REST URL"
     ),
@@ -399,7 +399,7 @@ def layer(
 @app.command(help="Get layer groups in the Geoserver")
 def layer_groups(
     request: requestEnum = requestEnum._sync,
-    workspace: str = typer.Option( default=None,help="Workspace name"),
+    workspace: str = typer.Option(default=None, help="Workspace name"),
     url: str = typer.Option(
         "http://127.0.0.1:8080/geoserver/rest/", help="Geoserver REST URL"
     ),
