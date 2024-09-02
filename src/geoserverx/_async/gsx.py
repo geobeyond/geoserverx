@@ -90,7 +90,14 @@ class AsyncGeoServerX:
         elif r == 409:
             resp = GSResponseEnum._409.value
         return GSResponse.model_validate(resp)
-
+    # check if certain module/plugin exists in geoserver
+    async def check_modules(self,name)-> Union[bool, GSResponse]:
+        Client = self.http_client
+        response = await Client.get("about/status.json")
+        if response.status_code != 200:
+            return False
+        modules = [item["name"].lower() for item in response.json()['statuss']['status']]
+        return name.lower() in modules
     # Get all workspaces
     async def get_all_workspaces(self) -> Union[WorkspacesModel, GSResponse]:
         Client = self.http_client
@@ -312,6 +319,9 @@ class AsyncGeoServerX:
     # Get all geofence rules
     async def get_all_geofence_rules(self) -> Union[RulesResponse, GSResponse]:
         Client = self.http_client
+        # Check if geofence plugin exists
+        if not  self.check_modules('geofence'):
+            return GSResponse(code=404, response="Plugin not found")
         responses = await Client.get("geofence/rules/",headers={'Accept': "application/json"})
         if responses.status_code == 200:
             return RulesResponse.model_validate(responses.json())
@@ -322,6 +332,9 @@ class AsyncGeoServerX:
     # Get geofence rule by id
     async def get_geofence_rule(self,id:int) -> Union[Rule, GSResponse]:
         Client = self.http_client
+        # Check if geofence plugin exists
+        if not await self.check_modules('geofence'):
+            return GSResponse(code=404, response="Plugin not found")
         responses = await Client.get(f"geofence/rules/id/{id}", headers={'Accept': "application/json"})
         if responses.status_code == 200:
             return Rule.model_validate(responses.json())
@@ -335,7 +348,9 @@ class AsyncGeoServerX:
         self, rule:Rule
     ) -> GSResponse:
         PostingRule = NewRule(Rule=rule)
-        print(PostingRule.model_dump_json())
+        # Check if geofence plugin exists
+        if not await self.check_modules('geofence'):
+            return GSResponse(code=404, response="Plugin not found")
         Client = self.http_client
         responses = await Client.post(
             "geofence/rules",

@@ -9,7 +9,7 @@ class Attribute(BaseModel):
 
 
 class LayerDetails(BaseModel):
-    layerType: str
+    layerType: Optional[str] = None
     defaultStyle: Optional[str] = None
     cqlFilterRead: Optional[str] = None
     cqlFilterWrite: Optional[str] = None
@@ -25,7 +25,7 @@ class Rule(BaseModel):
     userName: Optional[str] = None
     roleName: str
     addressRange: Optional[str] = None
-    workspace: str
+    workspace: Optional[str] = None
     layer: Optional[str] = None
     service: Optional[Literal["GWC", "WMS", "WCS", "WFS"]] = None
     request: Optional[str] = None

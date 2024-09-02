@@ -469,6 +469,11 @@ async def test_get_all_layer_groups_NetworkError(create_a_client, respx_mock):
 async def test_all_geofence_rules_validation(
     create_a_client, respx_mock, bad_all_geofence_rules_connection
 ):
+    respx_mock.get(f"{baseUrl}about/status.json").mock(
+        return_value=httpx.Response(200, json={
+            'statuss': {'status': [{'name': 'geofence'}]}
+        })
+    )
     respx_mock.get(f"{baseUrl}geofence/rules/", headers={'Accept': "application/json"}).mock(
         return_value=httpx.Response(404, json=bad_all_geofence_rules_connection)
     )
@@ -480,6 +485,11 @@ async def test_all_geofence_rules_validation(
 async def test_all_geofence_rules_success(
     create_a_client, respx_mock, good_all_geofence_rules_connection
 ):
+    respx_mock.get(f"{baseUrl}about/status.json").mock(
+        return_value=httpx.Response(200, json={
+            'statuss': {'status': [{'name': 'geofence'}]}
+        })
+    )
     respx_mock.get(f"{baseUrl}geofence/rules/", headers={'Accept': "application/json"}).mock(
         return_value=httpx.Response(200, json=good_all_geofence_rules_connection)
     )
@@ -489,6 +499,11 @@ async def test_all_geofence_rules_success(
 
 @pytest.mark.asyncio
 async def test_all_geofence_rules_NetworkError(create_a_client, respx_mock):
+    respx_mock.get(f"{baseUrl}about/status.json").mock(
+        return_value=httpx.Response(200, json={
+            'statuss': {'status': [{'name': 'geofence'}]}
+        })
+    )
     respx.get(f"{baseUrl}geofence/rules/", headers={'Accept': "application/json"}).mock(side_effect=httpx.ConnectError)
     with pytest.raises(httpx.ConnectError):
         response = await create_a_client.get_all_geofence_rules()
@@ -499,6 +514,11 @@ async def test_all_geofence_rules_NetworkError(create_a_client, respx_mock):
 async def test_create_geofence_validation(
     create_a_client, invalid_new_geofence_rule_connection, respx_mock
 ):
+    respx_mock.get(f"{baseUrl}about/status.json").mock(
+        return_value=httpx.Response(200, json={
+            'statuss': {'status': [{'name': 'geofence'}]}
+        })
+    )
     respx_mock.post(f"{baseUrl}geofence/rules").mock(
         return_value=httpx.Response(404, json=invalid_new_geofence_rule_connection)
     )
@@ -516,6 +536,11 @@ async def test_create_geofence_validation(
 async def test_create_geofence_success(
     create_a_client, good_all_geofence_rules_connection, respx_mock
 ):
+    respx_mock.get(f"{baseUrl}about/status.json").mock(
+        return_value=httpx.Response(200, json={
+            'statuss': {'status': [{'name': 'geofence'}]}
+        })
+    )
     respx_mock.post(f"{baseUrl}geofence/rules").mock(
         return_value=httpx.Response(201, json=good_all_geofence_rules_connection)
     )
@@ -531,6 +556,11 @@ async def test_create_geofence_success(
 
 @pytest_mark.anyio
 async def test_create_geofence_ConnectError(create_a_client, respx_mock):
+    respx_mock.get(f"{baseUrl}about/status.json").mock(
+        return_value=httpx.Response(200, json={
+            'statuss': {'status': [{'name': 'geofence'}]}
+        })
+    )
     respx_mock.post(f"{baseUrl}geofence/rules").mock(
         side_effect=httpx.ConnectError
     )

@@ -107,6 +107,17 @@ class SyncGeoServerX:
                 return GSResponse(code=504, response="Timeout Error in connection")
 
         return inner_function
+    
+    # check if certain module/plugin exists in geoserver
+    @exception_handler
+    def check_modules(self,name)-> Union[bool, GSResponse]:
+        Client = self.http_client
+        response = Client.get("about/status.json")
+        if response.status_code != 200:
+            return False
+        modules = [item["name"].lower() for item in response.json()['statuss']['status']]
+        return name.lower() in modules
+
 
     # Get all workspaces
     @exception_handler
@@ -439,6 +450,10 @@ class SyncGeoServerX:
     @exception_handler
     def get_all_geofence_rules(self) -> Union[RulesResponse, GSResponse]:
         Client = self.http_client
+        # Check if geofence plugin exists
+        if not self.check_modules('geofence'):
+            return GSResponse(code=404, response="Plugin not found")
+        
         responses = Client.get("geofence/rules/", headers={'Accept': "application/json"})
         if responses.status_code == 200:
             return RulesResponse.model_validate(responses.json())
@@ -450,6 +465,9 @@ class SyncGeoServerX:
     @exception_handler
     def get_geofence_rule(self,id:int) -> Union[GetRule, GSResponse]:
         Client = self.http_client
+        # Check if geofence plugin exists
+        if not self.check_modules('geofence'):
+            return GSResponse(code=404, response="Plugin not found")
         responses = Client.get(f"geofence/rules/id/{id}", headers={'Accept': "application/json"})
         if responses.status_code == 200:
             return Rule.model_validate(responses.json())
@@ -463,7 +481,9 @@ class SyncGeoServerX:
         self, rule:Rule
     ) -> GSResponse:
         PostingRule = NewRule(Rule=rule)
-        print(PostingRule.model_dump_json())
+        # Check if geofence plugin exists
+        if not self.check_modules('geofence'):
+            return GSResponse(code=404, response="Plugin not found")
         Client = self.http_client
         responses = Client.post(
             "geofence/rules",
@@ -472,3 +492,4 @@ class SyncGeoServerX:
         )        
         results = self.response_recognise(responses.status_code)
         return results
+    
