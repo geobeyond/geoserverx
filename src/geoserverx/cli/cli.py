@@ -1,9 +1,11 @@
-import typer
-from enum import Enum
-from geoserverx._sync.gsx import SyncGeoServerX
-from rich import print
 import json
+from enum import Enum
 from pathlib import Path
+
+import typer
+from rich import print
+
+from geoserverx._sync.gsx import SyncGeoServerX
 
 app = typer.Typer()
 

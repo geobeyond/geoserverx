@@ -1,10 +1,12 @@
 import httpx
+import pytest
+import pytest_asyncio
 import respx
 from pytest import mark as pytest_mark
-from geoserverx._async.gsx import AsyncGeoServerX, GeoServerXAuth, GeoServerXError
-import pytest_asyncio
-import pytest
 from respx.fixtures import session_event_loop as event_loop  # noqa: F401
+
+from geoserverx._async.gsx import (AsyncGeoServerX, GeoServerXAuth,
+                                   GeoServerXError)
 
 baseUrl = "http://127.0.0.1:8080/geoserver/rest/"
 
