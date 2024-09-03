@@ -31,6 +31,7 @@ from geoserverx.models.workspace import (
 )
 from geoserverx.models.layer_group import LayerGroupsModel
 
+
 # Testing DataStoreInBulk
 def test_datastoreinbulk_connection(good_datastore_in_bulk_connection):
     ds_connection = DataStoreInBulk(**good_datastore_in_bulk_connection)
