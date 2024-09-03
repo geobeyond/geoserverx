@@ -276,7 +276,7 @@ def test_layergroupsmodel_failure(bad_layer_groups_connection):
 # Testing MetricsDataModel
 def test_MetricsDataModel_connection(good_system_status_connection):
     ds_connection = MetricsDataModel(**good_system_status_connection)
-    assert ds_connection.metrics.metric[0].available == False
+    assert not ds_connection.metrics.metric[0].available
 
 
 def test_MetricsDataModel_failure(bad_system_status_connection):

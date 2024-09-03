@@ -484,7 +484,7 @@ async def test_system_status_success(
         return_value=httpx.Response(200, json=good_system_status_connection)
     )
     response = await create_a_client.system_status()
-    assert response.metrics.metric[0].available == False
+    assert not response.metrics.metric[0].available
 
 
 @pytest.mark.asyncio

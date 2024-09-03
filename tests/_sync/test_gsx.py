@@ -419,7 +419,7 @@ def test_system_status_success(client: SyncGeoServerX, good_system_status_connec
         return_value=httpx.Response(200, json=good_system_status_connection)
     )
     response = client.system_status()
-    assert response.metrics.metric[0].available == False
+    assert not response.metrics.metric[0].available
 
 
 def test_system_status_ConnectError(client: SyncGeoServerX, respx_mock):
