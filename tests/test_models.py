@@ -30,7 +30,7 @@ from geoserverx.models.workspace import (
     NewWorkspace,
 )
 from geoserverx.models.layer_group import LayerGroupsModel
-
+from geoserverx.models.system_status import MetricsDataModel
 # Testing DataStoreInBulk
 def test_datastoreinbulk_connection(good_datastore_in_bulk_connection):
     ds_connection = DataStoreInBulk(**good_datastore_in_bulk_connection)
@@ -272,3 +272,13 @@ def test_layergroupsmodel_connection(good_layer_groups_connection):
 def test_layergroupsmodel_failure(bad_layer_groups_connection):
     with pytest.raises(ValidationError):
         LayerGroupsModel(**bad_layer_groups_connection)
+
+# Testing MetricsDataModel
+def test_MetricsDataModel_connection(good_system_status_connection):
+    ds_connection = MetricsDataModel(**good_system_status_connection)
+    assert ds_connection.metrics.metric[0].available == False
+
+
+def test_MetricsDataModel_failure(bad_system_status_connection):
+    with pytest.raises(ValidationError):
+        MetricsDataModel(**bad_system_status_connection)

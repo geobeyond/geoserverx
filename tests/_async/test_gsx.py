@@ -462,3 +462,34 @@ async def test_get_all_layer_groups_NetworkError(create_a_client, respx_mock):
     with pytest.raises(httpx.ConnectError):
         response = await create_a_client.get_all_layer_groups(workspace="ne")
         assert response.response == "Error in connecting to Geoserver"
+
+
+# Test - system_status
+@pytest.mark.asyncio
+async def test_system_status_validation(
+    create_a_client, respx_mock, bad_system_status_connection
+):
+    respx_mock.get(f"{baseUrl}about/system-status").mock(
+        return_value=httpx.Response(404, json=bad_system_status_connection)
+    )
+    response = await create_a_client.system_status()
+    assert response.code == 404
+
+
+@pytest.mark.asyncio
+async def test_system_status_success(
+    create_a_client, respx_mock, good_system_status_connection
+):
+    respx_mock.get(f"{baseUrl}about/system-status").mock(
+        return_value=httpx.Response(200, json=good_system_status_connection)
+    )
+    response = await create_a_client.system_status()
+    assert response.metrics.metric[0].available == False
+
+
+@pytest.mark.asyncio
+async def test_system_status_NetworkError(create_a_client, respx_mock):
+    respx.get(f"{baseUrl}about/system-status").mock(side_effect=httpx.ConnectError)
+    with pytest.raises(httpx.ConnectError):
+        response = await create_a_client.system_status()
+        assert response.response == "Error in connecting to Geoserver"

@@ -25,6 +25,7 @@ from geoserverx.models.coverages_store import CoveragesStoreModel, CoveragesStor
 from geoserverx.models.layer_group import LayerGroupsModel
 from geoserverx.models.coverages_layer import CoverageModel
 from geoserverx.models.gs_response import GSResponse
+from geoserverx.models.system_status import MetricsDataModel
 from geoserverx.utils.services.datastore import (
     AddDataStoreProtocol,
     CreateFileStore,
@@ -429,6 +430,20 @@ class SyncGeoServerX:
             responses = Client.get("layergroups")
         if responses.status_code == 200:
             return LayerGroupsModel.model_validate(responses.json())
+        else:
+            results = self.response_recognise(responses.status_code)
+            return results
+        
+    # Get system status info
+    @exception_handler
+    def system_status(self) -> Union[MetricsDataModel, GSResponse]:
+        """
+        Returns a list of system-level information. Major operating systems (Linux, Windows and MacOX) are supported out of the box.
+        """
+        Client = self.http_client
+        responses = Client.get("about/system-status")
+        if responses.status_code == 200:
+            return MetricsDataModel.model_validate(responses.json())
         else:
             results = self.response_recognise(responses.status_code)
             return results

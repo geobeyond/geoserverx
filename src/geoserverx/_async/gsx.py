@@ -20,6 +20,7 @@ from geoserverx.models.data_store import (
     CreateStoreItem,
     MainCreateDataStoreModel,
 )
+from geoserverx.models.system_status import MetricsDataModel
 from geoserverx.models.layer_group import LayerGroupsModel
 from geoserverx.models.layers import LayersModel, LayerModel
 from geoserverx.models.coverages_store import CoveragesStoreModel, CoveragesStoresModel
@@ -304,6 +305,19 @@ class AsyncGeoServerX:
             responses = await Client.get("layergroups")
         if responses.status_code == 200:
             return LayerGroupsModel.model_validate(responses.json())
+        else:
+            results = self.response_recognise(responses.status_code)
+            return results
+        
+    # Get system status info
+    async def system_status(self) -> Union[MetricsDataModel, GSResponse]:
+        """
+        Returns a list of system-level information. Major operating systems (Linux, Windows and MacOX) are supported out of the box.
+        """
+        Client = self.http_client
+        responses = await Client.get("about/system-status")
+        if responses.status_code == 200:
+            return MetricsDataModel.model_validate(responses.json())
         else:
             results = self.response_recognise(responses.status_code)
             return results
