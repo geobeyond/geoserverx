@@ -307,3 +307,29 @@ class AsyncGeoServerX:
         else:
             results = self.response_recognise(responses.status_code)
             return results
+        
+    # Reset geoserver
+    async def reset_geoserver(self) -> GSResponse:
+        """
+        Resets all authentication, store, raster, and schema caches. This operation is used to force GeoServer to drop all caches and store connections and reconnect to each of them the next time they are needed by a request. This is useful in case the stores themselves cache some information about the data structures they manage that may have changed in the meantime.
+        """
+        Client = self.http_client
+        responses = await Client.put(
+            "/reset",
+            headers=self.head,
+        )
+        results = self.response_recognise(responses.status_code)
+        return results
+    
+    # Reload geoserver
+    async def reload_geoserver(self) -> GSResponse:
+        """
+        Reloads the GeoServer catalog and configuration from disk. This operation is used in cases where an external tool has modified the on-disk configuration. This operation will also force GeoServer to drop any internal caches and reconnect to all data stores.
+        """
+        Client = self.http_client
+        responses = await Client.put(
+            "/reload",
+            headers=self.head,
+        )
+        results = self.response_recognise(responses.status_code)
+        return results

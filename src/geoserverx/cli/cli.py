@@ -418,3 +418,45 @@ def layer_groups(
             print(result)
     else:
         typer.echo("Async support will be shortly")
+
+# Reset geoserver
+@SyncGeoServerX.exception_handler
+@app.command(help="Reset geoserver settings")
+def reset(
+    request: requestEnum = requestEnum._sync,
+    url: str = typer.Option(
+        "http://127.0.0.1:8080/geoserver/rest/", help="Geoserver REST URL"
+    ),
+    password: str = typer.Option("geoserver", help="Geoserver Password"),
+    username: str = typer.Option("admin", help="Geoserver username"),
+):
+    """
+    Resets all authentication, store, raster, and schema caches. This operation is used to force GeoServer to drop all caches and store connections and reconnect to each of them the next time they are needed by a request. This is useful in case the stores themselves cache some information about the data structures they manage that may have changed in the meantime.
+    """
+    if request.value == "sync":
+        client = SyncGeoServerX(username, password, url)
+        result = client.reset_geoserver()
+        typer.secho(result, fg=typer.colors.GREEN)
+    else:
+        typer.echo("Async support will be shortly")
+
+# Reload geoserver
+@SyncGeoServerX.exception_handler
+@app.command(help="Reload geoserver settings")
+def reload(
+    request: requestEnum = requestEnum._sync,
+    url: str = typer.Option(
+        "http://127.0.0.1:8080/geoserver/rest/", help="Geoserver REST URL"
+    ),
+    password: str = typer.Option("geoserver", help="Geoserver Password"),
+    username: str = typer.Option("admin", help="Geoserver username"),
+):
+    """
+    Reloads the GeoServer catalog and configuration from disk. This operation is used in cases where an external tool has modified the on-disk configuration. This operation will also force GeoServer to drop any internal caches and reconnect to all data stores.
+    """
+    if request.value == "sync":
+        client = SyncGeoServerX(username, password, url)
+        result = client.reload_geoserver()
+        typer.secho(result, fg=typer.colors.GREEN)
+    else:
+        typer.echo("Async support will be shortly")

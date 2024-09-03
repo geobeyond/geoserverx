@@ -385,3 +385,48 @@ def test_get_all_layer_groups_NetworkError(respx_mock):
     respx_mock.get(f"{baseUrl}workspaces/ne/layergroups").mock(side_effect=httpx.ConnectError)
     result = runner.invoke(app, ["layer-groups", "--workspace", "ne"])
     assert "Error in connecting to Geoserver" in result.stdout
+
+
+# Test - reset_geoserver
+def test_reset_geoserver_validation(bad_reset_geoserver_connection, respx_mock):
+    respx_mock.put(f"{baseUrl}reset").mock(
+        return_value=httpx.Response(404, json=bad_reset_geoserver_connection)
+    )
+    result = runner.invoke(app, ["reset"])
+    assert "404" in result.stdout
+
+
+def test_reset_geoserver_success(good_reset_geoserver_connection, respx_mock):
+    respx_mock.put(f"{baseUrl}reset").mock(
+        return_value=httpx.Response(200, json=good_reset_geoserver_connection)
+    )
+    result = runner.invoke(app, ["reset"])
+    assert "200" in result.stdout
+
+
+def test_reset_geoserver_NetworkError(respx_mock):
+    respx_mock.put(f"{baseUrl}reset").mock(side_effect=httpx.ConnectError)
+    result = runner.invoke(app, ["reset"])
+    assert "Error in connecting to Geoserver" in result.stdout
+
+# Test - reload_geoserver
+def test_reload_geoserver_validation(bad_reload_geoserver_connection, respx_mock):
+    respx_mock.put(f"{baseUrl}reload").mock(
+        return_value=httpx.Response(404, json=bad_reload_geoserver_connection)
+    )
+    result = runner.invoke(app, ["reload"])
+    assert "404" in result.stdout
+
+
+def test_reload_geoserver_success(good_reload_geoserver_connection, respx_mock):
+    respx_mock.put(f"{baseUrl}reload").mock(
+        return_value=httpx.Response(200, json=good_reload_geoserver_connection)
+    )
+    result = runner.invoke(app, ["reload"])
+    assert "200" in result.stdout
+
+
+def test_reload_geoserver_NetworkError(respx_mock):
+    respx_mock.put(f"{baseUrl}reload").mock(side_effect=httpx.ConnectError)
+    result = runner.invoke(app, ["reload"])
+    assert "Error in connecting to Geoserver" in result.stdout
