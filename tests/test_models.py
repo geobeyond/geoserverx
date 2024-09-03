@@ -1,35 +1,20 @@
 import pytest
 from pydantic import ValidationError
-from geoserverx.models.data_store import (
-    DataStoreInBulk,
-    DataStoreDict,
-    DatastoreConnection,
-    EntryItem,
-    DatastoreItem,
-    DataStoreModel,
-    DataStoresModel,
-)
-from geoserverx.models.coverages_store import (
-    CoveragesStoreInBulk,
-    CoveragesStoreModel,
-    CoveragesStoresDict,
-    CoveragesStoresModel,
-)
-from geoserverx.models.style import (
-    SingleStyle,
-    StyleModel,
-    allStyleList,
-    allStyle,
-    AllStylesModel,
-)
-from geoserverx.models.workspace import (
-    WorkspaceInBulk,
-    workspaceDict,
-    WorkspaceModel,
-    WorkspacesModel,
-    NewWorkspace,
-)
+
+from geoserverx.models.coverages_store import (CoveragesStoreInBulk,
+                                               CoveragesStoreModel,
+                                               CoveragesStoresDict,
+                                               CoveragesStoresModel)
+from geoserverx.models.data_store import (DatastoreConnection, DataStoreDict,
+                                          DataStoreInBulk, DatastoreItem,
+                                          DataStoreModel, DataStoresModel,
+                                          EntryItem)
 from geoserverx.models.layer_group import LayerGroupsModel
+from geoserverx.models.style import (AllStylesModel, SingleStyle, StyleModel,
+                                     allStyle, allStyleList)
+from geoserverx.models.workspace import (NewWorkspace, WorkspaceInBulk,
+                                         WorkspaceModel, WorkspacesModel,
+                                         workspaceDict)
 
 
 # Testing DataStoreInBulk

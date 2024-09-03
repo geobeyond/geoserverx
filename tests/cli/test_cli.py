@@ -1,6 +1,7 @@
-from typer.testing import CliRunner
-from geoserverx.cli.cli import app
 import httpx
+from typer.testing import CliRunner
+
+from geoserverx.cli.cli import app
 
 runner = CliRunner()
 
