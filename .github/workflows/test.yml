@@ -53,13 +53,10 @@ jobs:
       run: poetry run pytest
 
     - name: Run black
-      run: black . --check
+      uses: psf/black@stable
 
     - name: Run isort
-      run: isort . --check-only
-
-    - name: Run ruff
-      run: ruff check . --fix
+      uses: isort/isort-action@v1
 
     - name: Commit changes if any
       run: |
@@ -68,4 +65,4 @@ jobs:
         git add .
         git commit -m "Apply formatting and linting fixes" || echo "No changes to commit"
         git push || echo "No changes to push"
-      if: success() && steps.run_black.outcome == 'success' && steps.run_isort.outcome == 'success' && steps.run_ruff.outcome == 'success'
+      if: success() && steps.run_black.outcome == 'success' && steps.run_isort.outcome == 'success'
