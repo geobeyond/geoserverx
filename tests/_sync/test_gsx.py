@@ -2,8 +2,7 @@ import httpx
 from pytest import fixture
 from pytest import mark as pytest_mark
 
-from geoserverx._sync.gsx import (GeoServerXAuth, GeoServerXError,
-                                  SyncGeoServerX)
+from geoserverx._sync.gsx import GeoServerXAuth, GeoServerXError, SyncGeoServerX
 
 baseUrl = "http://127.0.0.1:8080/geoserver/rest/"
 

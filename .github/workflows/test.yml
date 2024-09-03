@@ -57,7 +57,9 @@ jobs:
 
     - name: Run isort
       uses: isort/isort-action@v1
-
+      with :
+        configuration : "--profile black"
+        
     - name : Ruff Check
       uses: jpetrucciani/ruff-check@main
       with:
