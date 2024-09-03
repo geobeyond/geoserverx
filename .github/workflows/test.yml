@@ -53,20 +53,12 @@ jobs:
       run: poetry run pytest
 
     - name: Run black
-      uses: rickstaa/action-black@v1
-      id: action_black
+      uses: psf/black@stable
+
+    - name: Run isort
+      uses: isort/isort-action@v1
+
+    - name : Ruff Check
+      uses: jpetrucciani/ruff-check@main
       with:
-        black_args: "."
-
-    # - name: Run isort
-    #   uses: isort/isort-action@v1
-
-    - name: Commit changes if any
-      if: steps.action_black.outputs.is_formatted == 'true'
-      run: |
-        git config --local user.name "Krishna lodha"
-        git config --local user.email "krishnaglodha@gmail.com"
-        git add .
-        git commit -m "Apply formatting and linting fixes" || echo "No changes to commit"
-        git push || echo "No changes to push"
-      
+        flags: '--fix'
