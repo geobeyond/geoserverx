@@ -418,14 +418,15 @@ class SyncGeoServerX:
         results = self.response_recognise(responses.status_code)
         return results
 
-
     # Get all layer groups
     @exception_handler
-    def get_all_layer_groups(self,workspace: Optional[str] = None) -> Union[LayerGroupsModel, GSResponse]:
+    def get_all_layer_groups(
+        self, workspace: Optional[str] = None
+    ) -> Union[LayerGroupsModel, GSResponse]:
         Client = self.http_client
         if workspace:
             responses = Client.get(f"workspaces/{workspace}/layergroups")
-        else :
+        else:
             responses = Client.get("layergroups")
         if responses.status_code == 200:
             return LayerGroupsModel.model_validate(responses.json())

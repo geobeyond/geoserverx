@@ -458,7 +458,9 @@ async def test_get_all_layer_groups_success(
 
 @pytest.mark.asyncio
 async def test_get_all_layer_groups_NetworkError(create_a_client, respx_mock):
-    respx.get(f"{baseUrl}workspaces/ne/layergroups").mock(side_effect=httpx.ConnectError)
+    respx.get(f"{baseUrl}workspaces/ne/layergroups").mock(
+        side_effect=httpx.ConnectError
+    )
     with pytest.raises(httpx.ConnectError):
         response = await create_a_client.get_all_layer_groups(workspace="ne")
         assert response.response == "Error in connecting to Geoserver"
