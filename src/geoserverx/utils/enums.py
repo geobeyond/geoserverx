@@ -1,4 +1,5 @@
 from enum import Enum
+
 from geoserverx.models.gs_response import GSResponse
 
 

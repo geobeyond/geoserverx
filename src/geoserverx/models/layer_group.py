@@ -1,5 +1,6 @@
 from enum import Enum
-from typing import List, Literal, Union, Optional
+from typing import List, Literal, Optional, Union
+
 from pydantic import BaseModel, Field
 
 
@@ -7,26 +8,33 @@ class LayerGroupElement(BaseModel):
     name: str = ...
     href: str = ...
 
+
 class LayerGroupList(BaseModel):
     layerGroup: List[LayerGroupElement] = ...
 
+
 class LayerGroupsModel(BaseModel):
     layerGroups: Union[LayerGroupList, Literal[""]]
+
 
 class Published(BaseModel):
     type: str = Field(..., alias="@type")
     name: str = ...
     href: str = ...
 
+
 class Publishables(BaseModel):
     published: Published = ...
+
 
 class Style(BaseModel):
     name: str = ...
     href: str = ...
 
+
 class Styles(BaseModel):
     style: Style = ...
+
 
 class Bounds(BaseModel):
     minx: float = ...
@@ -35,6 +43,7 @@ class Bounds(BaseModel):
     maxy: float = ...
     crs: str = ...
 
+
 class ModeEnum(Enum):
     single = "SINGLE"
     opaque_container = "OPAQUE_CONTAINER"
@@ -42,11 +51,14 @@ class ModeEnum(Enum):
     container = "CONTAINER"
     eo = "EO"
 
+
 class WorkspaceModel(BaseModel):
     name: str = None
 
+
 class BaseLayerGroup(BaseModel):
     name: str = ...
+
 
 class SingleLayerGroup(BaseLayerGroup):
     mode: ModeEnum
@@ -57,11 +69,14 @@ class SingleLayerGroup(BaseLayerGroup):
     bounds: Bounds
     dateCreated: str = ...
 
+
 class SingleLayerGroupModel(BaseModel):
     layerGroup: SingleLayerGroup
 
+
 class LayerListModel(BaseModel):
     layer: List[str] = []
+
 
 class LayerGroupModel(BaseModel):
     name: str
@@ -71,11 +86,14 @@ class LayerGroupModel(BaseModel):
     abstractTxt: Optional[str] = None
     workspace: Optional[WorkspaceModel] = None
 
+
 class LayerGroupPayload(BaseModel):
     layerGroup: LayerGroupModel
 
+
 class LayerGroupStylesModel(BaseModel):
     style: List[str] = []
+
 
 class LayerGroupKeywordsModel(BaseModel):
     keyword: List[str] = []
