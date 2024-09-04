@@ -446,6 +446,7 @@ def geofence_rules(
     else:
         typer.echo("Async support will be shortly")
 
+
 # get geofence rule
 @SyncGeoServerX.exception_handler
 @app.command(help="Get geofence rule in the Geoserver")

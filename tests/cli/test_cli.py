@@ -393,36 +393,38 @@ def test_get_all_layer_groups_NetworkError(respx_mock):
 # Test - all_geofence_rules
 def test_all_geofence_rules_validation(bad_all_geofence_rules_connection, respx_mock):
     respx_mock.get(f"{baseUrl}about/status.json").mock(
-        return_value=httpx.Response(200, json={
-            'statuss': {'status': [{'name': 'geofence'}]}
-        })
+        return_value=httpx.Response(
+            200, json={"statuss": {"status": [{"name": "geofence"}]}}
+        )
     )
-    respx_mock.get(f"{baseUrl}geofence/rules/", headers={'Accept': "application/json"}).mock(
-        return_value=httpx.Response(404, json=bad_all_geofence_rules_connection)
-    )
+    respx_mock.get(
+        f"{baseUrl}geofence/rules/", headers={"Accept": "application/json"}
+    ).mock(return_value=httpx.Response(404, json=bad_all_geofence_rules_connection))
     result = runner.invoke(app, ["geofence-rules"])
     assert "404" in result.stdout
 
 
 def test_all_geofence_rules_success(good_all_geofence_rules_connection, respx_mock):
     respx_mock.get(f"{baseUrl}about/status.json").mock(
-        return_value=httpx.Response(200, json={
-            'statuss': {'status': [{'name': 'geofence'}]}
-        })
+        return_value=httpx.Response(
+            200, json={"statuss": {"status": [{"name": "geofence"}]}}
+        )
     )
-    respx_mock.get(f"{baseUrl}geofence/rules/", headers={'Accept': "application/json"}).mock(
-        return_value=httpx.Response(200, json=good_all_geofence_rules_connection)
-    )
+    respx_mock.get(
+        f"{baseUrl}geofence/rules/", headers={"Accept": "application/json"}
+    ).mock(return_value=httpx.Response(200, json=good_all_geofence_rules_connection))
     result = runner.invoke(app, ["geofence-rules"])
     assert "2" in result.stdout
 
 
 def test_all_geofence_rules_NetworkError(respx_mock):
     respx_mock.get(f"{baseUrl}about/status.json").mock(
-        return_value=httpx.Response(200, json={
-            'statuss': {'status': [{'name': 'geofence'}]}
-        })
+        return_value=httpx.Response(
+            200, json={"statuss": {"status": [{"name": "geofence"}]}}
+        )
     )
-    respx_mock.get(f"{baseUrl}geofence/rules/", headers={'Accept': "application/json"}).mock(side_effect=httpx.ConnectError)
+    respx_mock.get(
+        f"{baseUrl}geofence/rules/", headers={"Accept": "application/json"}
+    ).mock(side_effect=httpx.ConnectError)
     result = runner.invoke(app, ["geofence-rules"])
     assert "Error in connecting to Geoserver" in result.stdout
