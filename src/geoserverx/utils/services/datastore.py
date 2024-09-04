@@ -18,8 +18,7 @@ class AddDataStoreProtocol(Protocol):
         layer_payload,
         store_header,
         layer_header,
-    ):
-        ...
+    ): ...
 
 
 class CreateFileStore:

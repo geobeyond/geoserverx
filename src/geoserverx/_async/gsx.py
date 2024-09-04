@@ -1,33 +1,34 @@
 from dataclasses import dataclass
-from typing import Union, Optional
-from geoserverx.utils.logger import std_out_logger
-from geoserverx.utils.enums import GSResponseEnum
+from typing import Optional, Union
+
+from geoserverx.models.coverages_store import CoveragesStoreModel, CoveragesStoresModel
+from geoserverx.models.data_store import (
+    CreateDataStoreModel,
+    CreateStoreItem,
+    DataStoreModel,
+    DataStoresModel,
+    MainCreateDataStoreModel,
+)
 from geoserverx.models.gs_response import GSResponse
-from geoserverx.utils.errors import GeoServerXError
-from geoserverx.models.style import StyleModel, AllStylesModel
-from geoserverx.utils.http_client import AsyncClient
-from geoserverx.utils.auth import GeoServerXAuth
+from geoserverx.models.layer_group import LayerGroupsModel
+from geoserverx.models.layers import LayerModel, LayersModel
+from geoserverx.models.style import AllStylesModel, StyleModel
 from geoserverx.models.workspace import (
     NewWorkspace,
     NewWorkspaceInfo,
     WorkspaceModel,
     WorkspacesModel,
 )
-from geoserverx.models.data_store import (
-    DataStoreModel,
-    DataStoresModel,
-    CreateDataStoreModel,
-    CreateStoreItem,
-    MainCreateDataStoreModel,
-)
-from geoserverx.models.layer_group import LayerGroupsModel
-from geoserverx.models.layers import LayersModel, LayerModel
-from geoserverx.models.coverages_store import CoveragesStoreModel, CoveragesStoresModel
+from geoserverx.utils.auth import GeoServerXAuth
+from geoserverx.utils.enums import GSResponseEnum
+from geoserverx.utils.errors import GeoServerXError
+from geoserverx.utils.http_client import AsyncClient
+from geoserverx.utils.logger import std_out_logger
 from geoserverx.utils.services.async_datastore import (
     AddDataStoreProtocol,
     CreateFileStore,
-    ShapefileStore,
     GPKGfileStore,
+    ShapefileStore,
 )
 
 
@@ -294,13 +295,14 @@ class AsyncGeoServerX:
         results = self.response_recognise(responses.status_code)
         return results
 
-
     # Get all layer groups
-    async def get_all_layer_groups(self,workspace: Optional[str] = None) -> Union[LayerGroupsModel, GSResponse]:
+    async def get_all_layer_groups(
+        self, workspace: Optional[str] = None
+    ) -> Union[LayerGroupsModel, GSResponse]:
         Client = self.http_client
         if workspace:
             responses = await Client.get(f"workspaces/{workspace}/layergroups")
-        else :
+        else:
             responses = await Client.get("layergroups")
         if responses.status_code == 200:
             return LayerGroupsModel.model_validate(responses.json())
