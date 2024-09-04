@@ -1,36 +1,38 @@
 import pytest
 from pydantic import ValidationError
-from geoserverx.models.data_store import (
-    DataStoreInBulk,
-    DataStoreDict,
-    DatastoreConnection,
-    EntryItem,
-    DatastoreItem,
-    DataStoreModel,
-    DataStoresModel,
-)
+
 from geoserverx.models.coverages_store import (
     CoveragesStoreInBulk,
     CoveragesStoreModel,
     CoveragesStoresDict,
     CoveragesStoresModel,
 )
-from geoserverx.models.style import (
-    SingleStyle,
-    StyleModel,
-    allStyleList,
-    allStyle,
-    AllStylesModel,
+from geoserverx.models.data_store import (
+    DatastoreConnection,
+    DataStoreDict,
+    DataStoreInBulk,
+    DatastoreItem,
+    DataStoreModel,
+    DataStoresModel,
+    EntryItem,
 )
 from geoserverx.models.geofence import RulesResponse
+from geoserverx.models.layer_group import LayerGroupsModel
+from geoserverx.models.style import (
+    AllStylesModel,
+    SingleStyle,
+    StyleModel,
+    allStyle,
+    allStyleList,
+)
 from geoserverx.models.workspace import (
+    NewWorkspace,
     WorkspaceInBulk,
-    workspaceDict,
     WorkspaceModel,
     WorkspacesModel,
-    NewWorkspace,
+    workspaceDict,
 )
-from geoserverx.models.layer_group import LayerGroupsModel
+
 
 # Testing DataStoreInBulk
 def test_datastoreinbulk_connection(good_datastore_in_bulk_connection):
@@ -270,6 +272,7 @@ def test_layergroupsmodel_connection(good_layer_groups_connection):
     ds_connection = LayerGroupsModel(**good_layer_groups_connection)
     assert ds_connection.layerGroups.layerGroup[0].name == "tg"
 
+
 def test_layergroupsmodel_failure(bad_layer_groups_connection):
     with pytest.raises(ValidationError):
         LayerGroupsModel(**bad_layer_groups_connection)
@@ -279,6 +282,7 @@ def test_layergroupsmodel_failure(bad_layer_groups_connection):
 def test_RulesResponse_connection(good_all_geofence_rules_connection):
     ds_connection = RulesResponse(**good_all_geofence_rules_connection)
     assert ds_connection.count == 2
+
 
 def test_RulesResponse_failure(bad_all_geofence_rules_connection):
     with pytest.raises(ValidationError):

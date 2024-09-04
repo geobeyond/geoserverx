@@ -1,34 +1,35 @@
 from dataclasses import dataclass
-from typing import Union, Optional
-from geoserverx.utils.logger import std_out_logger
-from geoserverx.utils.enums import GSResponseEnum
+from typing import Optional, Union
+
+from geoserverx.models.coverages_store import CoveragesStoreModel, CoveragesStoresModel
+from geoserverx.models.data_store import (
+    CreateDataStoreModel,
+    CreateStoreItem,
+    DataStoreModel,
+    DataStoresModel,
+    MainCreateDataStoreModel,
+)
+from geoserverx.models.geofence import NewRule, Rule, RulesResponse
 from geoserverx.models.gs_response import GSResponse
-from geoserverx.utils.errors import GeoServerXError
-from geoserverx.models.style import StyleModel, AllStylesModel
-from geoserverx.utils.http_client import AsyncClient
-from geoserverx.utils.auth import GeoServerXAuth
+from geoserverx.models.layer_group import LayerGroupsModel
+from geoserverx.models.layers import LayerModel, LayersModel
+from geoserverx.models.style import AllStylesModel, StyleModel
 from geoserverx.models.workspace import (
     NewWorkspace,
     NewWorkspaceInfo,
     WorkspaceModel,
     WorkspacesModel,
 )
-from geoserverx.models.data_store import (
-    DataStoreModel,
-    DataStoresModel,
-    CreateDataStoreModel,
-    CreateStoreItem,
-    MainCreateDataStoreModel,
-)
-from geoserverx.models.geofence import RulesResponse,Rule,NewRule
-from geoserverx.models.layer_group import LayerGroupsModel
-from geoserverx.models.layers import LayersModel, LayerModel
-from geoserverx.models.coverages_store import CoveragesStoreModel, CoveragesStoresModel
+from geoserverx.utils.auth import GeoServerXAuth
+from geoserverx.utils.enums import GSResponseEnum
+from geoserverx.utils.errors import GeoServerXError
+from geoserverx.utils.http_client import AsyncClient
+from geoserverx.utils.logger import std_out_logger
 from geoserverx.utils.services.async_datastore import (
     AddDataStoreProtocol,
     CreateFileStore,
-    ShapefileStore,
     GPKGfileStore,
+    ShapefileStore,
 )
 
 
@@ -90,14 +91,18 @@ class AsyncGeoServerX:
         elif r == 409:
             resp = GSResponseEnum._409.value
         return GSResponse.model_validate(resp)
+
     # check if certain module/plugin exists in geoserver
-    async def check_modules(self,name)-> Union[bool, GSResponse]:
+    async def check_modules(self, name) -> Union[bool, GSResponse]:
         Client = self.http_client
         response = await Client.get("about/status.json")
         if response.status_code != 200:
             return False
-        modules = [item["name"].lower() for item in response.json()['statuss']['status']]
+        modules = [
+            item["name"].lower() for item in response.json()["statuss"]["status"]
+        ]
         return name.lower() in modules
+
     # Get all workspaces
     async def get_all_workspaces(self) -> Union[WorkspacesModel, GSResponse]:
         Client = self.http_client
@@ -302,60 +307,62 @@ class AsyncGeoServerX:
         results = self.response_recognise(responses.status_code)
         return results
 
-
     # Get all layer groups
-    async def get_all_layer_groups(self,workspace: Optional[str] = None) -> Union[LayerGroupsModel, GSResponse]:
+    async def get_all_layer_groups(
+        self, workspace: Optional[str] = None
+    ) -> Union[LayerGroupsModel, GSResponse]:
         Client = self.http_client
         if workspace:
             responses = await Client.get(f"workspaces/{workspace}/layergroups")
-        else :
+        else:
             responses = await Client.get("layergroups")
         if responses.status_code == 200:
             return LayerGroupsModel.model_validate(responses.json())
         else:
             results = self.response_recognise(responses.status_code)
             return results
-        
+
     # Get all geofence rules
     async def get_all_geofence_rules(self) -> Union[RulesResponse, GSResponse]:
         Client = self.http_client
         # Check if geofence plugin exists
-        if not  self.check_modules('geofence'):
+        if not self.check_modules("geofence"):
             return GSResponse(code=404, response="Plugin not found")
-        responses = await Client.get("geofence/rules/",headers={'Accept': "application/json"})
+        responses = await Client.get(
+            "geofence/rules/", headers={"Accept": "application/json"}
+        )
         if responses.status_code == 200:
             return RulesResponse.model_validate(responses.json())
         else:
             results = self.response_recognise(responses.status_code)
             return results
-        
+
     # Get geofence rule by id
-    async def get_geofence_rule(self,id:int) -> Union[Rule, GSResponse]:
+    async def get_geofence_rule(self, id: int) -> Union[Rule, GSResponse]:
         Client = self.http_client
         # Check if geofence plugin exists
-        if not await self.check_modules('geofence'):
+        if not await self.check_modules("geofence"):
             return GSResponse(code=404, response="Plugin not found")
-        responses = await Client.get(f"geofence/rules/id/{id}", headers={'Accept': "application/json"})
+        responses = await Client.get(
+            f"geofence/rules/id/{id}", headers={"Accept": "application/json"}
+        )
         if responses.status_code == 200:
             return Rule.model_validate(responses.json())
         else:
             results = self.response_recognise(responses.status_code)
             return results
-        
 
     # Create geofence on geoserver
-    async def create_geofence(
-        self, rule:Rule
-    ) -> GSResponse:
+    async def create_geofence(self, rule: Rule) -> GSResponse:
         PostingRule = NewRule(Rule=rule)
         # Check if geofence plugin exists
-        if not await self.check_modules('geofence'):
+        if not await self.check_modules("geofence"):
             return GSResponse(code=404, response="Plugin not found")
         Client = self.http_client
         responses = await Client.post(
             "geofence/rules",
             content=PostingRule.model_dump_json(),
             headers=self.head,
-        )        
+        )
         results = self.response_recognise(responses.status_code)
         return results
