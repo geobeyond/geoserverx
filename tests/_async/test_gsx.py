@@ -1,10 +1,11 @@
 import httpx
+import pytest
+import pytest_asyncio
 import respx
 from pytest import mark as pytest_mark
-from geoserverx._async.gsx import AsyncGeoServerX, GeoServerXAuth, GeoServerXError
-import pytest_asyncio
-import pytest
 from respx.fixtures import session_event_loop as event_loop  # noqa: F401
+
+from geoserverx._async.gsx import AsyncGeoServerX, GeoServerXAuth, GeoServerXError
 
 baseUrl = "http://127.0.0.1:8080/geoserver/rest/"
 
@@ -458,10 +459,13 @@ async def test_get_all_layer_groups_success(
 
 @pytest.mark.asyncio
 async def test_get_all_layer_groups_NetworkError(create_a_client, respx_mock):
-    respx.get(f"{baseUrl}workspaces/ne/layergroups").mock(side_effect=httpx.ConnectError)
+    respx.get(f"{baseUrl}workspaces/ne/layergroups").mock(
+        side_effect=httpx.ConnectError
+    )
     with pytest.raises(httpx.ConnectError):
         response = await create_a_client.get_all_layer_groups(workspace="ne")
         assert response.response == "Error in connecting to Geoserver"
+
 
 # Test - reset_geoserver
 @pytest.mark.asyncio
