@@ -310,7 +310,7 @@ class AsyncGeoServerX:
         else:
             results = self.response_recognise(responses.status_code)
             return results
-        
+
     # Get system status info
     async def system_status(self) -> Union[MetricsDataModel, GSResponse]:
         """

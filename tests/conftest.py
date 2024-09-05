@@ -672,36 +672,36 @@ def networkbad_layer_groups_connection() -> dict:
     return item
 
 
-
 @pytest.fixture
 def good_system_status_connection() -> dict:
     item = {
-    "metrics": {
-        "metric": [
-            {
-                "available": False,
-                "description": "Operating system",
-                "name": "OPERATING_SYSTEM",
-                "unit": "",
-                "category": "SYSTEM",
-                "identifier": "OPERATING_SYSTEM",
-                "priority": 1,
-                "value": "NOT AVAILABLE"
-            },
-            {
-                "available": False,
-                "description": "Uptime",
-                "name": "SYSTEM_UPTIME",
-                "unit": "sec",
-                "category": "SYSTEM",
-                "identifier": "SYSTEM_UPTIME",
-                "priority": 2,
-                "value": "NOT AVAILABLE"
-            }
-        ]
+        "metrics": {
+            "metric": [
+                {
+                    "available": False,
+                    "description": "Operating system",
+                    "name": "OPERATING_SYSTEM",
+                    "unit": "",
+                    "category": "SYSTEM",
+                    "identifier": "OPERATING_SYSTEM",
+                    "priority": 1,
+                    "value": "NOT AVAILABLE",
+                },
+                {
+                    "available": False,
+                    "description": "Uptime",
+                    "name": "SYSTEM_UPTIME",
+                    "unit": "sec",
+                    "category": "SYSTEM",
+                    "identifier": "SYSTEM_UPTIME",
+                    "priority": 2,
+                    "value": "NOT AVAILABLE",
+                },
+            ]
+        }
     }
-}
     return item
+
 
 @pytest.fixture
 def bad_system_status_connection() -> dict:

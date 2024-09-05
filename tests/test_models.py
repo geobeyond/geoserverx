@@ -277,6 +277,7 @@ def test_layergroupsmodel_failure(bad_layer_groups_connection):
     with pytest.raises(ValidationError):
         LayerGroupsModel(**bad_layer_groups_connection)
 
+
 # Testing MetricsDataModel
 def test_MetricsDataModel_connection(good_system_status_connection):
     ds_connection = MetricsDataModel(**good_system_status_connection)

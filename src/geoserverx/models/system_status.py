@@ -13,8 +13,10 @@ class Metric(BaseModel):
     priority: int
     value: str
 
+
 class Metrics(BaseModel):
     metric: List[Metric]
+
 
 class MetricsDataModel(BaseModel):
     metrics: Metrics

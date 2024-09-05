@@ -434,7 +434,7 @@ class SyncGeoServerX:
         else:
             results = self.response_recognise(responses.status_code)
             return results
-        
+
     # Get system status info
     @exception_handler
     def system_status(self) -> Union[MetricsDataModel, GSResponse]:
