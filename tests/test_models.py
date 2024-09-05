@@ -1,36 +1,39 @@
 import pytest
 from pydantic import ValidationError
-from geoserverx.models.data_store import (
-    DataStoreInBulk,
-    DataStoreDict,
-    DatastoreConnection,
-    EntryItem,
-    DatastoreItem,
-    DataStoreModel,
-    DataStoresModel,
-)
+
 from geoserverx.models.coverages_store import (
     CoveragesStoreInBulk,
     CoveragesStoreModel,
     CoveragesStoresDict,
     CoveragesStoresModel,
 )
-from geoserverx.models.style import (
-    SingleStyle,
-    StyleModel,
-    allStyleList,
-    allStyle,
-    AllStylesModel,
-)
-from geoserverx.models.workspace import (
-    WorkspaceInBulk,
-    workspaceDict,
-    WorkspaceModel,
-    WorkspacesModel,
-    NewWorkspace,
+from geoserverx.models.data_store import (
+    DatastoreConnection,
+    DataStoreDict,
+    DataStoreInBulk,
+    DatastoreItem,
+    DataStoreModel,
+    DataStoresModel,
+    EntryItem,
 )
 from geoserverx.models.layer_group import LayerGroupsModel
+from geoserverx.models.style import (
+    AllStylesModel,
+    SingleStyle,
+    StyleModel,
+    allStyle,
+    allStyleList,
+)
 from geoserverx.models.system_status import MetricsDataModel
+from geoserverx.models.workspace import (
+    NewWorkspace,
+    WorkspaceInBulk,
+    WorkspaceModel,
+    WorkspacesModel,
+    workspaceDict,
+)
+
+
 # Testing DataStoreInBulk
 def test_datastoreinbulk_connection(good_datastore_in_bulk_connection):
     ds_connection = DataStoreInBulk(**good_datastore_in_bulk_connection)
@@ -268,6 +271,7 @@ def test_newworkspace_failure(bad_new_workspace_connection):
 def test_layergroupsmodel_connection(good_layer_groups_connection):
     ds_connection = LayerGroupsModel(**good_layer_groups_connection)
     assert ds_connection.layerGroups.layerGroup[0].name == "tg"
+
 
 def test_layergroupsmodel_failure(bad_layer_groups_connection):
     with pytest.raises(ValidationError):

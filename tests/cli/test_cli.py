@@ -1,6 +1,7 @@
-from typer.testing import CliRunner
-from geoserverx.cli.cli import app
 import httpx
+from typer.testing import CliRunner
+
+from geoserverx.cli.cli import app
 
 runner = CliRunner()
 
@@ -382,6 +383,8 @@ def test_get_all_layer_groups_success(good_layer_groups_connection, respx_mock):
 
 
 def test_get_all_layer_groups_NetworkError(respx_mock):
-    respx_mock.get(f"{baseUrl}workspaces/ne/layergroups").mock(side_effect=httpx.ConnectError)
+    respx_mock.get(f"{baseUrl}workspaces/ne/layergroups").mock(
+        side_effect=httpx.ConnectError
+    )
     result = runner.invoke(app, ["layer-groups", "--workspace", "ne"])
     assert "Error in connecting to Geoserver" in result.stdout

@@ -1,7 +1,8 @@
 import httpx
-from pytest import fixture, mark as pytest_mark
-from geoserverx._sync.gsx import SyncGeoServerX, GeoServerXAuth, GeoServerXError
+from pytest import fixture
+from pytest import mark as pytest_mark
 
+from geoserverx._sync.gsx import GeoServerXAuth, GeoServerXError, SyncGeoServerX
 
 baseUrl = "http://127.0.0.1:8080/geoserver/rest/"
 
@@ -383,7 +384,9 @@ def test_get_layer_ConnectError(client: SyncGeoServerX, respx_mock):
 
 
 # Test - get_all_layer_groups
-def test_get_all_layer_groups_validation(client: SyncGeoServerX, bad_layer_groups_connection, respx_mock):
+def test_get_all_layer_groups_validation(
+    client: SyncGeoServerX, bad_layer_groups_connection, respx_mock
+):
     respx_mock.get(f"{baseUrl}workspaces/ne/layergroups").mock(
         return_value=httpx.Response(404, json=bad_layer_groups_connection)
     )
@@ -391,7 +394,9 @@ def test_get_all_layer_groups_validation(client: SyncGeoServerX, bad_layer_group
     assert response.response == "Result not found"
 
 
-def test_get_all_layer_groups_success(client: SyncGeoServerX, good_layer_groups_connection, respx_mock):
+def test_get_all_layer_groups_success(
+    client: SyncGeoServerX, good_layer_groups_connection, respx_mock
+):
     respx_mock.get(f"{baseUrl}workspaces/ne/layergroups").mock(
         return_value=httpx.Response(200, json=good_layer_groups_connection)
     )
@@ -400,7 +405,9 @@ def test_get_all_layer_groups_success(client: SyncGeoServerX, good_layer_groups_
 
 
 def test_get_all_layer_groups_ConnectError(client: SyncGeoServerX, respx_mock):
-    respx_mock.get(f"{baseUrl}workspaces/ne/layergroups").mock(side_effect=httpx.ConnectError)
+    respx_mock.get(f"{baseUrl}workspaces/ne/layergroups").mock(
+        side_effect=httpx.ConnectError
+    )
     response = client.get_all_layer_groups(workspace="ne")
     assert response.response == "Error in connecting to Geoserver"
 
