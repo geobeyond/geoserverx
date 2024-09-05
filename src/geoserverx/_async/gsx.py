@@ -13,15 +13,13 @@ from geoserverx.models.gs_response import GSResponse
 from geoserverx.models.layer_group import LayerGroupsModel
 from geoserverx.models.layers import LayerModel, LayersModel
 from geoserverx.models.style import AllStylesModel, StyleModel
+from geoserverx.models.system_status import MetricsDataModel
 from geoserverx.models.workspace import (
     NewWorkspace,
     NewWorkspaceInfo,
     WorkspaceModel,
     WorkspacesModel,
 )
-
-from geoserverx.models.system_status import MetricsDataModel
-
 from geoserverx.utils.auth import GeoServerXAuth
 from geoserverx.utils.enums import GSResponseEnum
 from geoserverx.utils.errors import GeoServerXError
