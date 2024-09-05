@@ -412,6 +412,7 @@ def test_reset_geoserver_NetworkError(respx_mock):
     result = runner.invoke(app, ["reset"])
     assert "Error in connecting to Geoserver" in result.stdout
 
+
 # Test - reload_geoserver
 def test_reload_geoserver_validation(bad_reload_geoserver_connection, respx_mock):
     respx_mock.put(f"{baseUrl}reload").mock(

@@ -674,7 +674,7 @@ def networkbad_layer_groups_connection() -> dict:
 
 @pytest.fixture
 def good_reset_geoserver_connection() -> dict:
-    item ={"code": 200, "response": "Executed successfully'"}
+    item = {"code": 200, "response": "Executed successfully'"}
     return item
 
 
@@ -692,7 +692,7 @@ def invalid_reset_geoserver_connection() -> dict:
 
 @pytest.fixture
 def good_reload_geoserver_connection() -> dict:
-    item ={"code": 200, "response": "Executed successfully'"}
+    item = {"code": 200, "response": "Executed successfully'"}
     return item
 
 

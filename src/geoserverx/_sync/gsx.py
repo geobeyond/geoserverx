@@ -447,7 +447,7 @@ class SyncGeoServerX:
         )
         results = self.response_recognise(responses.status_code)
         return results
-    
+
     # Reload geoserver
     @exception_handler
     def reload_geoserver(self) -> GSResponse:

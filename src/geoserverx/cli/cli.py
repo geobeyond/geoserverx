@@ -421,6 +421,7 @@ def layer_groups(
     else:
         typer.echo("Async support will be shortly")
 
+
 # Reset geoserver
 @SyncGeoServerX.exception_handler
 @app.command(help="Reset geoserver settings")
@@ -441,6 +442,7 @@ def reset(
         typer.secho(result, fg=typer.colors.GREEN)
     else:
         typer.echo("Async support will be shortly")
+
 
 # Reload geoserver
 @SyncGeoServerX.exception_handler
