@@ -115,15 +115,17 @@ class SyncGeoServerX:
         try:
             response = Client.get("about/status.json")
             response.raise_for_status()  # Raises an HTTPError for bad responses (4xx and 5xx)
-            
+
             # Extract and check the modules
-            modules = [item["name"].lower() for item in response.json()["statuss"]["status"]]
+            modules = [
+                item["name"].lower() for item in response.json()["statuss"]["status"]
+            ]
             if name.lower() in modules:
                 return True
             else:
                 # Raise exception if the plugin is not found
                 raise Exception("Plugin not found")
-        
+
         except httpx.HTTPStatusError as e:
             # Handle HTTP errors (e.g., 4xx, 5xx)
             self.response_recognise(e.response.status_code)
@@ -134,8 +136,6 @@ class SyncGeoServerX:
         except Exception as e:
             # Handle any other exceptions
             return GSResponse(code=404, response=str(e))
-
-        
 
     # Get all workspaces
     @exception_handler
@@ -469,7 +469,7 @@ class SyncGeoServerX:
     def get_all_geofence_rules(self) -> Union[RulesResponse, GSResponse]:
         Client = self.http_client
         # Check if the geofence plugin exists
-        module_check= self.check_modules("geofence")
+        module_check = self.check_modules("geofence")
         # If the module check fails, return the GSResponse directly
         if isinstance(module_check, GSResponse):
             return module_check
