@@ -24,7 +24,7 @@ class LayerDetails(BaseModel):
 class Rule(BaseModel):
     priority: int
     userName: Optional[str] = None
-    roleName: str
+    roleName:  Optional[str] = None
     addressRange: Optional[str] = None
     workspace: Optional[str] = None
     layer: Optional[str] = None
