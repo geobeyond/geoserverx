@@ -478,7 +478,7 @@ class SyncGeoServerX:
             "geofence/rules/", headers={"Accept": "application/json"}
         )
         if responses.status_code == 200:
-            return Rule.model_validate(responses.json())
+            return RulesResponse.model_validate(responses.json())
         else:
             results = self.response_recognise(responses.status_code)
             return results
