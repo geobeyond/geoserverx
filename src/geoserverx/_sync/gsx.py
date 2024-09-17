@@ -128,8 +128,7 @@ class SyncGeoServerX:
 
         except httpx.HTTPStatusError as e:
             # Handle HTTP errors (e.g., 4xx, 5xx)
-            self.response_recognise(e.response.status_code)
-            # return GSResponse(code=e.response.status_code, response="Failed to fetch module status")
+            return self.response_recognise(e.response.status_code)
         except httpx.RequestError as e:
             # Handle other request errors (e.g., network problems)
             return self.response_recognise(e.response.status_code)
