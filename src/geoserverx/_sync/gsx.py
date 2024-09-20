@@ -124,7 +124,7 @@ class SyncGeoServerX:
                 return True
             else:
                 # Raise exception if the plugin is not found
-                raise Exception("Plugin not found")
+                raise Exception(f"'{name}' plugin not found")
 
         except httpx.HTTPStatusError as e:
             # Handle HTTP errors (e.g., 4xx, 5xx)
@@ -134,7 +134,7 @@ class SyncGeoServerX:
             return self.response_recognise(e.response.status_code)
         except Exception as e:
             # Handle any other exceptions
-            return GSResponse(code=404, response=str(e))
+            return GSResponse(code=412, response=str(e))
 
     # Get all workspaces
     @exception_handler
@@ -486,9 +486,11 @@ class SyncGeoServerX:
     @exception_handler
     def get_geofence_rule(self, id: int) -> Union[GetRule, GSResponse]:
         Client = self.http_client
-        # Check if geofence plugin exists
-        if not self.check_modules("geofence"):
-            return GSResponse(code=404, response="Plugin not found")
+        # Check if the geofence plugin exists
+        module_check = self.check_modules("geofence")
+        # If the module check fails, return the GSResponse directly
+        if isinstance(module_check, GSResponse):
+            return module_check
         responses = Client.get(
             f"geofence/rules/id/{id}", headers={"Accept": "application/json"}
         )
@@ -502,9 +504,11 @@ class SyncGeoServerX:
     @exception_handler
     def create_geofence(self, rule: Rule) -> GSResponse:
         PostingRule = NewRule(Rule=rule)
-        # Check if geofence plugin exists
-        if not self.check_modules("geofence"):
-            return GSResponse(code=404, response="Plugin not found")
+        # Check if the geofence plugin exists
+        module_check = self.check_modules("geofence")
+        # If the module check fails, return the GSResponse directly
+        if isinstance(module_check, GSResponse):
+            return module_check
         Client = self.http_client
         responses = Client.post(
             "geofence/rules",
