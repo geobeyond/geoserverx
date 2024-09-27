@@ -23,6 +23,7 @@ from geoserverx.models.workspace import (
     WorkspacesModel,
 )
 from geoserverx.utils.auth import GeoServerXAuth
+from geoserverx.utils.custom_exceptions import GSModuleNotFound
 from geoserverx.utils.enums import GSResponseEnum
 from geoserverx.utils.errors import GeoServerXError
 from geoserverx.utils.http_client import AsyncClient
@@ -109,7 +110,7 @@ class AsyncGeoServerX:
                 return True
             else:
                 # Raise exception if the plugin is not found
-                raise Exception(f"'{name}' plugin not found")
+                raise GSModuleNotFound(f"'{name}' plugin not found")
 
         except httpx.HTTPStatusError as e:
             # Handle HTTP errors (e.g., 4xx, 5xx)
@@ -117,8 +118,8 @@ class AsyncGeoServerX:
         except httpx.RequestError as e:
             # Handle other request errors (e.g., network problems)
             return self.response_recognise(e.response.status_code)
-        except Exception as e:
-            # Handle any other exceptions
+        except GSModuleNotFound as e:
+            # Handle Module not found exception
             return GSResponse(code=412, response=str(e))
 
     # Get all workspaces
