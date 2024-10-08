@@ -3,6 +3,7 @@ from pytest import fixture
 from pytest import mark as pytest_mark
 
 from geoserverx._sync.gsx import GeoServerXAuth, GeoServerXError, SyncGeoServerX
+from geoserverx.models.geofence import Rule
 
 baseUrl = "http://127.0.0.1:8080/geoserver/rest/"
 
@@ -409,4 +410,120 @@ def test_get_all_layer_groups_ConnectError(client: SyncGeoServerX, respx_mock):
         side_effect=httpx.ConnectError
     )
     response = client.get_all_layer_groups(workspace="ne")
+    assert response.response == "Error in connecting to Geoserver"
+
+
+# Test - all_geofence_rules
+def test_all_geofence_rules_validation(
+    client: SyncGeoServerX, bad_all_geofence_rules_connection, respx_mock
+):
+    respx_mock.get(f"{baseUrl}about/status.json").mock(
+        return_value=httpx.Response(
+            200, json={"statuss": {"status": [{"name": "geofence"}]}}
+        )
+    )
+    respx_mock.get(
+        f"{baseUrl}geofence/rules/", headers={"Accept": "application/json"}
+    ).mock(return_value=httpx.Response(404, json=bad_all_geofence_rules_connection))
+    response = client.get_all_geofence_rules()
+    assert response.response == "Result not found"
+
+
+def test_all_geofence_rules_success(
+    client: SyncGeoServerX, good_all_geofence_rules_connection, respx_mock
+):
+    respx_mock.get(f"{baseUrl}about/status.json").mock(
+        return_value=httpx.Response(
+            200, json={"statuss": {"status": [{"name": "geofence"}]}}
+        )
+    )
+    respx_mock.get(
+        f"{baseUrl}geofence/rules/", headers={"Accept": "application/json"}
+    ).mock(return_value=httpx.Response(200, json=good_all_geofence_rules_connection))
+    response = client.get_all_geofence_rules()
+    assert response.count == 2
+
+
+def test_all_geofence_rules_ConnectError(client: SyncGeoServerX, respx_mock):
+    respx_mock.get(f"{baseUrl}about/status.json").mock(
+        return_value=httpx.Response(
+            200, json={"statuss": {"status": [{"name": "geofence"}]}}
+        )
+    )
+    respx_mock.get(
+        f"{baseUrl}geofence/rules/", headers={"Accept": "application/json"}
+    ).mock(side_effect=httpx.ConnectError)
+    response = client.get_all_geofence_rules()
+    assert response.response == "Error in connecting to Geoserver"
+
+
+# Test - create_geofence
+def test_create_geofence_validation(
+    client: SyncGeoServerX, invalid_new_geofence_rule_connection, respx_mock
+):
+    respx_mock.get(f"{baseUrl}about/status.json").mock(
+        return_value=httpx.Response(
+            200, json={"statuss": {"status": [{"name": "geofence"}]}}
+        )
+    )
+    respx_mock.post(f"{baseUrl}geofence/rules").mock(
+        return_value=httpx.Response(404, json=invalid_new_geofence_rule_connection)
+    )
+    response = client.create_geofence(
+        rule=Rule(
+            priority=3,
+            userName=None,
+            roleName="ROLE_AUTHENTICATED",
+            workspace="*",
+            service="GWC",
+            layer="ne",
+            access="ALLOW",
+        )
+    )
+    assert response.response == "Result not found"
+
+
+def test_create_geofence_success(
+    client: SyncGeoServerX, good_all_geofence_rules_connection, respx_mock
+):
+    respx_mock.get(f"{baseUrl}about/status.json").mock(
+        return_value=httpx.Response(
+            200, json={"statuss": {"status": [{"name": "geofence"}]}}
+        )
+    )
+    respx_mock.post(f"{baseUrl}geofence/rules").mock(
+        return_value=httpx.Response(201, json=good_all_geofence_rules_connection)
+    )
+    response = client.create_geofence(
+        rule=Rule(
+            priority=3,
+            userName=None,
+            roleName="ROLE_AUTHENTICATED",
+            workspace="*",
+            service="GWC",
+            layer="ne",
+            access="ALLOW",
+        )
+    )
+    assert response.response == "Data added successfully"
+
+
+def test_create_geofence_ConnectError(client: SyncGeoServerX, respx_mock):
+    respx_mock.get(f"{baseUrl}about/status.json").mock(
+        return_value=httpx.Response(
+            200, json={"statuss": {"status": [{"name": "geofence"}]}}
+        )
+    )
+    respx_mock.post(f"{baseUrl}geofence/rules").mock(side_effect=httpx.ConnectError)
+    response = client.create_geofence(
+        rule=Rule(
+            priority=3,
+            userName=None,
+            roleName="ROLE_AUTHENTICATED",
+            workspace="*",
+            service="GWC",
+            layer="ne",
+            access="ALLOW",
+        )
+    )
     assert response.response == "Error in connecting to Geoserver"

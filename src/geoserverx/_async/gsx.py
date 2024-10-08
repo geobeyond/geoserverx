@@ -1,6 +1,8 @@
 from dataclasses import dataclass
 from typing import Optional, Union
 
+import httpx
+
 from geoserverx.models.coverages_store import CoveragesStoreModel, CoveragesStoresModel
 from geoserverx.models.data_store import (
     CreateDataStoreModel,
@@ -9,6 +11,7 @@ from geoserverx.models.data_store import (
     DataStoresModel,
     MainCreateDataStoreModel,
 )
+from geoserverx.models.geofence import NewRule, Rule, RulesResponse
 from geoserverx.models.gs_response import GSResponse
 from geoserverx.models.layer_group import LayerGroupsModel
 from geoserverx.models.layers import LayerModel, LayersModel
@@ -20,6 +23,7 @@ from geoserverx.models.workspace import (
     WorkspacesModel,
 )
 from geoserverx.utils.auth import GeoServerXAuth
+from geoserverx.utils.custom_exceptions import GSModuleNotFound
 from geoserverx.utils.enums import GSResponseEnum
 from geoserverx.utils.errors import GeoServerXError
 from geoserverx.utils.http_client import AsyncClient
@@ -90,6 +94,33 @@ class AsyncGeoServerX:
         elif r == 409:
             resp = GSResponseEnum._409.value
         return GSResponse.model_validate(resp)
+
+    # check if certain module/plugin exists in geoserver
+    async def check_modules(self, name) -> Union[bool, GSResponse]:
+        Client = self.http_client
+        try:
+            response = await Client.get("about/status.json")
+            response.raise_for_status()  # Raises an HTTPError for bad responses (4xx and 5xx)
+
+            # Extract and check the modules
+            modules = [
+                item["name"].lower() for item in response.json()["statuss"]["status"]
+            ]
+            if name.lower() in modules:
+                return True
+            else:
+                # Raise exception if the plugin is not found
+                raise GSModuleNotFound(f"'{name}' plugin not found")
+
+        except httpx.HTTPStatusError as e:
+            # Handle HTTP errors (e.g., 4xx, 5xx)
+            return self.response_recognise(e.response.status_code)
+        except httpx.RequestError as e:
+            # Handle other request errors (e.g., network problems)
+            return self.response_recognise(e.response.status_code)
+        except GSModuleNotFound as e:
+            # Handle Module not found exception
+            return GSResponse(code=412, response=str(e))
 
     # Get all workspaces
     async def get_all_workspaces(self) -> Union[WorkspacesModel, GSResponse]:
@@ -309,3 +340,54 @@ class AsyncGeoServerX:
         else:
             results = self.response_recognise(responses.status_code)
             return results
+
+    # Get all geofence rules
+    async def get_all_geofence_rules(self) -> Union[RulesResponse, GSResponse]:
+        Client = self.http_client
+        # Check if the geofence plugin exists
+        module_check = await self.check_modules("geofence")
+        # If the module check fails, return the GSResponse directly
+        if isinstance(module_check, GSResponse):
+            return module_check
+        responses = await Client.get(
+            "geofence/rules/", headers={"Accept": "application/json"}
+        )
+        if responses.status_code == 200:
+            return RulesResponse.model_validate(responses.json())
+        else:
+            results = self.response_recognise(responses.status_code)
+            return results
+
+    # Get geofence rule by id
+    async def get_geofence_rule(self, id: int) -> Union[Rule, GSResponse]:
+        Client = self.http_client
+        # Check if the geofence plugin exists
+        module_check = await self.check_modules("geofence")
+        # If the module check fails, return the GSResponse directly
+        if isinstance(module_check, GSResponse):
+            return module_check
+        responses = await Client.get(
+            f"geofence/rules/id/{id}", headers={"Accept": "application/json"}
+        )
+        if responses.status_code == 200:
+            return Rule.model_validate(responses.json())
+        else:
+            results = self.response_recognise(responses.status_code)
+            return results
+
+    # Create geofence on geoserver
+    async def create_geofence(self, rule: Rule) -> GSResponse:
+        PostingRule = NewRule(Rule=rule)
+        # Check if the geofence plugin exists
+        module_check = await self.check_modules("geofence")
+        # If the module check fails, return the GSResponse directly
+        if isinstance(module_check, GSResponse):
+            return module_check
+        Client = self.http_client
+        responses = await Client.post(
+            "geofence/rules",
+            content=PostingRule.model_dump_json(),
+            headers=self.head,
+        )
+        results = self.response_recognise(responses.status_code)
+        return results
