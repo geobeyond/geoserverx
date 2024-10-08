@@ -445,6 +445,8 @@ def geofence_rules(
             print(result)
     else:
         typer.echo("Async support will be shortly")
+
+
 # Reset geoserver
 @SyncGeoServerX.exception_handler
 @app.command(help="Reset geoserver settings")
@@ -465,7 +467,8 @@ def reset(
         typer.secho(result, fg=typer.colors.GREEN)
     else:
         typer.echo("Async support will be shortly")
-    
+
+
 # get geofence rule
 @SyncGeoServerX.exception_handler
 @app.command(help="Get geofence rule in the Geoserver")
@@ -490,7 +493,6 @@ def geofence_rule(
             print(result)
     else:
         typer.echo("Async support will be shortly")
-    
 
 
 # Reload geoserver
@@ -513,5 +515,3 @@ def reload(
         typer.secho(result, fg=typer.colors.GREEN)
     else:
         typer.echo("Async support will be shortly")
-    
-    

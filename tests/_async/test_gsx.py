@@ -478,6 +478,8 @@ async def test_reset_geoserver_validation(
     )
     response = await create_a_client.reset_geoserver()
     assert response.code == 404
+
+
 # Test - all_geofence_rules
 @pytest.mark.asyncio
 async def test_all_geofence_rules_validation(
@@ -543,6 +545,7 @@ async def test_reload_geoserver_NetworkError(create_a_client, respx_mock):
     with pytest.raises(httpx.ConnectError):
         response = await create_a_client.reload_geoserver()
         assert response.response == "Error in connecting to Geoserver"
+
 
 @pytest.mark.asyncio
 async def test_all_geofence_rules_success(
