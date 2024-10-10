@@ -20,3 +20,12 @@ This command fetches all Information about raster store available in given works
 # Get all information about `image` raster stores available in `cite` workspace
 await client.get_raster_store(workspace='cite', store='image') 
 ```
+
+
+## Delete store
+Use this command to delete raster store from geoserver. 
+
+```Python
+# Delete store in `cite` workspace with name `image`
+await client.delete_store(workspace="cite",store="image",type="raster")
+```

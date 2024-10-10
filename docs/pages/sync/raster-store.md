@@ -21,3 +21,11 @@ This command fetches all Information about raster store available in given works
 
 client.get_raster_store(workspace='cite', store='image') 
 ```
+
+## Delete store
+Use this command to delete raster store from geoserver. 
+
+```Python
+# Delete store in `cite` workspace with name `image`
+client.delete_store(workspace="cite",store="image",type="raster")
+```

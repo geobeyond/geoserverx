@@ -53,3 +53,12 @@ client.create_pg_store(
         password="XXXXXXXX",
         database="test")
 ```
+
+
+## Delete store
+Use this command to delete vector store from geoserver. 
+
+```Python
+# Delete store in `cite` workspace with name `pg`
+client.delete_store(workspace="cite",store="pg",type="vector")
+```
