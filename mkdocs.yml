@@ -1,5 +1,6 @@
 site_name: geoserverx
 site_description: "geoserverx is a modern python and CLI package for communicating with Geoserver."
+site_url:  https://geobeyond.github.io/geoserverx/
 site_author: Geobeyond
 copyright: "&copy; 2024 Geobeyond"
 theme:
