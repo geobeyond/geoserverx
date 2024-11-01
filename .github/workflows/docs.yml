@@ -27,4 +27,6 @@ jobs:
           path: .cache
           restore-keys: |
             mkdocs-material-
-      - run: mkdocs gh-deploy --force
+      - name: Deploy Documentation
+        run: |
+          poetry run mkdocs gh-deploy --force
