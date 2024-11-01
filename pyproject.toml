@@ -1,7 +1,7 @@
 [tool.poetry]
 name = "geoserverx"
-version = "0.0.3"
-description = ""
+version = "0.0.4"
+description = "python package to talk to GeoServer efficiently using sync and async methods"
 authors = ["krishnaglodha <krishnaglodha@gmail.com>"]
 
 [tool.poetry.scripts]
