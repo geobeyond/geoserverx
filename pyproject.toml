@@ -1,8 +1,9 @@
 [tool.poetry]
 name = "geoserverx"
-version = "0.0.3"
-description = ""
+version = "0.0.4"
+description = "geoserverx is a modern python and CLI package for communicating with Geoserver."
 authors = ["krishnaglodha <krishnaglodha@gmail.com>"]
+readme = "README.md"
 
 [tool.poetry.scripts]
 gsx = "geoserverx.cli.cli:app"
