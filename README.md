@@ -3,7 +3,7 @@ A GeoServer REST API client influenced by HTTPX
 
 -----------
 
-`geoserverx` allows `Sync`, `Async` as well as `CLI` Capabilities to talk to your geoserver REST APIs which makes it ideal to be used in software development project which relies on content of geoserver. 
+`geoserverx` allows `Sync`, `Async` as well as `CLI` Capabilities to talk to your GeoServer REST APIs which makes it ideal to be used in software development project which relies on content of GeoServer. 
 
 Here is a simplistic view of how geoserverx works under the hood
 ![architecture](/docs/assets/images/arch.png "architecture")

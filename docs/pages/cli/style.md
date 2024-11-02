@@ -1,6 +1,6 @@
 # Style
 
-`geoserverx` allows users to access all/one raster stores from geoserver. As of now, `geoserverx` also supports new raster store creation for `shapefile` and `gpkg` data
+`geoserverx` allows users to access all/one raster stores from GeoServer. As of now, `geoserverx` also supports new raster store creation for `shapefile` and `gpkg` data
 
 !!! get "Get started"
     To start using `geoserverx` using command line, activate the Environment where package is installed and use `gsx` command
@@ -19,7 +19,7 @@ Options:
   --request [sync|async]  [default: requestEnum._sync]
   --url TEXT              Geoserver REST URL  [default:
                           http://127.0.0.1:8080/geoserver/rest/]
-  --password TEXT         Geoserver Password  [default: geoserver]
+  --password TEXT         Geoserver Password  [default: GeoServer]
   --username TEXT         Geoserver username  [default: admin]
   --help                  Show this message and exit.
 ```
@@ -29,8 +29,8 @@ As listed above, `styles` command accepts following parameters.
 
 * request type ( sync or async )
 * url - Geoserver REST URL
-* password - Password for geoserver
-* username - Username for geoserver
+* password - Password for GeoServer
+* username - Username for GeoServer
 
 All these parameters have default value setup which will work for local default installation. 
 
@@ -67,7 +67,7 @@ Options:
   --url TEXT              Geoserver REST URL  [default:
                           http://127.0.0.1:8080/geoserver/rest/]
   --style TEXT            Style name  [required]
-  --password TEXT         Geoserver Password  [default: geoserver]
+  --password TEXT         Geoserver Password  [default: GeoServer]
   --username TEXT         Geoserver username  [default: admin]
   --help                  Show this message and exit.
 

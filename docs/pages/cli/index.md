@@ -1,6 +1,6 @@
 # Command line access
 
-`geoserverx` allows users to leverage power of command line to communicate with geoserver.
+`geoserverx` allows users to leverage power of command line to communicate with GeoServer.
 `gsx` is a command line tool by `geoserverx`. 
 
 ## Installation

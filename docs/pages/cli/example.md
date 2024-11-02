@@ -20,7 +20,7 @@ Error: Missing command.
 ```
 </div>
 
-We'll assume connection to local geoserver with default credentials 
+We'll assume connection to local GeoServer with default credentials 
 
 
 ## Get all workspaces

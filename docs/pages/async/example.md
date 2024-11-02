@@ -7,7 +7,7 @@ Here, we'll have a look at implementation `geoserverx` asynchronous Class
 
 ## Setup Class instance
 
-`AsyncGeoServerX` Class has default username, password, url which points to default geoserver settings. 
+`AsyncGeoServerX` Class has default username, password, url which points to default GeoServer settings. 
 ```Python
 # Import class from package
 from geoserverx._async.gsx import AsyncGeoServerX
@@ -15,7 +15,7 @@ import asyncio
 # Create class Instance with default paramaters
 client = AsyncGeoServerX()
 ```
-We'll assume connection to local geoserver with default credentials
+We'll assume connection to local GeoServer with default credentials
 
 ## Get all workspaces
 
@@ -29,7 +29,7 @@ async def get_info_raster_workspaces(url, username, password):
     print(await client.get_all_workspaces())
 
 async def main():
-    await asyncio.gather(get_info_raster_workspaces(url='http://localhost:8080/geoserver/rest/',username='admin', password='geoserver'),get_info_raster_workspaces(url='http://89.233.108.250:8080/geoserver/rest',username='admin', password='myP'),get_info_raster_workspaces(url='http://localhost:8080/geoserver/rest/',username='admin', password='geoserver'))
+    await asyncio.gather(get_info_raster_workspaces(url='http://localhost:8080/geoserver/rest/',username='admin', password='GeoServer'),get_info_raster_workspaces(url='http://locahost:8080/geoserver/rest',username='admin', password='myP'),get_info_raster_workspaces(url='http://localhost:8080/geoserver/rest/',username='admin', password='GeoServer'))
 
 asyncio.run(main())
 
@@ -53,7 +53,7 @@ async def get_info_raster_workspaces(url, username, password,workspace):
     print(await client.get_workspace(workspace))
 
 async def main():
-    await asyncio.gather(get_info_raster_workspaces(url='http://localhost:8080/geoserver/rest/',username='admin', password='geoserver',workspace='cesium'))
+    await asyncio.gather(get_info_raster_workspaces(url='http://localhost:8080/geoserver/rest/',username='admin', password='GeoServer',workspace='cesium'))
 
 asyncio.run(main())
 
@@ -80,13 +80,13 @@ async def create_single_workspaces(url, username, password,workspace,default,iso
 
 async def main():
     await asyncio.gather(create_single_workspaces(
-        url='http://localhost:8080/geoserver/rest/',username='admin', password='geoserver',
+        url='http://localhost:8080/geoserver/rest/',username='admin', password='GeoServer',
 workspace='AsyncMyDefault',default=True,isolated= False),
 create_single_workspaces(
-        url='http://localhost:8080/geoserver/rest/',username='admin', password='geoserver',
+        url='http://localhost:8080/geoserver/rest/',username='admin', password='GeoServer',
 workspace='AsyncMyHidden',default=False,isolated= True),
 create_single_workspaces(
-        url='http://localhost:8080/geoserver/rest/',username='admin', password='geoserver',
+        url='http://localhost:8080/geoserver/rest/',username='admin', password='GeoServer',
 workspace='AsyncMySimple',default=False,isolated= False))
 
 asyncio.run(main())
@@ -114,7 +114,7 @@ async def create_single_workspaces(url, username, password,workspace):
 
 async def main():
     await asyncio.gather(create_single_workspaces(
-        url='http://localhost:8080/geoserver/rest/',username='admin', password='geoserver',
+        url='http://localhost:8080/geoserver/rest/',username='admin', password='GeoServer',
 workspace='cesium'))
 
 asyncio.run(main())
@@ -138,7 +138,7 @@ async def get_info_vector_workspaces(url, username, password,workspace,store):
 
 async def main():
     await asyncio.gather(get_info_vector_workspaces(
-        url='http://localhost:8080/geoserver/rest/',username='admin', password='geoserver',
+        url='http://localhost:8080/geoserver/rest/',username='admin', password='GeoServer',
 workspace='cesium',store='myshp'))
 
 asyncio.run(main())
@@ -163,7 +163,7 @@ def add_vector_workspaces(url, username, password,workspace,store,file):
     client = SyncGeoServerX(username, password,url)
     return client.create_file_store(workspace, store, file, service_type='shapefile') 
 
-result = add_vector_workspaces(url='http://localhost:8080/geoserver/rest/',username='admin', password='geoserver',
+result = add_vector_workspaces(url='http://localhost:8080/geoserver/rest/',username='admin', password='GeoServer',
 workspace='cesium',store='myshp', file='safe_users.zip' )
 print(result.json())
 
@@ -188,7 +188,7 @@ async def get_all_raster_workspaces(url, username, password,workspace):
 
 async def main():
     await asyncio.gather(get_all_raster_workspaces(
-        url='http://localhost:8080/geoserver/rest/',username='admin', password='geoserver',workspace='cesium'))
+        url='http://localhost:8080/geoserver/rest/',username='admin', password='GeoServer',workspace='cesium'))
 
 asyncio.run(main())
 
@@ -211,7 +211,7 @@ async def get_info_raster_workspaces(url, username, password,workspace,store):
 
 async def main():
     await asyncio.gather(get_info_raster_workspaces(
-        url='http://localhost:8080/geoserver/rest/',username='admin', password='geoserver',workspace='cesium',store='dsm'))
+        url='http://localhost:8080/geoserver/rest/',username='admin', password='GeoServer',workspace='cesium',store='dsm'))
 
 asyncio.run(main())
 
@@ -221,7 +221,7 @@ coverageStore=CoveragesStoreModelDetail(name='dsm', description=None, enabled=Tr
 '''
 ```
 
-## Get all Styles in geoserver
+## Get all Styles in GeoServer
 
 ```Python hl_lines="7"
 from geoserverx._async.gsx import AsyncGeoServerX
@@ -234,7 +234,7 @@ async def get_info_raster_workspaces(url, username, password):
 
 async def main():
     await asyncio.gather(get_info_raster_workspaces(
-        url='http://localhost:8080/geoserver/rest/',username='admin', password='geoserver'))
+        url='http://localhost:8080/geoserver/rest/',username='admin', password='GeoServer'))
 
 asyncio.run(main())
 
@@ -244,7 +244,7 @@ styles=allStyle(style=[allStyleList(name='burg', href='http://localhost:8080/geo
 '''
 ```
 
-## Get Single Style in geoserver
+## Get Single Style in GeoServer
 
 ```Python hl_lines="7"
 from geoserverx._async.gsx import AsyncGeoServerX
@@ -257,7 +257,7 @@ async def get_info_raster_workspaces(url, username, password,style):
 
 async def main():
     await asyncio.gather(get_info_raster_workspaces(
-        url='http://localhost:8080/geoserver/rest/',username='admin', password='geoserver',style='poi'))
+        url='http://localhost:8080/geoserver/rest/',username='admin', password='GeoServer',style='poi'))
 
 asyncio.run(main())
 ''' Console 
