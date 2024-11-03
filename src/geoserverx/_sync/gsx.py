@@ -478,6 +478,7 @@ class SyncGeoServerX:
         else:
             results = self.response_recognise(responses.status_code)
             return results
+
     # Get all geofence rules
     @exception_handler
     def get_all_geofence_rules(self) -> Union[RulesResponse, GSResponse]:

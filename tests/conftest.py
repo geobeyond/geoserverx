@@ -698,9 +698,12 @@ def good_system_status_connection() -> dict:
                     "value": "NOT AVAILABLE",
                 },
             ]
-            }
+        }
     }
     return item
+
+
+@pytest.fixture
 def good_all_geofence_rules_connection() -> dict:
     item = {
         "count": 2,
@@ -874,6 +877,9 @@ def good_new_geofence_rule_connection() -> dict:
 def bad_system_status_connection() -> dict:
     item = {"code": 404, "response": "Result not found"}
     return item
+
+
+@pytest.fixture
 def bad_new_geofence_rule_connection() -> dict:
     item = {"Rule": ""}
     return item
@@ -883,6 +889,9 @@ def bad_new_geofence_rule_connection() -> dict:
 def networkbad_system_status_connection() -> dict:
     item = {"code": 503, "response": "Geoserver unavailable"}
     return item
+
+
+@pytest.fixture
 def invalid_new_geofence_rule_connection() -> dict:
     item = {"code": 404, "response": "Result not found"}
     return item

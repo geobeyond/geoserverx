@@ -354,6 +354,7 @@ class AsyncGeoServerX:
         else:
             results = self.response_recognise(responses.status_code)
             return results
+
     # Get all geofence rules
     async def get_all_geofence_rules(self) -> Union[RulesResponse, GSResponse]:
         Client = self.http_client

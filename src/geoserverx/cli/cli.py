@@ -445,7 +445,8 @@ def system_status(
             print(result)
     else:
         typer.echo("Async support will be shortly")
-    
+
+
 # get all geofence rules
 @SyncGeoServerX.exception_handler
 @app.command(help="Get all geofence rules in the Geoserver")
@@ -458,7 +459,7 @@ def geofence_rules(
     username: str = typer.Option("admin", help="Geoserver username"),
 ):
     """
-    
+
     Get all geofence rules in the Geoserver
     """
     if request.value == "sync":

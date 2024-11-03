@@ -438,6 +438,8 @@ def test_system_status_ConnectError(client: SyncGeoServerX, respx_mock):
     respx_mock.get(f"{baseUrl}about/system-status").mock(side_effect=httpx.ConnectError)
     response = client.system_status()
     assert response.response == "Error in connecting to Geoserver"
+
+
 # Test - all_geofence_rules
 def test_all_geofence_rules_validation(
     client: SyncGeoServerX, bad_all_geofence_rules_connection, respx_mock

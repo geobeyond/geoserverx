@@ -288,6 +288,8 @@ def test_MetricsDataModel_connection(good_system_status_connection):
 def test_MetricsDataModel_failure(bad_system_status_connection):
     with pytest.raises(ValidationError):
         MetricsDataModel(**bad_system_status_connection)
+
+
 # Testing LayerGroupsModel
 def test_RulesResponse_connection(good_all_geofence_rules_connection):
     ds_connection = RulesResponse(**good_all_geofence_rules_connection)
