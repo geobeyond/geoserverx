@@ -410,11 +410,11 @@ def good_all_styles_model_connection() -> dict:
             "style": [
                 {
                     "name": "CUSD 2020 Census Blocks",
-                    "href": "http://localhost:8080/geoserver/rest/styles/CUSD+2020+Census+Blocks.json",
+                    "href": "http://localhost:8080/geoserver/rest/styles/CUSD.json",
                 },
                 {
                     "name": "Default Styler",
-                    "href": "http://localhost:8080/geoserver/rest/styles/Default+Styler.json",
+                    "href": "http://localhost:8080/geoserver/rest/styles/Default.json",
                 },
             ]
         }
@@ -698,6 +698,173 @@ def good_system_status_connection() -> dict:
                     "value": "NOT AVAILABLE",
                 },
             ]
+            }
+    }
+    return item
+def good_all_geofence_rules_connection() -> dict:
+    item = {
+        "count": 2,
+        "rules": [
+            {
+                "id": 2,
+                "priority": 0,
+                "userName": None,
+                "roleName": "ROLE_ANONYMOUS",
+                "addressRange": None,
+                "workspace": "ne",
+                "layer": "ne_10m_admin_0_countries",
+                "service": None,
+                "request": None,
+                "subfield": None,
+                "access": "ALLOW",
+                "limits": None,
+                "layerDetails": {
+                    "layerType": "VECTOR",
+                    "defaultStyle": None,
+                    "cqlFilterRead": "INCOME_GRP = '4. Lower middle income'",
+                    "cqlFilterWrite": None,
+                    "allowedArea": None,
+                    "spatialFilterType": "INTERSECT",
+                    "catalogMode": None,
+                    "allowedStyles": [],
+                    "attributes": [
+                        {
+                            "name": "FCLASS_SA",
+                            "dataType": "java.lang.String",
+                            "accessType": "NONE",
+                        },
+                        {
+                            "name": "NAME_NL",
+                            "dataType": "java.lang.String",
+                            "accessType": "NONE",
+                        },
+                        {
+                            "name": "FCLASS_PK",
+                            "dataType": "java.lang.String",
+                            "accessType": "NONE",
+                        },
+                        {
+                            "name": "ADM0_DIF",
+                            "dataType": "java.lang.Integer",
+                            "accessType": "NONE",
+                        },
+                        {
+                            "name": "ADM0_A3_ID",
+                            "dataType": "java.lang.String",
+                            "accessType": "NONE",
+                        },
+                        {
+                            "name": "WOE_ID_EH",
+                            "dataType": "java.lang.Integer",
+                            "accessType": "NONE",
+                        },
+                        {
+                            "name": "FCLASS_TW",
+                            "dataType": "java.lang.String",
+                            "accessType": "NONE",
+                        },
+                        {
+                            "name": "ADM0_A3",
+                            "dataType": "java.lang.String",
+                            "accessType": "NONE",
+                        },
+                        {
+                            "name": "FCLASS_US",
+                            "dataType": "java.lang.String",
+                            "accessType": "NONE",
+                        },
+                        {
+                            "name": "ISO_A2_EH",
+                            "dataType": "java.lang.String",
+                            "accessType": "NONE",
+                        },
+                        {
+                            "name": "ADM0_A3_IT",
+                            "dataType": "java.lang.String",
+                            "accessType": "NONE",
+                        },
+                        {
+                            "name": "FCLASS_NP",
+                            "dataType": "java.lang.String",
+                            "accessType": "NONE",
+                        },
+                        {
+                            "name": "ISO_N3",
+                            "dataType": "java.lang.String",
+                            "accessType": "NONE",
+                        },
+                    ],
+                },
+            },
+            {
+                "id": 1,
+                "priority": 1,
+                "userName": None,
+                "roleName": "ADMIN",
+                "addressRange": None,
+                "workspace": "ne",
+                "layer": "ne_10m_admin_0_countries",
+                "service": None,
+                "request": None,
+                "subfield": None,
+                "access": "ALLOW",
+                "limits": None,
+                "layerDetails": {
+                    "layerType": "VECTOR",
+                    "defaultStyle": "generic",
+                    "cqlFilterRead": "ADMIN = 'India'",
+                    "cqlFilterWrite": None,
+                    "allowedArea": None,
+                    "spatialFilterType": "INTERSECT",
+                    "catalogMode": None,
+                    "allowedStyles": [],
+                    "attributes": [
+                        {
+                            "name": "FCLASS_MA",
+                            "dataType": "java.lang.String",
+                            "accessType": "NONE",
+                        },
+                        {
+                            "name": "ABBREV",
+                            "dataType": "java.lang.String",
+                            "accessType": "NONE",
+                        },
+                    ],
+                },
+            },
+        ],
+    }
+    return item
+
+
+@pytest.fixture
+def bad_all_geofence_rules_connection() -> dict:
+    item = {"code": 404, "response": "Result not found"}
+    return item
+
+
+@pytest.fixture
+def networkbad_all_geofence_rules_connection() -> dict:
+    item = {"code": 503, "response": "Geoserver unavailable"}
+    return item
+
+
+@pytest.fixture
+def good_new_geofence_rule_connection() -> dict:
+    item = {
+        "Rule": {
+            "priority": 3,
+            "userName": None,
+            "roleName": "ROLE_AUTHENTICATED",
+            "addressRange": None,
+            "workspace": "*",
+            "layer": "ne",
+            "service": "GWC",
+            "request": None,
+            "subfield": None,
+            "access": "ALLOW",
+            "limits": None,
+            "layerDetails": None,
         }
     }
     return item
@@ -707,9 +874,15 @@ def good_system_status_connection() -> dict:
 def bad_system_status_connection() -> dict:
     item = {"code": 404, "response": "Result not found"}
     return item
+def bad_new_geofence_rule_connection() -> dict:
+    item = {"Rule": ""}
+    return item
 
 
 @pytest.fixture
 def networkbad_system_status_connection() -> dict:
     item = {"code": 503, "response": "Geoserver unavailable"}
+    return item
+def invalid_new_geofence_rule_connection() -> dict:
+    item = {"code": 404, "response": "Result not found"}
     return item

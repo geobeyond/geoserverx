@@ -1,17 +1,17 @@
 # Workspaces 
 
-`geoserverx` allows users to access all/one workspace from geoserver, along with ability to add new workspaces. 
+`geoserverx` allows users to access all/one workspace from GeoServer, along with ability to add new workspaces. 
 
 ## Get all workspaces
-This command fetches all workspaces available in geoserver. No paramters are required to be passed.
+This command fetches all workspaces available in GeoServer. No paramters are required to be passed.
 
 ```Python
-# Get all workspaces in geoserver
+# Get all workspaces in GeoServer
 client.get_all_workspaces()
 ```
 
 ## Get single workspace
-This command fetches workspace with paramter as name of it from geoserver.
+This command fetches workspace with paramter as name of it from GeoServer.
 ```Python
 # Get workspace with name `cite`
 client.get_workspace('cite')

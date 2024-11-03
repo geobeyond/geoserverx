@@ -1,9 +1,9 @@
 # Vector Stores 
 
-`geoserverx` allows users to access all/one vector stores from geoserver. As of now, `geoserverx` also supports new vector store creation for `shapefile` and `gpkg` data
+`geoserverx` allows users to access all/one vector stores from GeoServer. As of now, `geoserverx` also supports new vector store creation for `shapefile` and `gpkg` data
 
 ## Get all Vector stores 
-This command fetches all Vector store available in given workspace from geoserver. 
+This command fetches all Vector store available in given workspace from GeoServer. 
 
 ```Python
 # Get all vector stores available in `cite` workspace
@@ -13,7 +13,7 @@ await client.get_vector_stores_in_workspaces('cite')
 
 
 ## Get single Vector store
-This command fetches all Information about Vector store available in given workspace from geoserver. 
+This command fetches all Information about Vector store available in given workspace from GeoServer. 
 
 ```Python
 # Get all information about `shape` vector stores available in `cite` workspace
@@ -52,4 +52,20 @@ await client.create_pg_store(
         username="XXXXXXXX",
         password="XXXXXXXX",
         database="test")
+```
+
+## Get all Vector layers
+This command fetches all Vector layers available in given workspace from GeoServer.
+
+```Python
+# Get all vector layers available in `cite` workspace
+await client.get_all_layers(workspace='cite')
+```
+
+## Get single Vector layer
+This command fetches all Information about Vector layer available in given workspace from GeoServer.
+
+```Python
+# Get all information about `roads` vector layers available in `cite` workspace
+await client.get_vector_layer(workspace='cite', store='shape', layer='roads')
 ```

@@ -1,6 +1,6 @@
 # Workspaces 
 
-`geoserverx` allows users to access all/one workspace from geoserver, along with ability to add new workspaces. 
+`geoserverx` allows users to access all/one workspace from GeoServer, along with ability to add new workspaces. 
 
 !!! get "Get started"
     To start using `geoserverx` using command line, activate the Environment where package is installed and use `gsx` command
@@ -22,7 +22,7 @@ Options:
   --request [sync|async]  [default: requestEnum._sync]
   --url TEXT              Geoserver REST URL  [default:
                           http://127.0.0.1:8080/geoserver/rest/]
-  --password TEXT         Geoserver Password  [default: geoserver]
+  --password TEXT         Geoserver Password  [default: GeoServer]
   --username TEXT         Geoserver username  [default: admin]
   --help                  Show this message and exit.
 ```
@@ -32,8 +32,8 @@ As listed above, `workspaces` command accepts four parameters.
 
 * request type ( sync or async )
 * url - Geoserver REST URL
-* password - Password for geoserver
-* username - Username for geoserver
+* password - Password for GeoServer
+* username - Username for GeoServer
 
 All these parameters have default value setup which will work for local default installation
 
@@ -48,13 +48,13 @@ $ gsx workspaces
 ```
 </div>
 
-## Get all workspaces of hosted geoserver
+## Get all workspaces of hosted GeoServer
 
 <div class="termy">
 ```console
-$ gsx workspaces --url http://89.233.108.250:8080/geoserver/rest --password myPassword --username admin
+$ gsx workspaces --url http://locahost:8080/geoserver/rest --password myPassword --username admin
 {"workspaces": {"workspace": [{"name": "giz", "href": 
-"http://89.233.108.250:8080/geoserver/rest/workspaces/giz.json"}]}}
+"http://locahost:8080/geoserver/rest/workspaces/giz.json"}]}}
 ```
 </div>
 
@@ -74,7 +74,7 @@ Options:
   --workspace TEXT        Workspace name  [required]
   --url TEXT              Geoserver REST URL  [default:
                           http://127.0.0.1:8080/geoserver/rest/]
-  --password TEXT         Geoserver Password  [default: geoserver]
+  --password TEXT         Geoserver Password  [default: GeoServer]
   --username TEXT         Geoserver username  [default: admin]
   --help                  Show this message and exit.
 ```
@@ -116,7 +116,7 @@ Options:
   --isolated / --no-isolated  Make workspace isolated?  [default: no-isolated]
   --url TEXT                  Geoserver REST URL  [default:
                               http://127.0.0.1:8080/geoserver/rest/]
-  --password TEXT             Geoserver Password  [default: geoserver]
+  --password TEXT             Geoserver Password  [default: GeoServer]
   --username TEXT             Geoserver username  [default: admin]
   --help                      Show this message and exit.
 ```

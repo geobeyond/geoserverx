@@ -7,7 +7,7 @@
 
 ## Setup Class instance
 
-`AsyncGeoServerX` Class has default username, password, url which points to default geoserver settings. 
+`AsyncGeoServerX` Class has default username, password, url which points to default GeoServer settings. 
 ```Python
 # Import class from package
 from geoserverx._async.gsx import AsyncGeoServerX 

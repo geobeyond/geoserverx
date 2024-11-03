@@ -16,6 +16,7 @@ from geoserverx.models.data_store import (
     DataStoresModel,
     EntryItem,
 )
+from geoserverx.models.geofence import RulesResponse
 from geoserverx.models.layer_group import LayerGroupsModel
 from geoserverx.models.style import (
     AllStylesModel,
@@ -287,3 +288,12 @@ def test_MetricsDataModel_connection(good_system_status_connection):
 def test_MetricsDataModel_failure(bad_system_status_connection):
     with pytest.raises(ValidationError):
         MetricsDataModel(**bad_system_status_connection)
+# Testing LayerGroupsModel
+def test_RulesResponse_connection(good_all_geofence_rules_connection):
+    ds_connection = RulesResponse(**good_all_geofence_rules_connection)
+    assert ds_connection.count == 2
+
+
+def test_RulesResponse_failure(bad_all_geofence_rules_connection):
+    with pytest.raises(ValidationError):
+        RulesResponse(**bad_all_geofence_rules_connection)
