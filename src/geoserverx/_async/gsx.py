@@ -243,7 +243,7 @@ class AsyncGeoServerX:
                     user=username,
                     passwd=password,
                     dbtype="postgis",
-                ).dict(exclude_none=True),
+                ).model_dump(exclude_none=True),
             )
         )
         Client = self.http_client
