@@ -18,7 +18,7 @@ rich = "^12.5.1"
 [tool.poetry.group.dev.dependencies]
 pytest = "^7.1.2"
 respx = "^0.20.1"
-mypy = "^0.960"
+mypy = "*"
 ruff = "^0.6.3"
 black = "^24.8.0"
 isort = "^5.10.1"
