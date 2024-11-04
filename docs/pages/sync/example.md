@@ -7,14 +7,14 @@ Here, we'll have a look at implementation `geoserverx` synchronous Class
 
 ## Setup Class instance
 
-`SyncGeoServerX` Class has default username, password, url which points to default geoserver settings. 
+`SyncGeoServerX` Class has default username, password, url which points to default GeoServer settings. 
 ```Python
 # Import class from package
 from geoserverx._sync.gsx import SyncGeoServerX 
 # Create class Instance with default paramaters
 client = SyncGeoServerX()
 ```
-We'll assume connection to local geoserver with default credentials
+We'll assume connection to local GeoServer with default credentials
 
 ## Get all workspaces
 
@@ -28,7 +28,7 @@ def get_all_gs_workspaces(url, username, password):
     client = SyncGeoServerX(username, password,url)
     return client.get_all_workspaces()
 
-result = get_all_gs_workspaces(url='http://localhost:8080/geoserver/rest/',username='admin', password='geoserver')
+result = get_all_gs_workspaces(url='http://localhost:8080/geoserver/rest/',username='admin', password='GeoServer')
 print(result.json())
 ''' Console 
 -------------start-----------------
@@ -52,7 +52,7 @@ def get_single_workspaces(url, username, password,workspace):
     client = SyncGeoServerX(username, password,url)
     return client.get_workspace(workspace)
 
-result = get_single_workspaces(url='http://localhost:8080/geoserver/rest/',username='admin', password='geoserver',workspace='cesium')
+result = get_single_workspaces(url='http://localhost:8080/geoserver/rest/',username='admin', password='GeoServer',workspace='cesium')
 
 print(result.json())
 ''' Console 
@@ -79,13 +79,13 @@ def create_single_workspaces(url, username, password,workspace,default,isolated)
     client = SyncGeoServerX(username, password,url)
     return client.create_workspace(workspace, default,isolated)
 
-first = create_single_workspaces(url='http://localhost:8080/geoserver/rest/',username='admin', password='geoserver',
+first = create_single_workspaces(url='http://localhost:8080/geoserver/rest/',username='admin', password='GeoServer',
 workspace='MyDefault',default=True,isolated= False)
 print(first.json())
-second = create_single_workspaces(url='http://localhost:8080/geoserver/rest/',username='admin', password='geoserver',
+second = create_single_workspaces(url='http://localhost:8080/geoserver/rest/',username='admin', password='GeoServer',
 workspace='MyHidden',default=False,isolated= True)
 print(second.json())
-third = create_single_workspaces(url='http://localhost:8080/geoserver/rest/',username='admin', password='geoserver',
+third = create_single_workspaces(url='http://localhost:8080/geoserver/rest/',username='admin', password='GeoServer',
 workspace='MySimple',default=False,isolated= False)
 print(third.json())
 ''' Console 
@@ -112,7 +112,7 @@ def get_all_vector_workspaces(url, username, password,workspace):
     client = SyncGeoServerX(username, password,url)
     return client.get_vector_stores_in_workspaces(workspace)
 
-result = get_vector_store(url='http://localhost:8080/geoserver/rest/',username='admin', password='geoserver',
+result = get_vector_store(url='http://localhost:8080/geoserver/rest/',username='admin', password='GeoServer',
 workspace='cesium')
 print(result.json())
 
@@ -135,7 +135,7 @@ def get_info_vector_workspaces(url, username, password,workspace,store):
     client = SyncGeoServerX(username, password,url)
     return client.get_vector_store(workspace,store)
 
-result = get_info_vector_workspaces(url='http://localhost:8080/geoserver/rest/',username='admin', password='geoserver',
+result = get_info_vector_workspaces(url='http://localhost:8080/geoserver/rest/',username='admin', password='GeoServer',
 workspace='cesium',store='mysqldb' )
 print(result.json())
 
@@ -160,7 +160,7 @@ def add_vector_workspaces(url, username, password,workspace,store,file):
     client = SyncGeoServerX(username, password,url)
     return client.create_file_store(workspace, store, file, service_type='shapefile') 
 
-result = add_vector_workspaces(url='http://localhost:8080/geoserver/rest/',username='admin', password='geoserver',
+result = add_vector_workspaces(url='http://localhost:8080/geoserver/rest/',username='admin', password='GeoServer',
 workspace='cesium',store='natural_earth', file='/Users/krishnaglodha/Downloads/ne_10m_populated_places_simple/ne_10m_populated_places_simple.shp' )
 print(result.json())
 ''' Console 
@@ -183,7 +183,7 @@ def get_all_raster_workspaces(url, username, password,workspace):
     client = SyncGeoServerX(username, password,url)
     return client.get_raster_stores_in_workspaces(workspace)
 
-result = get_all_raster_workspaces(url='http://localhost:8080/geoserver/rest/',username='admin', password='geoserver',
+result = get_all_raster_workspaces(url='http://localhost:8080/geoserver/rest/',username='admin', password='GeoServer',
 workspace='cesium')
 print(result.json())
 
@@ -205,7 +205,7 @@ def get_info_raster_workspaces(url, username, password,workspace,store):
     client = SyncGeoServerX(username, password,url)
     return client.get_raster_store(workspace,store)
 
-result = get_info_raster_workspaces(url='http://localhost:8080/geoserver/rest/',username='admin', password='geoserver',
+result = get_info_raster_workspaces(url='http://localhost:8080/geoserver/rest/',username='admin', password='GeoServer',
 workspace='cesium',store='dsm' )
 print(result.json())
 
@@ -215,7 +215,7 @@ print(result.json())
 '''
 ```
 
-## Get all Styles in geoserver
+## Get all Styles in GeoServer
 
 ```Python hl_lines="8"
 # Import Class from Package
@@ -225,9 +225,9 @@ def get_all_styles(url, username, password):
     print("-------------start-----------------")
 
     client = SyncGeoServerX(username, password,url)
-    return client.get_allstyles()
+    return client.get_all_styles()
 
-result = get_all_styles(url='http://localhost:8080/geoserver/rest/',username='admin', password='geoserver' )
+result = get_all_styles(url='http://localhost:8080/geoserver/rest/',username='admin', password='GeoServer' )
 print(result.json())
 
 ''' Console 
@@ -236,7 +236,7 @@ print(result.json())
 '''
 ```
 
-## Get Single Style in geoserver
+## Get Single Style in GeoServer
 
 ```Python hl_lines="8"
 # Import Class from Package
@@ -248,7 +248,7 @@ def get_style_info(url, username, password,style):
     client = SyncGeoServerX(username, password,url)
     return client.get_style(style)
 
-result = get_style_info(url='http://localhost:8080/geoserver/rest/',username='admin', password='geoserver',style='poi' )
+result = get_style_info(url='http://localhost:8080/geoserver/rest/',username='admin', password='GeoServer',style='poi' )
 print(result.json())
 ''' Console 
 -------------start-----------------

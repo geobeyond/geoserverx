@@ -1,6 +1,7 @@
-from typer.testing import CliRunner
-from geoserverx.cli.cli import app
 import httpx
+from typer.testing import CliRunner
+
+from geoserverx.cli.cli import app
 
 runner = CliRunner()
 
@@ -175,8 +176,8 @@ def test_get_raster_store_ConnectError(respx_mock):
     assert "Error in connecting to Geoserver" in result.stdout
 
 
-# Test - get_allstyles
-def test_get_allstyles_validation(invalid_all_styles_model_connection, respx_mock):
+# Test - get_all_styles
+def test_get_all_styles_validation(invalid_all_styles_model_connection, respx_mock):
     respx_mock.get(f"{baseUrl}styles").mock(
         return_value=httpx.Response(404, json=invalid_all_styles_model_connection)
     )
@@ -184,15 +185,15 @@ def test_get_allstyles_validation(invalid_all_styles_model_connection, respx_moc
     assert "Result not found" in result.stdout
 
 
-def test_get_allstyles_success(good_all_styles_model_connection, respx_mock):
+def test_get_all_styles_success(good_all_styles_model_connection, respx_mock):
     respx_mock.get(f"{baseUrl}styles").mock(
         return_value=httpx.Response(200, json=good_all_styles_model_connection)
     )
     result = runner.invoke(app, ["styles"])
-    assert "CUSD" in result.stdout
+    assert "CUSD 2020 Census" in result.stdout
 
 
-def test_get_allstyles_ConnectError(respx_mock):
+def test_get_all_styles_ConnectError(respx_mock):
     respx_mock.get(f"{baseUrl}styles").mock(side_effect=httpx.ConnectError)
     result = runner.invoke(app, ["styles"])
     assert "Error in connecting to Geoserver" in result.stdout
@@ -360,4 +361,69 @@ def test_get_layer_success(good_layer_connection, respx_mock):
 def test_get_layer_NetworkError(respx_mock):
     respx_mock.get(f"{baseUrl}layers/tiger:poi").mock(side_effect=httpx.ConnectError)
     result = runner.invoke(app, ["layer", "--workspace", "tiger", "--layer", "poi"])
+    assert "Error in connecting to Geoserver" in result.stdout
+
+
+# Test - get_all_layer_groups
+def test_get_all_layer_groups_validation(bad_layer_groups_connection, respx_mock):
+    respx_mock.get(f"{baseUrl}workspaces/ne/layergroups").mock(
+        return_value=httpx.Response(404, json=bad_layer_groups_connection)
+    )
+    result = runner.invoke(app, ["layer-groups", "--workspace", "ne"])
+    assert "404" in result.stdout
+
+
+def test_get_all_layer_groups_success(good_layer_groups_connection, respx_mock):
+    respx_mock.get(f"{baseUrl}workspaces/ne/layergroups").mock(
+        return_value=httpx.Response(200, json=good_layer_groups_connection)
+    )
+    result = runner.invoke(app, ["layer-groups", "--workspace", "ne"])
+    assert "tg" in result.stdout
+
+
+def test_get_all_layer_groups_NetworkError(respx_mock):
+    respx_mock.get(f"{baseUrl}workspaces/ne/layergroups").mock(
+        side_effect=httpx.ConnectError
+    )
+    result = runner.invoke(app, ["layer-groups", "--workspace", "ne"])
+    assert "Error in connecting to Geoserver" in result.stdout
+
+
+# Test - all_geofence_rules
+def test_all_geofence_rules_validation(bad_all_geofence_rules_connection, respx_mock):
+    respx_mock.get(f"{baseUrl}about/status.json").mock(
+        return_value=httpx.Response(
+            200, json={"statuss": {"status": [{"name": "geofence"}]}}
+        )
+    )
+    respx_mock.get(
+        f"{baseUrl}geofence/rules/", headers={"Accept": "application/json"}
+    ).mock(return_value=httpx.Response(404, json=bad_all_geofence_rules_connection))
+    result = runner.invoke(app, ["geofence-rules"])
+    assert "404" in result.stdout
+
+
+def test_all_geofence_rules_success(good_all_geofence_rules_connection, respx_mock):
+    respx_mock.get(f"{baseUrl}about/status.json").mock(
+        return_value=httpx.Response(
+            200, json={"statuss": {"status": [{"name": "geofence"}]}}
+        )
+    )
+    respx_mock.get(
+        f"{baseUrl}geofence/rules/", headers={"Accept": "application/json"}
+    ).mock(return_value=httpx.Response(200, json=good_all_geofence_rules_connection))
+    result = runner.invoke(app, ["geofence-rules"])
+    assert "2" in result.stdout
+
+
+def test_all_geofence_rules_NetworkError(respx_mock):
+    respx_mock.get(f"{baseUrl}about/status.json").mock(
+        return_value=httpx.Response(
+            200, json={"statuss": {"status": [{"name": "geofence"}]}}
+        )
+    )
+    respx_mock.get(
+        f"{baseUrl}geofence/rules/", headers={"Accept": "application/json"}
+    ).mock(side_effect=httpx.ConnectError)
+    result = runner.invoke(app, ["geofence-rules"])
     assert "Error in connecting to Geoserver" in result.stdout

@@ -1,5 +1,6 @@
 from typing import List, Literal, Optional, Union
-from pydantic import BaseModel, Field, ConfigDict
+
+from pydantic import BaseModel, Field
 
 from .workspace import WorkspaceInBulk
 
@@ -21,7 +22,8 @@ class DatastoreConnection(BaseModel):
     key: str = Field(..., alias="@key")
     path: str = Field(..., alias="$")
 
-    model_config = ConfigDict(populate_by_name=True)
+    class Config:
+        populate_by_name = True
 
 
 class EntryItem(BaseModel):

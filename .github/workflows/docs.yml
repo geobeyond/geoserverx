@@ -14,6 +14,12 @@ jobs:
       - uses: actions/setup-python@v4
         with:
           python-version: 3.x
+      - name: Install Poetry
+        uses: snok/install-poetry@v1
+        with:
+          version: 1.5.1
+      - name: Install dependencies
+        run: poetry install  --with docs              
       - run: echo "cache_id=$(date --utc '+%V')" >> $GITHUB_ENV 
       - uses: actions/cache@v3
         with:
@@ -21,5 +27,6 @@ jobs:
           path: .cache
           restore-keys: |
             mkdocs-material-
-      - run: pip install mkdocs-material 
-      - run: mkdocs gh-deploy --force
+      - name: Deploy Documentation
+        run: |
+          poetry run mkdocs gh-deploy --force

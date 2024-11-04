@@ -1,4 +1,5 @@
 from typing import List, Optional, Union
+
 from pydantic import BaseModel, Field
 
 
@@ -21,12 +22,12 @@ class DefaultStyleOfLayer(BaseModel):
 
 
 class ExtraStyles(BaseModel):
-    class_field: str = Field(..., alias="@class")
+    class_name: str = Field(..., alias="@class")
     style: List[DefaultStyleOfLayer]
 
 
 class LayerResource(BaseModel):
-    class_field: str = Field(..., alias="@class")
+    class_name: str = Field(..., alias="@class")
     name: str = ...
     href: str = ...
 
@@ -38,13 +39,15 @@ class LayerAttribution(BaseModel):
 
 class SingleLayer(BaseModel):
     name: str = ...
-    path: str = ...
+    path: Optional[str]
     type: str = ...
     defaultStyle: DefaultStyleOfLayer = ...
     styles: Optional[ExtraStyles] = None
     resource: LayerResource = ...
     attribution: LayerAttribution
     dateCreated: Optional[str] = None
+    opaque: Optional[bool]
+    queryable: Optional[bool]
 
 
 class LayerModel(BaseModel):

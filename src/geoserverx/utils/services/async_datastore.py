@@ -1,7 +1,6 @@
 import json
 from logging import Logger
 from typing import Protocol
-import asyncio
 
 
 class AddDataStoreProtocol(Protocol):
@@ -42,7 +41,7 @@ class CreateFileStore:
             headers=store_header,
         )
         # async with client as Client:
-        layer_responses = await Client.put(
+        await Client.put(
             f"workspaces/{workspace}/datastores/{store}/file.{method}",
             content=layer_payload,
             headers=layer_header,

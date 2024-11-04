@@ -1,8 +1,6 @@
 import json
 from logging import Logger
-from typing import Protocol, Literal
-from geoserverx.models.gs_response import GSResponse
-import httpx
+from typing import Protocol
 
 
 class AddDataStoreProtocol(Protocol):
@@ -40,7 +38,7 @@ class CreateFileStore:
             content=store_payload,
             headers=store_header,
         )
-        layer_responses = client.put(
+        client.put(
             f"workspaces/{workspace}/datastores/{store}/file.{method}",
             content=layer_payload,
             headers=layer_header,
