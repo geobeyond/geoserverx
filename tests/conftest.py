@@ -59,6 +59,24 @@ def networkbad_workspace_connection() -> dict:
 
 
 @pytest.fixture
+def good_update_workspace_connection() -> dict:
+    item = {"workspace": {"isolated": True}}
+    return item
+
+
+@pytest.fixture
+def bad_update_workspace_connection() -> dict:
+    item = {"workspace": ""}
+    return item
+
+
+@pytest.fixture
+def invalid_update_workspace_connection() -> dict:
+    item = {"code": 404, "response": "Result not found"}
+    return item
+
+
+@pytest.fixture
 def good_datastore_in_bulk_connection() -> dict:
     item = {"name": "just", "href": "https://www.linkedin.com/notifications/"}
     return item

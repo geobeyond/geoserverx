@@ -54,6 +54,37 @@ def test_get_workspace_ConnectError(respx_mock):
     assert "Error in connecting to Geoserver" in result.stdout
 
 
+# Test - update_workspace
+def test_update_workspace_validation(bad_update_workspace_connection, respx_mock):
+    respx_mock.put(f"{baseUrl}workspaces/tiger.json").mock(
+        return_value=httpx.Response(404, json=bad_update_workspace_connection)
+    )
+    result = runner.invoke(
+        app, ["update-workspace", "--current-name", "tiger", "--isolated"]
+    )
+    assert "Result not found" in result.stdout
+
+
+def test_update_workspace_success(good_update_workspace_connection, respx_mock):
+    respx_mock.put(f"{baseUrl}workspaces/tiger.json").mock(
+        return_value=httpx.Response(200, json=good_update_workspace_connection)
+    )
+    result = runner.invoke(
+        app, ["update-workspace", "--current-name", "tiger", "--isolated"]
+    )
+    assert "200" in result.stdout
+
+
+def test_update_workspace_ConnectError(respx_mock):
+    respx_mock.put(f"{baseUrl}workspaces/tiger.json").mock(
+        side_effect=httpx.ConnectError
+    )
+    result = runner.invoke(
+        app, ["update-workspace", "--current-name", "tiger", "--isolated"]
+    )
+    assert "Error in connecting to Geoserver" in result.stdout
+
+
 # Test - get_vector_stores_in_workspaces
 def test_get_vector_stores_in_workspaces_validation(
     invalid_datastores_model_connection, respx_mock

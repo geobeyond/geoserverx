@@ -27,6 +27,7 @@ from geoserverx.models.style import (
 )
 from geoserverx.models.workspace import (
     NewWorkspace,
+    UpdateWorkspace,
     WorkspaceInBulk,
     WorkspaceModel,
     WorkspacesModel,
@@ -287,3 +288,14 @@ def test_RulesResponse_connection(good_all_geofence_rules_connection):
 def test_RulesResponse_failure(bad_all_geofence_rules_connection):
     with pytest.raises(ValidationError):
         RulesResponse(**bad_all_geofence_rules_connection)
+
+
+# Testing UpdateWorkspace
+def test_UpdateWorkspace_connection(good_update_workspace_connection):
+    ds_connection = UpdateWorkspace(**good_update_workspace_connection)
+    assert ds_connection.workspace.isolated is True
+
+
+def test_UpdateWorkspace_failure(bad_update_workspace_connection):
+    with pytest.raises(ValidationError):
+        UpdateWorkspace(**bad_update_workspace_connection)

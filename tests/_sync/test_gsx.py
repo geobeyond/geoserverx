@@ -4,6 +4,7 @@ from pytest import mark as pytest_mark
 
 from geoserverx._sync.gsx import GeoServerXAuth, GeoServerXError, SyncGeoServerX
 from geoserverx.models.geofence import Rule
+from geoserverx.models.workspace import UpdateWorkspaceInfo
 
 baseUrl = "http://127.0.0.1:8080/geoserver/rest/"
 
@@ -75,6 +76,35 @@ def test_get_workspace_success(
 def test_get_workspace_ConnectError(client: SyncGeoServerX, respx_mock):
     respx_mock.get(f"{baseUrl}workspaces/pydad").mock(side_effect=httpx.ConnectError)
     response = client.get_workspace("pydad")
+    assert response.response == "Error in connecting to Geoserver"
+
+
+# Test - update_workspace
+def test_update_workspace_validation(
+    client: SyncGeoServerX, bad_update_workspace_connection, respx_mock
+):
+    respx_mock.put(f"{baseUrl}workspaces/tiger.json").mock(
+        return_value=httpx.Response(404, json=bad_update_workspace_connection)
+    )
+    response = client.update_workspace("tiger", UpdateWorkspaceInfo(isolated=True))
+    assert response.response == "Result not found"
+
+
+def test_update_workspace_success(
+    client: SyncGeoServerX, good_update_workspace_connection, respx_mock
+):
+    respx_mock.put(f"{baseUrl}workspaces/tiger.json").mock(
+        return_value=httpx.Response(200, json=good_update_workspace_connection)
+    )
+    response = client.update_workspace("tiger", UpdateWorkspaceInfo(isolated=True))
+    assert response.code == 200
+
+
+def test_update_workspace_ConnectError(client: SyncGeoServerX, respx_mock):
+    respx_mock.put(f"{baseUrl}workspaces/tiger.json").mock(
+        side_effect=httpx.ConnectError
+    )
+    response = client.update_workspace("tiger", UpdateWorkspaceInfo(isolated=True))
     assert response.response == "Error in connecting to Geoserver"
 
 
