@@ -37,3 +37,12 @@ class NewWorkspaceInfo(BaseModel):
 
 class NewWorkspace(BaseModel):
     workspace: NewWorkspaceInfo = ...
+
+
+class UpdateWorkspaceInfo(BaseModel):
+    name: Optional[str] = None
+    isolated: Optional[bool] = None
+
+
+class UpdateWorkspace(BaseModel):
+    workspace: UpdateWorkspaceInfo = ...

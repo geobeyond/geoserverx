@@ -22,6 +22,8 @@ from geoserverx.models.style import AllStylesModel, StyleModel
 from geoserverx.models.workspace import (
     NewWorkspace,
     NewWorkspaceInfo,
+    UpdateWorkspace,
+    UpdateWorkspaceInfo,
     WorkspaceModel,
     WorkspacesModel,
 )
@@ -159,6 +161,14 @@ class SyncGeoServerX:
             results = self.response_recognise(responses.status_code)
             return results
 
+    # Delete specific workspaces
+    @exception_handler
+    def delete_workspace(self, workspace: str) -> GSResponse:
+        Client = self.http_client
+        responses = Client.delete(f"workspaces/{workspace}")
+        results = self.response_recognise(responses.status_code)
+        return results
+
     # Create workspace on geoserver
     @exception_handler
     def create_workspace(
@@ -171,6 +181,20 @@ class SyncGeoServerX:
         responses = Client.post(
             f"workspaces?default={default}",
             content=payload.model_dump_json(),
+            headers=self.head,
+        )
+        results = self.response_recognise(responses.status_code)
+        return results
+
+    # Update workspace on geoserver
+    @exception_handler
+    def update_workspace(self, name: str, update: UpdateWorkspaceInfo) -> GSResponse:
+        Client = self.http_client
+        update_ws = UpdateWorkspace(workspace=update)
+        print(update_ws.model_dump_json(exclude_unset=True))
+        responses = Client.put(
+            f"workspaces/{name}.json",
+            data=update_ws.model_dump_json(exclude_unset=True),
             headers=self.head,
         )
         results = self.response_recognise(responses.status_code)

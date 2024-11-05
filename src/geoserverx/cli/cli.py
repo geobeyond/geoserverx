@@ -1,11 +1,13 @@
 import json
 from enum import Enum
 from pathlib import Path
+from typing import Optional
 
 import typer
 from rich import print
 
 from geoserverx._sync.gsx import SyncGeoServerX
+from geoserverx.models.workspace import UpdateWorkspaceInfo
 
 app = typer.Typer()
 
@@ -80,6 +82,32 @@ def workspace(
         typer.echo("Async support will be shortly")
 
 
+# Delete workspace
+@SyncGeoServerX.exception_handler
+@app.command(help="Delete workspace in the Geoserver")
+def delete_workspace(
+    request: requestEnum = requestEnum._sync,
+    workspace: str = typer.Option(..., help="Workspace name"),
+    url: str = typer.Option(
+        "http://127.0.0.1:8080/geoserver/rest/", help="Geoserver REST URL"
+    ),
+    password: str = typer.Option("geoserver", help="Geoserver Password"),
+    username: str = typer.Option("admin", help="Geoserver username"),
+):
+    """
+    Delete workspace in the Geoserver
+    """
+    if request.value == "sync":
+        client = SyncGeoServerX(username, password, url)
+        result = client.delete_workspace(workspace).model_dump_json()
+        if "code" in result:
+            typer.secho(result, fg=typer.colors.RED)
+        else:
+            print(result)
+    else:
+        typer.echo("Async support will be shortly")
+
+
 # create workspace
 @SyncGeoServerX.exception_handler
 @app.command(help="Add workspace in the Geoserver")
@@ -102,6 +130,41 @@ def create_workspace(
         client = SyncGeoServerX(username, password, url)
         result = client.create_workspace(workspace, default, isolated).model_dump_json()
         if json.loads(result)["code"] == 201:
+            typer.secho(result, fg=typer.colors.GREEN)
+        else:
+            typer.secho(result, fg=typer.colors.RED)
+
+    else:
+        typer.echo("Async support will be shortly")
+
+
+# Update workspace
+@SyncGeoServerX.exception_handler
+@app.command(help="Add workspace in the Geoserver")
+def update_workspace(
+    request: requestEnum = requestEnum._sync,
+    current_name: str = typer.Option(..., help="Current Workspace name"),
+    new_name: Optional[str] = typer.Option(None, help="New Workspace name"),
+    isolated: Optional[bool] = typer.Option(False, help="Make workspace isolated?"),
+    url: str = typer.Option(
+        "http://127.0.0.1:8080/geoserver/rest/", help="Geoserver REST URL"
+    ),
+    password: str = typer.Option("geoserver", help="Geoserver Password"),
+    username: str = typer.Option("admin", help="Geoserver username"),
+):
+    """
+    Add workspace in the Geoserver
+    looks like - gsx create-workspace --workspace <workspacename> --default/--no-default  --isolated/--no-isolated --username <username> --password <password>
+    """
+    if request.value == "sync":
+        client = SyncGeoServerX(username, password, url)
+        result = client.update_workspace(
+            current_name,
+            UpdateWorkspaceInfo(name=new_name, isolated=isolated).model_dump(
+                exclude_none=True
+            ),
+        ).model_dump_json()
+        if json.loads(result)["code"] == 200:
             typer.secho(result, fg=typer.colors.GREEN)
         else:
             typer.secho(result, fg=typer.colors.RED)
