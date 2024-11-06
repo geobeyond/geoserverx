@@ -204,6 +204,10 @@ As listed above, `update-workspace` command accepts parameters as follows
 
 ## Delete single workspaces
 
+!!! danger ""
+
+    Deleting workspace will also delete all the layers and styles associated with the workspace.
+    
 <div class="termy">
 ```console
 gsx update-workspace --current-name sde --new-name duster

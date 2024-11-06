@@ -36,6 +36,11 @@ client.create_workspace(name='my_wrkspc',default=True,Isolated=True)
 
 ## Delete workspace
 This command allows user to delete  workspace. 
+
+!!! danger ""
+
+    Deleting workspace will also delete all the layers and styles associated with the workspace.
+
 Deleting workspace requires following parameters
 
 * workspace `str` : Name of the workspace
