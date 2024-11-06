@@ -99,7 +99,7 @@ $ gsx workspace --workspace cesium
 </div>
 
 
-## Paramters for create workspace command
+## Parameters for create workspace command
 
 <div class="termy">
 
@@ -135,5 +135,78 @@ As listed above, `create-workspace` command accepts parameters as follows
 ```console
 $ gsx create-workspace --workspace mydefaultws --default
 code=201 response='Data added successfully'
+```
+</div>
+
+## Parameters for delete workspace command
+
+<div class="termy">
+
+```console
+$ gsx delete-workspace --help
+Usage: gsx delete-workspace [OPTIONS]
+
+  Delete workspace in the Geoserver
+
+Options:
+  --request [sync|async]  [default: requestEnum._sync]
+  --workspace TEXT        Workspace name  [required]
+  --url TEXT              Geoserver REST URL  [default:
+                          http://127.0.0.1:8080/geoserver/rest/]
+  --password TEXT         Geoserver Password  [default: geoserver]
+  --username TEXT         Geoserver username  [default: admin]
+  --help                  Show this message and exit.
+```
+</div>
+
+As listed above, `delete-workspace` command accepts parameters as follows
+
+* --workspace - name of workspace
+
+## Delete single workspaces
+
+<div class="termy">
+```console
+gsx delete-workspace --workspace my_wrkspace 
+{"code":200,"response":"Executed successfully"}
+```
+</div>
+
+
+## Parameters for update workspace command
+
+<div class="termy">
+
+```console
+$ gsx update-workspace --help
+Usage: gsx update-workspace [OPTIONS]
+
+  Add workspace in the Geoserver
+
+Options:
+  --request [sync|async]      [default: requestEnum._sync]
+  --current-name TEXT         Current Workspace name  [required]
+  --new-name TEXT             New Workspace name
+  --isolated / --no-isolated  Make workspace isolated?  [default: no-isolated]
+  --url TEXT                  Geoserver REST URL  [default:
+                              http://127.0.0.1:8080/geoserver/rest/]
+  --password TEXT             Geoserver Password  [default: geoserver]
+  --username TEXT             Geoserver username  [default: admin]
+  --help                      Show this message and exit.
+```
+</div>
+
+As listed above, `update-workspace` command accepts parameters as follows
+
+* --current-name - name of current workspace
+* --new-name - name of new workspace
+* --isolated/--no-isolated - To keep workspace either isolated or not
+
+## Delete single workspaces
+
+<div class="termy">
+```console
+gsx update-workspace --current-name sde --new-name duster
+{"code":200,"response":"Executed successfully"}
 ```
 </div>
