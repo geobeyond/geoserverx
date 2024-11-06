@@ -151,6 +151,7 @@ Usage: gsx delete-workspace [OPTIONS]
 Options:
   --request [sync|async]  [default: requestEnum._sync]
   --workspace TEXT        Workspace name  [required]
+  --recurse / --no-recurse  Delete all stores,layers,styles,etc.  [default: no-recurse]
   --url TEXT              Geoserver REST URL  [default:
                           http://127.0.0.1:8080/geoserver/rest/]
   --password TEXT         Geoserver Password  [default: geoserver]
@@ -162,12 +163,13 @@ Options:
 As listed above, `delete-workspace` command accepts parameters as follows
 
 * --workspace - name of workspace
+* --recurse / --no-recurse - This parameter recursively deletes all layers referenced by the specified workspace, including data stores, coverage stores, feature types, and so on
 
 ## Delete single workspaces
 
 <div class="termy">
 ```console
-gsx delete-workspace --workspace my_wrkspace 
+gsx delete-workspace --workspace my_wrkspace --recurse
 {"code":200,"response":"Executed successfully"}
 ```
 </div>
@@ -202,12 +204,8 @@ As listed above, `update-workspace` command accepts parameters as follows
 * --new-name - name of new workspace
 * --isolated/--no-isolated - To keep workspace either isolated or not
 
-## Delete single workspaces
+## Update single workspaces
 
-!!! danger ""
-
-    Deleting workspace will also delete all the layers and styles associated with the workspace.
-    
 <div class="termy">
 ```console
 gsx update-workspace --current-name sde --new-name duster

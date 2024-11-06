@@ -88,6 +88,7 @@ def workspace(
 def delete_workspace(
     request: requestEnum = requestEnum._sync,
     workspace: str = typer.Option(..., help="Workspace name"),
+    recurse: bool = typer.Option(False, help="Delete all stores,layers,styles,etc."),
     url: str = typer.Option(
         "http://127.0.0.1:8080/geoserver/rest/", help="Geoserver REST URL"
     ),
@@ -99,7 +100,7 @@ def delete_workspace(
     """
     if request.value == "sync":
         client = SyncGeoServerX(username, password, url)
-        result = client.delete_workspace(workspace).model_dump_json()
+        result = client.delete_workspace(workspace,recurse).model_dump_json()
         if "code" in result:
             typer.secho(result, fg=typer.colors.RED)
         else:

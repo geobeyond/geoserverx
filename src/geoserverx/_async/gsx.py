@@ -145,9 +145,9 @@ class AsyncGeoServerX:
             return results
 
     # Delete specific workspaces
-    async def delete_workspace(self, workspace: str) -> GSResponse:
+    async def delete_workspace(self, workspace: str, recurse: bool = False) -> GSResponse:
         Client = self.http_client
-        responses = await Client.delete(f"workspaces/{workspace}?recurse=true")
+        responses = await Client.delete(f"workspaces/{workspace}?recurse={recurse}")
         results = self.response_recognise(responses.status_code)
         return results
 
