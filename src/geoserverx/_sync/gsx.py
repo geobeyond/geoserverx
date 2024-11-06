@@ -163,7 +163,7 @@ class SyncGeoServerX:
 
     # Delete specific workspaces
     @exception_handler
-    def delete_workspace(self, workspace: str,recurse: bool = False) -> GSResponse:
+    def delete_workspace(self, workspace: str, recurse: bool = False) -> GSResponse:
         Client = self.http_client
         responses = Client.delete(f"workspaces/{workspace}?recurse={recurse}")
         results = self.response_recognise(responses.status_code)

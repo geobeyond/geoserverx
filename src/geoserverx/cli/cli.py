@@ -100,7 +100,7 @@ def delete_workspace(
     """
     if request.value == "sync":
         client = SyncGeoServerX(username, password, url)
-        result = client.delete_workspace(workspace,recurse).model_dump_json()
+        result = client.delete_workspace(workspace, recurse).model_dump_json()
         if "code" in result:
             typer.secho(result, fg=typer.colors.RED)
         else:
