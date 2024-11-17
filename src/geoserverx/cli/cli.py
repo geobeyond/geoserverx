@@ -60,8 +60,8 @@ def workspaces(
 @SyncGeoServerX.exception_handler
 @app.command(help="Get workspace in the Geoserver")
 def workspace(
+    workspace: str,
     request: requestEnum = requestEnum._sync,
-    workspace: str = typer.Option(..., help="Workspace name"),
     url: str = typer.Option(
         "http://127.0.0.1:8080/geoserver/rest/", help="Geoserver REST URL"
     ),
@@ -86,8 +86,8 @@ def workspace(
 @SyncGeoServerX.exception_handler
 @app.command(help="Delete workspace in the Geoserver")
 def delete_workspace(
+    workspace: str,
     request: requestEnum = requestEnum._sync,
-    workspace: str = typer.Option(..., help="Workspace name"),
     recurse: bool = typer.Option(False, help="Delete all stores,layers,styles,etc."),
     url: str = typer.Option(
         "http://127.0.0.1:8080/geoserver/rest/", help="Geoserver REST URL"
@@ -113,8 +113,8 @@ def delete_workspace(
 @SyncGeoServerX.exception_handler
 @app.command(help="Add workspace in the Geoserver")
 def create_workspace(
+    workspace: str,
     request: requestEnum = requestEnum._sync,
-    workspace: str = typer.Option(..., help="Workspace name"),
     default: bool = typer.Option(False, help="Make workspace default?"),
     isolated: bool = typer.Option(False, help="Make workspace isolated?"),
     url: str = typer.Option(
@@ -143,8 +143,8 @@ def create_workspace(
 @SyncGeoServerX.exception_handler
 @app.command(help="Add workspace in the Geoserver")
 def update_workspace(
+    current_name: str,
     request: requestEnum = requestEnum._sync,
-    current_name: str = typer.Option(..., help="Current Workspace name"),
     new_name: Optional[str] = typer.Option(None, help="New Workspace name"),
     isolated: Optional[bool] = typer.Option(False, help="Make workspace isolated?"),
     url: str = typer.Option(
@@ -154,7 +154,7 @@ def update_workspace(
     username: str = typer.Option("admin", help="Geoserver username"),
 ):
     """
-    Add workspace in the Geoserver
+    Update existing workspace in the Geoserver
     looks like - gsx create-workspace --workspace <workspacename> --default/--no-default  --isolated/--no-isolated --username <username> --password <password>
     """
     if request.value == "sync":

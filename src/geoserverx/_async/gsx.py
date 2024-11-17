@@ -47,7 +47,7 @@ class AsyncGeoServerX:
     username: str = "admin"
     password: str = "geoserver"
     url: str = "http://127.0.0.1:8080/geoserver/rest/"
-    head = {"Content-Type": "application/json"}
+    headers = {"Content-Type": "application/json"}
 
     def __post_init__(self):
         if not self.username and not self.password and not self.url:
@@ -144,13 +144,12 @@ class AsyncGeoServerX:
             results = self.response_recognise(responses.status_code)
             return results
 
-    # Delete specific workspaces
     async def delete_workspace(
         self, workspace: str, recurse: bool = False
     ) -> GSResponse:
         Client = self.http_client
-        responses = await Client.delete(f"workspaces/{workspace}?recurse={recurse}")
-        results = self.response_recognise(responses.status_code)
+        response = await Client.delete(f"workspaces/{workspace}?recurse={recurse}")
+        results = self.response_recognise(response.status_code)
         return results
 
     # Create workspace
@@ -164,12 +163,11 @@ class AsyncGeoServerX:
         responses = await Client.post(
             f"workspaces?default={default}",
             data=payload.model_dump_json(),
-            headers=self.head,
+            headers=self.headers,
         )
         results = self.response_recognise(responses.status_code)
         return results
 
-    # Update workspace on geoserver
     async def update_workspace(
         self, name: str, update: UpdateWorkspaceInfo
     ) -> GSResponse:
@@ -177,11 +175,11 @@ class AsyncGeoServerX:
         update_ws = UpdateWorkspace(workspace=update)
         responses = await Client.put(
             f"workspaces/{name}.json",
-            data=update_ws.model_dump_json(exclude_unset=True),
-            headers=self.head,
+            data=update_ws.model_dump_json(exclude_none=True),
+            headers=self.headers,
         )
-        results = self.response_recognise(responses.status_code)
-        return results
+        result = self.response_recognise(responses.status_code)
+        return result
 
     # Get vector stores in specific workspaces
     async def get_vector_stores_in_workspaces(self, workspace: str) -> DataStoresModel:
@@ -275,7 +273,7 @@ class AsyncGeoServerX:
         responses = await Client.post(
             f"workspaces/{workspace}/datastores/",
             data=payload.model_dump_json(),
-            headers=self.head,
+            headers=self.headers,
         )
         results = self.response_recognise(responses.status_code)
         return results
@@ -412,7 +410,7 @@ class AsyncGeoServerX:
         responses = await Client.post(
             "geofence/rules",
             content=PostingRule.model_dump_json(),
-            headers=self.head,
+            headers=self.headers,
         )
         results = self.response_recognise(responses.status_code)
         return results

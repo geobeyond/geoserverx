@@ -30,6 +30,7 @@ Options:
 
 As listed above, `workspaces` command accepts four parameters. 
 
+
 * request type ( sync or async )
 * url - Geoserver REST URL
 * password - Password for GeoServer
@@ -87,7 +88,7 @@ As listed above, `workspace` accepts `workspace` parameter as the name of worksp
 
 <div class="termy">
 ```console
-$ gsx workspace --workspace cesium
+$ gsx workspace cesium
 {"workspace": {"name": "cesium", "isolated": false, "dateCreated": "2023-02-13 
 06:43:28.793 UTC", "dataStores": 
 "http://127.0.0.1:8080/geoserver/rest/workspaces/cesium/datastores.json", 
@@ -133,7 +134,7 @@ As listed above, `create-workspace` command accepts parameters as follows
 
 <div class="termy">
 ```console
-$ gsx create-workspace --workspace mydefaultws --default
+$ gsx create-workspace mydefaultws --default
 code=201 response='Data added successfully'
 ```
 </div>
@@ -162,14 +163,14 @@ Options:
 
 As listed above, `delete-workspace` command accepts parameters as follows
 
-* --workspace - name of workspace
+* --current_name - name of workspace
 * --recurse / --no-recurse - This parameter recursively deletes all layers referenced by the specified workspace, including data stores, coverage stores, feature types, and so on
 
 ## Delete single workspaces
 
 <div class="termy">
 ```console
-gsx delete-workspace --workspace my_wrkspace --recurse
+gsx delete-workspace my_wrkspace --recurse
 {"code":200,"response":"Executed successfully"}
 ```
 </div>
@@ -208,7 +209,7 @@ As listed above, `update-workspace` command accepts parameters as follows
 
 <div class="termy">
 ```console
-gsx update-workspace --current-name sde --new-name duster
+gsx update-workspace d --new-name duster
 {"code":200,"response":"Executed successfully"}
 ```
 </div>

@@ -50,7 +50,7 @@ class SyncGeoServerX:
     username: str = "admin"
     password: str = "geoserver"
     url: str = "http://127.0.0.1:8080/geoserver/rest/"
-    head = {"Content-Type": "application/json"}
+    headers = {"Content-Type": "application/json"}
 
     def __post_init__(self):
         if not self.username and not self.password and not self.url:
@@ -181,7 +181,7 @@ class SyncGeoServerX:
         responses = Client.post(
             f"workspaces?default={default}",
             content=payload.model_dump_json(),
-            headers=self.head,
+            headers=self.headers,
         )
         results = self.response_recognise(responses.status_code)
         return results
@@ -191,11 +191,10 @@ class SyncGeoServerX:
     def update_workspace(self, name: str, update: UpdateWorkspaceInfo) -> GSResponse:
         Client = self.http_client
         update_ws = UpdateWorkspace(workspace=update)
-        print(update_ws.model_dump_json(exclude_unset=True))
         responses = Client.put(
             f"workspaces/{name}.json",
-            data=update_ws.model_dump_json(exclude_unset=True),
-            headers=self.head,
+            data=update_ws.model_dump_json(exclude_none=True),
+            headers=self.headers,
         )
         results = self.response_recognise(responses.status_code)
         return results
@@ -241,7 +240,7 @@ class SyncGeoServerX:
         responses = Client.post(
             f"workspaces/{workspace}/datastores",
             content=store.model_dump_json(),
-            headers=self.head,
+            headers=self.headers,
         )
         results = self.response_recognise(responses.status_code)
         return results
@@ -267,7 +266,7 @@ class SyncGeoServerX:
         responses = Client.post(
             f"workspaces/{workspace}/coveragestores",
             content=store.model_dump_json(),
-            headers=self.head,
+            headers=self.headers,
         )
         results = self.response_recognise(responses.status_code)
         return results
@@ -280,11 +279,11 @@ class SyncGeoServerX:
         Client = self.http_client
         if type == "raster":
             responses = Client.delete(
-                f"/workspaces/{workspace}/coveragestores/{store}", headers=self.head
+                f"/workspaces/{workspace}/coveragestores/{store}", headers=self.headers
             )
         elif type == "vector":
             responses = Client.delete(
-                f"/workspaces/{workspace}/datastores/{store}", headers=self.head
+                f"/workspaces/{workspace}/datastores/{store}", headers=self.headers
             )
         results = self.response_recognise(responses.status_code)
         return results
@@ -359,7 +358,7 @@ class SyncGeoServerX:
         responses = Client.post(
             f"workspaces/{workspace}/datastores/",
             data=payload.model_dump_json(),
-            headers=self.head,
+            headers=self.headers,
         )
         results = self.response_recognise(responses.status_code)
         return results
@@ -448,7 +447,7 @@ class SyncGeoServerX:
         responses = Client.post(
             f"/workspaces/{workspace}/featuretypes",
             data=layer.model_dump(by_alias=True, exclude_none=True),
-            headers=self.head,
+            headers=self.headers,
         )
         results = self.response_recognise(responses.status_code)
         return results
@@ -459,7 +458,7 @@ class SyncGeoServerX:
         responses = Client.post(
             f"/workspaces/{workspace}/coverages",
             data=layer.model_dump_json(),
-            headers=self.head,
+            headers=self.headers,
         )
         results = self.response_recognise(responses.status_code)
         return results
@@ -538,7 +537,7 @@ class SyncGeoServerX:
         responses = Client.post(
             "geofence/rules",
             content=PostingRule.model_dump_json(),
-            headers=self.head,
+            headers=self.headers,
         )
         results = self.response_recognise(responses.status_code)
         return results
