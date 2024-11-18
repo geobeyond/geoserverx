@@ -45,7 +45,7 @@ class AsyncGeoServerX:
     username: str = "admin"
     password: str = "geoserver"
     url: str = "http://127.0.0.1:8080/geoserver/rest/"
-    head = {"Content-Type": "application/json"}
+    headers: dict = {"Content-Type": "application/json"}
 
     def __post_init__(self):
         if not self.username and not self.password and not self.url:
@@ -153,7 +153,7 @@ class AsyncGeoServerX:
         responses = await Client.post(
             f"workspaces?default={default}",
             data=payload.model_dump_json(),
-            headers=self.head,
+            headers=self.headers,
         )
         results = self.response_recognise(responses.status_code)
         return results
@@ -250,7 +250,7 @@ class AsyncGeoServerX:
         responses = await Client.post(
             f"workspaces/{workspace}/datastores/",
             data=payload.model_dump_json(),
-            headers=self.head,
+            headers=self.headers,
         )
         results = self.response_recognise(responses.status_code)
         return results
@@ -387,7 +387,7 @@ class AsyncGeoServerX:
         responses = await Client.post(
             "geofence/rules",
             content=PostingRule.model_dump_json(),
-            headers=self.head,
+            headers=self.headers,
         )
         results = self.response_recognise(responses.status_code)
         return results
