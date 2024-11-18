@@ -48,7 +48,7 @@ class SyncGeoServerX:
     username: str = "admin"
     password: str = "geoserver"
     url: str = "http://127.0.0.1:8080/geoserver/rest/"
-    headers: dict = {"Content-Type": "application/json"}
+    headers = {"Content-Type": "application/json"}
 
     def __post_init__(self):
         if not self.username and not self.password and not self.url:
