@@ -157,8 +157,8 @@ def update_workspace(
         result = client.update_workspace(
             current_name,
             UpdateWorkspaceInfo(name=new_name, isolated=isolated),
-        ).model_dump_json()
-        if json.loads(result)["code"] == 200:
+        ).model_dump()
+        if result['code'] == 200: 
             typer.secho(result, fg=typer.colors.GREEN)
         else:
             typer.secho(result, fg=typer.colors.RED)
