@@ -456,9 +456,7 @@ class SyncGeoServerX:
         if isinstance(module_check, GSResponse):
             return module_check
         # Make the HTTP request to fetch geofence rules
-        response = Client.get(
-            "geofence/rules/", headers={"Accept": "application/json"}
-        )
+        response = Client.get("geofence/rules/", headers={"Accept": "application/json"})
         if response.status_code == 200:
             return RulesResponse.model_validate(response.json())
         else:
