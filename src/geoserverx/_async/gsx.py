@@ -100,7 +100,7 @@ class AsyncGeoServerX:
         Client = self.http_client
         try:
             response = await Client.get("about/status.json")
-            response.raise_for_status()  # Raises an HTTPError for bad responses (4xx and 5xx)
+            response.raise_for_status()  # Raises an HTTPError for bad response (4xx and 5xx)
 
             # Extract and check the modules
             modules = [
@@ -124,12 +124,12 @@ class AsyncGeoServerX:
 
     async def get_all_workspaces(self) -> Union[WorkspacesModel, GSResponse]:
         Client = self.http_client
-        responses = await Client.get("workspaces")
-        if responses.status_code == 200:
-            return WorkspacesModel.model_validate(responses.json())
+        response = await Client.get("workspaces")
+        if response.status_code == 200:
+            return WorkspacesModel.model_validate(response.json())
         else:
-            results = self.response_recognise(responses.status_code)
-            return results
+            result = self.response_recognise(response.status_code)
+            return result
 
     async def get_workspace(self, workspace: str) -> Union[WorkspaceModel, GSResponse]:
         Client = self.http_client
@@ -137,8 +137,8 @@ class AsyncGeoServerX:
         if response.status_code == 200:
             return WorkspaceModel.model_validate(response.json())
         else:
-            results = self.response_recognise(response.status_code)
-            return results
+            result = self.response_recognise(response.status_code)
+            return result
 
     async def create_workspace(
         self, name: str, default: bool = False, Isolated: bool = False
@@ -152,28 +152,28 @@ class AsyncGeoServerX:
             data=payload.model_dump_json(),
             headers=self.headers,
         )
-        results = self.response_recognise(response.status_code)
-        return results
+        result = self.response_recognise(response.status_code)
+        return result
 
     async def get_vector_stores_in_workspaces(self, workspace: str) -> DataStoresModel:
         Client = self.http_client
-        responses = await Client.get(f"workspaces/{workspace}/datastores")
-        if responses.status_code == 200:
-            return DataStoresModel.model_validate(responses.json())
+        response = await Client.get(f"workspaces/{workspace}/datastores")
+        if response.status_code == 200:
+            return DataStoresModel.model_validate(response.json())
         else:
-            results = self.response_recognise(responses.status_code)
-            return results
+            result = self.response_recognise(response.status_code)
+            return result
 
     async def get_raster_stores_in_workspaces(
         self, workspace: str
     ) -> CoveragesStoresModel:
         Client = self.http_client
-        responses = await Client.get(f"workspaces/{workspace}/coveragestores")
-        if responses.status_code == 200:
-            return CoveragesStoresModel.model_validate(responses.json())
+        response = await Client.get(f"workspaces/{workspace}/coveragestores")
+        if response.status_code == 200:
+            return CoveragesStoresModel.model_validate(response.json())
         else:
-            results = self.response_recognise(responses.status_code)
-            return results
+            result = self.response_recognise(response.status_code)
+            return result
 
     async def get_vector_store(self, workspace: str, store: str) -> DataStoreModel:
         url = f"workspaces/{workspace}/datastores/{store}.json"
@@ -182,8 +182,8 @@ class AsyncGeoServerX:
         if response.status_code == 200:
             return DataStoreModel.model_validate(response.json())
         else:
-            results = self.response_recognise(response.status_code)
-            return results
+            result = self.response_recognise(response.status_code)
+            return result
 
     async def get_raster_store(self, workspace: str, store: str) -> CoveragesStoreModel:
         url = f"workspaces/{workspace}/coveragestores/{store}.json"
@@ -192,17 +192,17 @@ class AsyncGeoServerX:
         if response.status_code == 200:
             return CoveragesStoreModel.model_validate(response.json())
         else:
-            results = self.response_recognise(response.status_code)
-            return results
+            result = self.response_recognise(response.status_code)
+            return result
 
     async def get_all_styles(self) -> AllStylesModel:
         Client = self.http_client
-        responses = await Client.get("styles")
-        if responses.status_code == 200:
-            return AllStylesModel.model_validate(responses.json())
+        response = await Client.get("styles")
+        if response.status_code == 200:
+            return AllStylesModel.model_validate(response.json())
         else:
-            results = self.response_recognise(responses.status_code)
-            return results
+            result = self.response_recognise(response.status_code)
+            return result
 
     async def get_style(self, style: str) -> StyleModel:
         Client = self.http_client
@@ -210,8 +210,8 @@ class AsyncGeoServerX:
         if response.status_code == 200:
             return StyleModel.model_validate(response.json())
         else:
-            results = self.response_recognise(response.status_code)
-            return results
+            result = self.response_recognise(response.status_code)
+            return result
 
     async def create_pg_store(
         self,
@@ -242,8 +242,8 @@ class AsyncGeoServerX:
             data=payload.model_dump_json(),
             headers=self.headers,
         )
-        results = self.response_recognise(response.status_code)
-        return results
+        result = self.response_recognise(response.status_code)
+        return result
 
     async def create_file_store(self, workspace: str, store: str, file, service_type):
         service: AddDataStoreProtocol = CreateFileStore()
@@ -264,8 +264,8 @@ class AsyncGeoServerX:
             )
         else:
             raise ValueError(f"Service type {service_type} not supported")
-        responses = await service.addFile(self.http_client, workspace, store)
-        return self.response_recognise(responses)
+        response = await service.addFile(self.http_client, workspace, store)
+        return self.response_recognise(response)
 
         if service_type == "shapefile":
             service = ShapefileStore(
@@ -287,14 +287,14 @@ class AsyncGeoServerX:
     ) -> Union[LayersModel, GSResponse]:
         Client = self.http_client
         if workspace:
-            responses = await Client.get(f"/workspaces/{workspace}/layers")
+            response = await Client.get(f"/workspaces/{workspace}/layers")
         else:
-            responses = await Client.get("layers")
-        if responses.status_code == 200:
-            return LayersModel.model_validate(responses.json())
+            response = await Client.get("layers")
+        if response.status_code == 200:
+            return LayersModel.model_validate(response.json())
         else:
-            results = self.response_recognise(responses.status_code)
-            return results
+            result = self.response_recognise(response.status_code)
+            return result
 
     async def get_layer(
         self, workspace: str, layer: str
@@ -304,28 +304,28 @@ class AsyncGeoServerX:
         if response.status_code == 200:
             return LayerModel.model_validate(response.json())
         else:
-            results = self.response_recognise(response.status_code)
-            return results
+            result = self.response_recognise(response.status_code)
+            return result
 
     async def delete_layer(self, workspace: str, layer: str) -> GSResponse:
         Client = self.http_client
         response = await Client.delete(f"layers/{workspace}:{layer}")
-        results = self.response_recognise(response.status_code)
-        return results
+        result = self.response_recognise(response.status_code)
+        return result
 
     async def get_all_layer_groups(
         self, workspace: Optional[str] = None
     ) -> Union[LayerGroupsModel, GSResponse]:
         Client = self.http_client
         if workspace:
-            responses = await Client.get(f"workspaces/{workspace}/layergroups")
+            response = await Client.get(f"workspaces/{workspace}/layergroups")
         else:
-            responses = await Client.get("layergroups")
-        if responses.status_code == 200:
-            return LayerGroupsModel.model_validate(responses.json())
+            response = await Client.get("layergroups")
+        if response.status_code == 200:
+            return LayerGroupsModel.model_validate(response.json())
         else:
-            results = self.response_recognise(responses.status_code)
-            return results
+            result = self.response_recognise(response.status_code)
+            return result
 
     async def get_all_geofence_rules(self) -> Union[RulesResponse, GSResponse]:
         Client = self.http_client
@@ -334,14 +334,14 @@ class AsyncGeoServerX:
         # If the module check fails, return the GSResponse directly
         if isinstance(module_check, GSResponse):
             return module_check
-        responses = await Client.get(
+        response = await Client.get(
             "geofence/rules/", headers={"Accept": "application/json"}
         )
-        if responses.status_code == 200:
-            return RulesResponse.model_validate(responses.json())
+        if response.status_code == 200:
+            return RulesResponse.model_validate(response.json())
         else:
-            results = self.response_recognise(responses.status_code)
-            return results
+            result = self.response_recognise(response.status_code)
+            return result
 
     async def get_geofence_rule(self, id: int) -> Union[Rule, GSResponse]:
         Client = self.http_client
@@ -356,8 +356,8 @@ class AsyncGeoServerX:
         if response.status_code == 200:
             return Rule.model_validate(response.json())
         else:
-            results = self.response_recognise(response.status_code)
-            return results
+            result = self.response_recognise(response.status_code)
+            return result
 
     async def create_geofence(self, rule: Rule) -> GSResponse:
         PostingRule = NewRule(Rule=rule)
@@ -372,5 +372,5 @@ class AsyncGeoServerX:
             content=PostingRule.model_dump_json(),
             headers=self.headers,
         )
-        results = self.response_recognise(response.status_code)
-        return results
+        result = self.response_recognise(response.status_code)
+        return result
