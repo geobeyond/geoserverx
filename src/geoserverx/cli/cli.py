@@ -156,9 +156,7 @@ def update_workspace(
         client = SyncGeoServerX(username, password, url)
         result = client.update_workspace(
             current_name,
-            UpdateWorkspaceInfo(name=new_name, isolated=isolated).model_dump(
-                exclude_none=True
-            ),
+            UpdateWorkspaceInfo(name=new_name, isolated=isolated),
         ).model_dump_json()
         if json.loads(result)["code"] == 200:
             typer.secho(result, fg=typer.colors.GREEN)
