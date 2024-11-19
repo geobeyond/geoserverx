@@ -29,7 +29,6 @@ class vectorFileEnum(str, Enum):
     gpkg = "gpkg"
 
 
-# get all workspaces
 @SyncGeoServerX.exception_handler
 @app.command(help="Get all workspaces in the Geoserver")
 def workspaces(
@@ -54,7 +53,6 @@ def workspaces(
         typer.echo("Async support will be shortly")
 
 
-# get workspace
 @SyncGeoServerX.exception_handler
 @app.command(help="Get workspace in the Geoserver")
 def workspace(
@@ -80,7 +78,6 @@ def workspace(
         typer.echo("Async support will be shortly")
 
 
-# create workspace
 @SyncGeoServerX.exception_handler
 @app.command(help="Add workspace in the Geoserver")
 def create_workspace(
@@ -110,7 +107,6 @@ def create_workspace(
         typer.echo("Async support will be shortly")
 
 
-# Get vector stores in specific workspaces
 @SyncGeoServerX.exception_handler
 @app.command(help="Get vector stores in specific workspaces")
 def vector_st_wp(
@@ -136,7 +132,6 @@ def vector_st_wp(
         typer.echo("Async support will be shortly")
 
 
-# Get raster stores in specific workspaces
 @SyncGeoServerX.exception_handler
 @app.command(help="Get raster stores in specific workspaces")
 def raster_st_wp(
@@ -162,7 +157,6 @@ def raster_st_wp(
         typer.echo("Async support will be shortly")
 
 
-# Get vector store information in specific workspaces
 @SyncGeoServerX.exception_handler
 @app.command(help="Get vector store information in specific workspaces")
 def vector_store(
@@ -189,7 +183,6 @@ def vector_store(
         typer.echo("Async support will be shortly")
 
 
-# Get raster store information in specific workspaces
 @SyncGeoServerX.exception_handler
 @app.command(help="Get raster store information in specific workspaces")
 def raster_store(
@@ -216,7 +209,6 @@ def raster_store(
         typer.echo("Async support will be shortly")
 
 
-# Get all styles in Geoserver
 @SyncGeoServerX.exception_handler
 @app.command(help="Get all styles in Geoserver")
 def styles(
@@ -241,7 +233,6 @@ def styles(
         typer.echo("Async support will be shortly")
 
 
-# Get style in Geoserver
 @SyncGeoServerX.exception_handler
 @app.command(help="Get style in Geoserver")
 def style(
@@ -267,7 +258,6 @@ def style(
         typer.echo("Async support will be shortly")
 
 
-# Create Vector Layer in Geoserver
 @SyncGeoServerX.exception_handler
 @app.command(help="Create Vector Layer in Geoserver")
 def create_file(
@@ -302,7 +292,6 @@ def create_file(
         typer.echo("Async support will be shortly")
 
 
-# Create PostgreSQL store in Geoserver
 @SyncGeoServerX.exception_handler
 @app.command(help="Create PostgreSQL store in Geoserver")
 def create_pg_store(
@@ -342,7 +331,6 @@ def create_pg_store(
         typer.echo("Async support will be shortly")
 
 
-# get all layers
 @SyncGeoServerX.exception_handler
 @app.command(help="Get all layers in the Geoserver")
 def layers(
@@ -368,7 +356,6 @@ def layers(
         typer.echo("Async support will be shortly")
 
 
-# get layer
 @SyncGeoServerX.exception_handler
 @app.command(help="Get layer in the Geoserver")
 def layer(
@@ -396,7 +383,6 @@ def layer(
         typer.echo("Async support will be shortly")
 
 
-# get layer groups
 @SyncGeoServerX.exception_handler
 @app.command(help="Get layer groups in the Geoserver")
 def layer_groups(
@@ -422,7 +408,6 @@ def layer_groups(
         typer.echo("Async support will be shortly")
 
 
-# get all geofence rules
 @SyncGeoServerX.exception_handler
 @app.command(help="Get all geofence rules in the Geoserver")
 def geofence_rules(
@@ -447,7 +432,6 @@ def geofence_rules(
         typer.echo("Async support will be shortly")
 
 
-# get geofence rule
 @SyncGeoServerX.exception_handler
 @app.command(help="Get geofence rule in the Geoserver")
 def geofence_rule(

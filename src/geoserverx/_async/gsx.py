@@ -122,7 +122,6 @@ class AsyncGeoServerX:
             # Handle Module not found exception
             return GSResponse(code=412, response=str(e))
 
-    # Get all workspaces
     async def get_all_workspaces(self) -> Union[WorkspacesModel, GSResponse]:
         Client = self.http_client
         responses = await Client.get("workspaces")
@@ -132,7 +131,6 @@ class AsyncGeoServerX:
             results = self.response_recognise(responses.status_code)
             return results
 
-    # Get specific workspaces
     async def get_workspace(self, workspace: str) -> Union[WorkspaceModel, GSResponse]:
         Client = self.http_client
         response = await Client.get(f"workspaces/{workspace}")
@@ -142,7 +140,6 @@ class AsyncGeoServerX:
             results = self.response_recognise(response.status_code)
             return results
 
-    # Create workspace
     async def create_workspace(
         self, name: str, default: bool = False, Isolated: bool = False
     ) -> GSResponse:
@@ -158,7 +155,6 @@ class AsyncGeoServerX:
         results = self.response_recognise(response.status_code)
         return results
 
-    # Get vector stores in specific workspaces
     async def get_vector_stores_in_workspaces(self, workspace: str) -> DataStoresModel:
         Client = self.http_client
         responses = await Client.get(f"workspaces/{workspace}/datastores")
@@ -168,7 +164,6 @@ class AsyncGeoServerX:
             results = self.response_recognise(responses.status_code)
             return results
 
-    # Get raster stores in specific workspaces
     async def get_raster_stores_in_workspaces(
         self, workspace: str
     ) -> CoveragesStoresModel:
@@ -180,7 +175,6 @@ class AsyncGeoServerX:
             results = self.response_recognise(responses.status_code)
             return results
 
-    # Get vector store information in specific workspaces
     async def get_vector_store(self, workspace: str, store: str) -> DataStoreModel:
         url = f"workspaces/{workspace}/datastores/{store}.json"
         Client = self.http_client
@@ -191,7 +185,6 @@ class AsyncGeoServerX:
             results = self.response_recognise(response.status_code)
             return results
 
-    # Get raster  store information in specific workspaces
     async def get_raster_store(self, workspace: str, store: str) -> CoveragesStoreModel:
         url = f"workspaces/{workspace}/coveragestores/{store}.json"
         Client = self.http_client
@@ -202,7 +195,6 @@ class AsyncGeoServerX:
             results = self.response_recognise(response.status_code)
             return results
 
-    # Get all styles in GS
     async def get_all_styles(self) -> AllStylesModel:
         Client = self.http_client
         responses = await Client.get("styles")
@@ -212,7 +204,6 @@ class AsyncGeoServerX:
             results = self.response_recognise(responses.status_code)
             return results
 
-    # Get specific style in GS
     async def get_style(self, style: str) -> StyleModel:
         Client = self.http_client
         response = await Client.get(f"styles/{style}.json")
@@ -222,7 +213,6 @@ class AsyncGeoServerX:
             results = self.response_recognise(response.status_code)
             return results
 
-    # Add postgres db
     async def create_pg_store(
         self,
         name: str,
@@ -292,7 +282,6 @@ class AsyncGeoServerX:
             raise ValueError(f"Service type {service_type} not supported")
         await service.addFile(self.http_client, workspace, store)
 
-    # Get all layers
     async def get_all_layers(
         self, workspace: Optional[str] = None
     ) -> Union[LayersModel, GSResponse]:
@@ -307,7 +296,6 @@ class AsyncGeoServerX:
             results = self.response_recognise(responses.status_code)
             return results
 
-    # Get specific layer
     async def get_layer(
         self, workspace: str, layer: str
     ) -> Union[LayerModel, GSResponse]:
@@ -319,14 +307,12 @@ class AsyncGeoServerX:
             results = self.response_recognise(response.status_code)
             return results
 
-    # Delete specific layer
     async def delete_layer(self, workspace: str, layer: str) -> GSResponse:
         Client = self.http_client
         response = await Client.delete(f"layers/{workspace}:{layer}")
         results = self.response_recognise(response.status_code)
         return results
 
-    # Get all layer groups
     async def get_all_layer_groups(
         self, workspace: Optional[str] = None
     ) -> Union[LayerGroupsModel, GSResponse]:
@@ -341,7 +327,6 @@ class AsyncGeoServerX:
             results = self.response_recognise(responses.status_code)
             return results
 
-    # Get all geofence rules
     async def get_all_geofence_rules(self) -> Union[RulesResponse, GSResponse]:
         Client = self.http_client
         # Check if the geofence plugin exists
@@ -358,7 +343,6 @@ class AsyncGeoServerX:
             results = self.response_recognise(responses.status_code)
             return results
 
-    # Get geofence rule by id
     async def get_geofence_rule(self, id: int) -> Union[Rule, GSResponse]:
         Client = self.http_client
         # Check if the geofence plugin exists
@@ -375,7 +359,6 @@ class AsyncGeoServerX:
             results = self.response_recognise(response.status_code)
             return results
 
-    # Create geofence on geoserver
     async def create_geofence(self, rule: Rule) -> GSResponse:
         PostingRule = NewRule(Rule=rule)
         # Check if the geofence plugin exists
