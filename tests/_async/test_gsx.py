@@ -30,14 +30,15 @@ async def test_error():
 
 
 @pytest.mark.asyncio
+@pytest_mark.parametrize("status_code,response_data", [(404, {"error": "not found"})])
 async def test_get_all_workspaces_validation(
-    create_a_client, respx_mock, bad_workspaces_connection
+    create_a_client, respx_mock, response_data, status_code
 ):
     respx_mock.get(f"{baseUrl}workspaces").mock(
-        return_value=httpx.Response(404, json=bad_workspaces_connection)
+        return_value=httpx.Response(status_code, json=response_data)
     )
     response = await create_a_client.get_all_workspaces()
-    assert response.code == 404
+    assert response.code == status_code
 
 
 @pytest.mark.asyncio
@@ -61,14 +62,26 @@ async def test_get_all_workspaces_NetworkError(create_a_client, respx_mock):
 
 # Test - get_workspace
 @pytest_mark.anyio
+@pytest.mark.parametrize(
+    "workspace_name,status_code,response_data,expected_response",
+    [
+        ("sfsf", 404, {"error": "not found"}, "Result not found"),
+    ],
+)
 async def test_get_workspace_validation(
-    create_a_client, bad_workspace_connection, respx_mock
+    create_a_client,
+    respx_mock,
+    workspace_name,
+    status_code,
+    response_data,
+    expected_response,
 ):
-    respx_mock.get(f"{baseUrl}workspaces/sfsf").mock(
-        return_value=httpx.Response(404, json=bad_workspace_connection)
+    respx_mock.get(f"{baseUrl}workspaces/{workspace_name}").mock(
+        return_value=httpx.Response(status_code, json=response_data)
     )
-    response = await create_a_client.get_workspace("sfsf")
-    assert response.response == "Result not found"
+
+    response = await create_a_client.get_workspace(workspace_name)
+    assert response.response == expected_response
 
 
 @pytest_mark.anyio
@@ -92,29 +105,54 @@ async def test_get_workspace_ConnectError(create_a_client, respx_mock):
 
 # Test - update_workspace
 @pytest_mark.anyio
+@pytest.mark.parametrize(
+    "workspace_name,status_code,response_data,expected_response",
+    [
+        ("tiger", 404, {"error": "not found"}, "Result not found"),
+    ],
+)
 async def test_update_workspace_validation(
-    create_a_client, bad_update_workspace_connection, respx_mock
+    create_a_client,
+    respx_mock,
+    workspace_name,
+    status_code,
+    response_data,
+    expected_response,
 ):
-    respx_mock.put(f"{baseUrl}workspaces/tiger.json").mock(
-        return_value=httpx.Response(404, json=bad_update_workspace_connection)
+    respx_mock.put(f"{baseUrl}workspaces/{workspace_name}.json").mock(
+        return_value=httpx.Response(status_code, json=response_data)
     )
     response = await create_a_client.update_workspace(
-        "tiger", UpdateWorkspaceInfo(isolated=True)
+        workspace_name, UpdateWorkspaceInfo(isolated=True)
     )
-    assert response.response == "Result not found"
+    assert response.response == expected_response
 
 
 @pytest_mark.anyio
+@pytest_mark.parametrize(
+    "workspace_name,workspace_info,status_code,response_data",
+    [
+        (
+            "tiger",
+            UpdateWorkspaceInfo(isolated=True),
+            200,
+            {"workspace": {"isolated": True}},
+        )
+    ],
+)
 async def test_update_workspace_success(
-    create_a_client, good_update_workspace_connection, respx_mock
+    create_a_client,
+    respx_mock,
+    workspace_name,
+    workspace_info,
+    status_code,
+    response_data,
 ):
-    respx_mock.put(f"{baseUrl}workspaces/tiger.json").mock(
-        return_value=httpx.Response(200, json=good_update_workspace_connection)
+    respx_mock.put(f"{baseUrl}workspaces/{workspace_name}.json").mock(
+        return_value=httpx.Response(status_code, json=response_data)
     )
-    response = await create_a_client.update_workspace(
-        "tiger", UpdateWorkspaceInfo(isolated=True)
-    )
-    assert response.code == 200
+    response = await create_a_client.update_workspace(workspace_name, workspace_info)
+    assert response.code == status_code
 
 
 @pytest_mark.anyio

@@ -1,4 +1,5 @@
 import httpx
+import pytest
 from typer.testing import CliRunner
 
 from geoserverx.cli.cli import app
@@ -9,12 +10,13 @@ baseUrl = "http://127.0.0.1:8080/geoserver/rest/"
 
 
 # Test - get_all_workspaces
-def test_get_all_workspaces_validation(bad_workspaces_connection, respx_mock):
+@pytest.mark.parametrize("status_code,response_data", [(404, {"error": "not found"})])
+def test_get_all_workspaces_validation(respx_mock, response_data, status_code):
     respx_mock.get(f"{baseUrl}workspaces").mock(
-        return_value=httpx.Response(404, json=bad_workspaces_connection)
+        return_value=httpx.Response(status_code, json=response_data)
     )
     result = runner.invoke(app, ["workspaces"])
-    assert "404" in result.stdout
+    assert str(status_code) in result.stdout
 
 
 def test_get_all_workspaces_success(good_workspaces_connection, respx_mock):
@@ -32,12 +34,20 @@ def test_get_all_workspaces_NetworkError(respx_mock):
 
 
 # Test - get_workspace
-def test_get_workspace_validation(bad_workspace_connection, respx_mock):
-    respx_mock.get(f"{baseUrl}workspaces/sfsf").mock(
-        return_value=httpx.Response(404, json=bad_workspace_connection)
+@pytest.mark.parametrize(
+    "workspace_name,status_code,response_data,expected_response",
+    [
+        ("sfsf", 404, {"error": "not found"}, "Result not found"),
+    ],
+)
+def test_get_workspace_validation(
+    workspace_name, status_code, response_data, expected_response, respx_mock
+):
+    respx_mock.get(f"{baseUrl}workspaces/{workspace_name}").mock(
+        return_value=httpx.Response(status_code, json=response_data)
     )
     result = runner.invoke(app, ["workspace", "sfsf"])
-    assert "Result not found" in result.stdout
+    assert expected_response in result.stdout
 
 
 def test_get_workspace_success(good_workspace_connection, respx_mock):
@@ -55,20 +65,42 @@ def test_get_workspace_ConnectError(respx_mock):
 
 
 # Test - update_workspace
-def test_update_workspace_validation(bad_update_workspace_connection, respx_mock):
-    respx_mock.put(f"{baseUrl}workspaces/tiger.json").mock(
-        return_value=httpx.Response(404, json=bad_update_workspace_connection)
+@pytest.mark.parametrize(
+    "workspace_name,status_code,response_data,expected_response",
+    [
+        ("tiger", 404, {"error": "not found"}, "Result not found"),
+    ],
+)
+def test_update_workspace_validation(
+    respx_mock, workspace_name, status_code, response_data, expected_response
+):
+    respx_mock.put(f"{baseUrl}workspaces/{workspace_name}.json").mock(
+        return_value=httpx.Response(status_code, json=response_data)
     )
-    result = runner.invoke(app, ["update-workspace", "tiger", "--isolated"])
-    assert "Result not found" in result.stdout
+    result = runner.invoke(app, ["update-workspace", workspace_name, "--isolated"])
+    assert expected_response in result.stdout
 
 
-def test_update_workspace_success(good_update_workspace_connection, respx_mock):
-    respx_mock.put(f"{baseUrl}workspaces/tiger.json").mock(
-        return_value=httpx.Response(200, json=good_update_workspace_connection)
+@pytest.mark.parametrize(
+    "workspace_name,workspace_info,status_code,response_data",
+    [
+        (
+            "tiger",
+            "--isolated",
+            200,
+            {"workspace": {"isolated": True}},
+        )
+    ],
+)
+def test_update_workspace_success(
+    respx_mock, workspace_name, workspace_info, status_code, response_data
+):
+    respx_mock.put(f"{baseUrl}workspaces/{workspace_name}.json").mock(
+        return_value=httpx.Response(status_code, json=response_data)
     )
-    result = runner.invoke(app, ["update-workspace", "tiger", "--isolated"])
-    assert "200" in result.stdout
+    print(workspace_info)
+    result = runner.invoke(app, ["update-workspace", workspace_name, workspace_info])
+    assert str(status_code) in result.stdout
 
 
 def test_update_workspace_ConnectError(respx_mock):

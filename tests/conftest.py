@@ -25,12 +25,6 @@ def good_workspaces_connection() -> dict:
 
 
 @pytest.fixture
-def bad_workspaces_connection() -> dict:
-    item = {"code": 502}
-    return item
-
-
-@pytest.fixture
 def good_workspace_connection() -> dict:
     item = {
         "workspace": {
@@ -43,30 +37,6 @@ def good_workspace_connection() -> dict:
             "wmtsStores": "http://localhost:8080/geoserver/rest/workspaces/pydad/wmtsstores.json",
         }
     }
-    return item
-
-
-@pytest.fixture
-def bad_workspace_connection() -> dict:
-    item = {"code": 404, "response": "Result not found"}
-    return item
-
-
-@pytest.fixture
-def networkbad_workspace_connection() -> dict:
-    item = {"code": 503, "response": "Geoserver unavailable"}
-    return item
-
-
-@pytest.fixture
-def good_update_workspace_connection() -> dict:
-    item = {"workspace": {"isolated": True}}
-    return item
-
-
-@pytest.fixture
-def bad_update_workspace_connection() -> dict:
-    item = {"workspace": ""}
     return item
 
 

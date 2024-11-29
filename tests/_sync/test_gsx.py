@@ -26,14 +26,15 @@ def test_error():
 
 
 # Test - get_all_workspaces
+@pytest_mark.parametrize("status_code,response_data", [(404, {"error": "not found"})])
 def test_get_all_workspaces_validation(
-    client: SyncGeoServerX, bad_workspaces_connection, respx_mock
+    client: SyncGeoServerX, respx_mock, response_data, status_code
 ):
     respx_mock.get(f"{baseUrl}workspaces").mock(
-        return_value=httpx.Response(404, json=bad_workspaces_connection)
+        return_value=httpx.Response(status_code, json=response_data)
     )
     response = client.get_all_workspaces()
-    assert response.code == 404
+    assert response.code == status_code
 
 
 def test_get_all_workspaces_success(
@@ -53,14 +54,26 @@ def test_get_all_workspaces_NetworkError(client: SyncGeoServerX, respx_mock):
 
 
 # Test - get_workspace
+@pytest_mark.parametrize(
+    "workspace_name,status_code,response_data,expected_response",
+    [
+        ("sfsf", 404, {"error": "not found"}, "Result not found"),
+    ],
+)
 def test_get_workspace_validation(
-    client: SyncGeoServerX, bad_workspace_connection, respx_mock
+    client: SyncGeoServerX,
+    respx_mock,
+    workspace_name,
+    status_code,
+    response_data,
+    expected_response,
 ):
-    respx_mock.get(f"{baseUrl}workspaces/sfsf").mock(
-        return_value=httpx.Response(404, json=bad_workspace_connection)
+    respx_mock.get(f"{baseUrl}workspaces/{workspace_name}").mock(
+        return_value=httpx.Response(status_code, json=response_data)
     )
-    response = client.get_workspace("sfsf")
-    assert response.response == "Result not found"
+
+    response = client.get_workspace(workspace_name)
+    assert response.response == expected_response
 
 
 def test_get_workspace_success(
@@ -80,24 +93,53 @@ def test_get_workspace_ConnectError(client: SyncGeoServerX, respx_mock):
 
 
 # Test - update_workspace
+@pytest_mark.parametrize(
+    "workspace_name,status_code,response_data,expected_response",
+    [
+        ("tiger", 404, {"error": "not found"}, "Result not found"),
+    ],
+)
 def test_update_workspace_validation(
-    client: SyncGeoServerX, bad_update_workspace_connection, respx_mock
+    client: SyncGeoServerX,
+    respx_mock,
+    workspace_name,
+    status_code,
+    response_data,
+    expected_response,
 ):
-    respx_mock.put(f"{baseUrl}workspaces/tiger.json").mock(
-        return_value=httpx.Response(404, json=bad_update_workspace_connection)
+    respx_mock.put(f"{baseUrl}workspaces/{workspace_name}.json").mock(
+        return_value=httpx.Response(status_code, json=response_data)
     )
-    response = client.update_workspace("tiger", UpdateWorkspaceInfo(isolated=True))
-    assert response.response == "Result not found"
+    response = client.update_workspace(
+        workspace_name, UpdateWorkspaceInfo(isolated=True)
+    )
+    assert response.response == expected_response
 
 
+@pytest_mark.parametrize(
+    "workspace_name,workspace_info,status_code,response_data",
+    [
+        (
+            "tiger",
+            UpdateWorkspaceInfo(isolated=True),
+            200,
+            {"workspace": {"isolated": True}},
+        )
+    ],
+)
 def test_update_workspace_success(
-    client: SyncGeoServerX, good_update_workspace_connection, respx_mock
+    client: SyncGeoServerX,
+    respx_mock,
+    workspace_name,
+    workspace_info,
+    status_code,
+    response_data,
 ):
-    respx_mock.put(f"{baseUrl}workspaces/tiger.json").mock(
-        return_value=httpx.Response(200, json=good_update_workspace_connection)
+    respx_mock.put(f"{baseUrl}workspaces/{workspace_name}.json").mock(
+        return_value=httpx.Response(status_code, json=response_data)
     )
-    response = client.update_workspace("tiger", UpdateWorkspaceInfo(isolated=True))
-    assert response.code == 200
+    response = client.update_workspace(workspace_name, workspace_info)
+    assert response.code == status_code
 
 
 def test_update_workspace_ConnectError(client: SyncGeoServerX, respx_mock):
