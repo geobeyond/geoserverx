@@ -23,8 +23,11 @@ A modern, powerful GeoServer REST API client influenced by HTTPX, offering Sync,
 ```bash
 pip install geoserverx
 ```
+
 ## Quick Start
+
 ### Synchronous Usage
+
 ```python
 from geoserverx._sync.gsx import SyncGeoServerX
 
@@ -49,6 +52,7 @@ print(workspaces.workspaces.workspace[0].name)  # Print first workspace name
 ```
 
 ### Asynchronous Usage
+
 ```python
 from geoserverx._async.gsx import AsyncGeoServerX
 import asyncio
@@ -62,6 +66,7 @@ asyncio.run(main())
 ```
 
 ### CLI Usage
+
 ```bash
 # Get help
 geoserverx --help
@@ -74,22 +79,28 @@ geoserverx workspaces create --name my_workspace
 ```
 
 ## Documentation
+
 Detailed documentation is available through [Material for MkDocs](https://squidfunk.github.io/mkdocs-material/)
 
 ## Development Setup
+
 Install Poetry (dependency management tool):
+
 ```bash
   curl -sSL https://install.python-poetry.org | python3 -
 ```
+
 ```bash
 # Clone the repository:
 git clone https://github.com/geobeyond/geoserverx.git
 cd geoserverx
 ```
+
 ```bash
 # Install dependencies:
 poetry install
 ```
+
 ```bash
 
 # Activate virtual environment:
@@ -97,6 +108,7 @@ poetry shell
 ```
 
 ## Contributing
+
 We welcome contributions! Here's how you can help:
 
 - Check for open issues or create a new one to discuss new features or bugs.
@@ -114,12 +126,15 @@ We welcome contributions! Here's how you can help:
 - Update documentation as needed
 
 ## Bug Reports and Feature Requests
+
 Please use the GitHub issue tracker to report bugs or request features.
 
 ## License
+
 This project is licensed under the MIT License - see the LICENSE file for details.
 
 ## Acknowledgments
+
 - HTTPX for inspiration
 - GeoServer community
 - All contributors who have helped shape this project
