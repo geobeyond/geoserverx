@@ -80,7 +80,7 @@ geoserverx workspaces create --name my_workspace
 
 ## Documentation
 
-Detailed documentation is available through [Material for MkDocs](https://squidfunk.github.io/mkdocs-material/)
+Detailed documentation is available through [Material for MkDocs](https://geobeyond.github.io/geoserverx/)
 
 ## Development Setup
 
