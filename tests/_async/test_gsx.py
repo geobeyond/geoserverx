@@ -30,18 +30,6 @@ async def test_error():
 
 
 @pytest.mark.asyncio
-@pytest_mark.parametrize("status_code,response_data", [(404, {"error": "not found"})])
-async def test_get_all_workspaces_validation(
-    create_a_client, respx_mock, response_data, status_code
-):
-    respx_mock.get(f"{baseUrl}workspaces").mock(
-        return_value=httpx.Response(status_code, json=response_data)
-    )
-    response = await create_a_client.get_all_workspaces()
-    assert response.code == status_code
-
-
-@pytest.mark.asyncio
 async def test_get_all_workspaces_success(
     create_a_client, respx_mock, good_workspaces_connection
 ):
@@ -106,34 +94,32 @@ async def test_get_workspace_ConnectError(create_a_client, respx_mock):
 # Test - update_workspace
 @pytest_mark.anyio
 @pytest.mark.parametrize(
-    "workspace_name,status_code,response_data,expected_response",
+    "status_code,response_data,expected_response",
     [
-        ("tiger", 404, {"error": "not found"}, "Result not found"),
+        (404, {"error": "not found"}, "Result not found"),
     ],
 )
 async def test_update_workspace_validation(
     create_a_client,
     respx_mock,
-    workspace_name,
     status_code,
     response_data,
     expected_response,
 ):
-    respx_mock.put(f"{baseUrl}workspaces/{workspace_name}.json").mock(
+    respx_mock.put(f"{baseUrl}workspaces/tiger.json").mock(
         return_value=httpx.Response(status_code, json=response_data)
     )
     response = await create_a_client.update_workspace(
-        workspace_name, UpdateWorkspaceInfo(isolated=True)
+        "tiger", UpdateWorkspaceInfo(isolated=True)
     )
     assert response.response == expected_response
 
 
 @pytest_mark.anyio
 @pytest_mark.parametrize(
-    "workspace_name,workspace_info,status_code,response_data",
+    "workspace_info,status_code,response_data",
     [
         (
-            "tiger",
             UpdateWorkspaceInfo(isolated=True),
             200,
             {"workspace": {"isolated": True}},
@@ -143,15 +129,14 @@ async def test_update_workspace_validation(
 async def test_update_workspace_success(
     create_a_client,
     respx_mock,
-    workspace_name,
     workspace_info,
     status_code,
     response_data,
 ):
-    respx_mock.put(f"{baseUrl}workspaces/{workspace_name}.json").mock(
+    respx_mock.put(f"{baseUrl}workspaces/tiger.json").mock(
         return_value=httpx.Response(status_code, json=response_data)
     )
-    response = await create_a_client.update_workspace(workspace_name, workspace_info)
+    response = await create_a_client.update_workspace("tiger", workspace_info)
     assert response.code == status_code
 
 

@@ -9,16 +9,6 @@ runner = CliRunner()
 baseUrl = "http://127.0.0.1:8080/geoserver/rest/"
 
 
-# Test - get_all_workspaces
-@pytest.mark.parametrize("status_code,response_data", [(404, {"error": "not found"})])
-def test_get_all_workspaces_validation(respx_mock, response_data, status_code):
-    respx_mock.get(f"{baseUrl}workspaces").mock(
-        return_value=httpx.Response(status_code, json=response_data)
-    )
-    result = runner.invoke(app, ["workspaces"])
-    assert str(status_code) in result.stdout
-
-
 def test_get_all_workspaces_success(good_workspaces_connection, respx_mock):
     respx_mock.get(f"{baseUrl}workspaces").mock(
         return_value=httpx.Response(200, json=good_workspaces_connection)

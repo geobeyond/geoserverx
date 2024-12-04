@@ -5,8 +5,6 @@
 !!! get "Get started"
     To start using `geoserverx` using command line, activate the Environment where package is installed and use `gsx` command
 
-
-
 ## Paramters for all workspaces command
 
 <div class="termy">
@@ -26,10 +24,10 @@ Options:
   --username TEXT         Geoserver username  [default: admin]
   --help                  Show this message and exit.
 ```
+
 </div>
 
 As listed above, `workspaces` command accepts four parameters. 
-
 
 * request type ( sync or async )
 * url - Geoserver REST URL
@@ -41,12 +39,14 @@ All these parameters have default value setup which will work for local default 
 ## Get all workspaces
 
 <div class="termy">
+
 ```console
 $ gsx workspaces
 
 {"workspaces": {"workspace": [{"name": "cesium", "href": 
 "http://127.0.0.1:8080/geoserver/rest/workspaces/cesium.json"}]}}
 ```
+
 </div>
 
 ## Get all workspaces of hosted GeoServer
@@ -57,6 +57,7 @@ $ gsx workspaces --url http://locahost:8080/geoserver/rest --password myPassword
 {"workspaces": {"workspace": [{"name": "giz", "href": 
 "http://locahost:8080/geoserver/rest/workspaces/giz.json"}]}}
 ```
+
 </div>
 
 
@@ -79,14 +80,15 @@ Options:
   --username TEXT         Geoserver username  [default: admin]
   --help                  Show this message and exit.
 ```
+
 </div>
 
 As listed above, `workspace` accepts `workspace` parameter as the name of workspace 
 
-
 ## Get single workspaces
 
 <div class="termy">
+
 ```console
 $ gsx workspace cesium
 {"workspace": {"name": "cesium", "isolated": false, "dateCreated": "2023-02-13 
@@ -97,8 +99,8 @@ $ gsx workspace cesium
 "wmsStores": "http://127.0.0.1:8080/geoserver/rest/workspaces/cesium/wmsstores.json", 
 "wmtsStores": "http://127.0.0.1:8080/geoserver/rest/workspaces/cesium/wmtsstores.json"}}
 ```
-</div>
 
+</div>
 
 ## Parameters for create workspace command
 
@@ -121,6 +123,7 @@ Options:
   --username TEXT             Geoserver username  [default: admin]
   --help                      Show this message and exit.
 ```
+
 </div>
 
 As listed above, `create-workspace` command accepts parameters as follows
@@ -128,7 +131,6 @@ As listed above, `create-workspace` command accepts parameters as follows
 * workspace - name of workspace
 * --default/--no-default - To keep workspace either default or not
 * --isolated/--no-isolated - To keep workspace either isolated or not
-
 
 ## Create single workspaces
 
@@ -149,16 +151,20 @@ Usage: gsx delete-workspace [OPTIONS]
 
   Delete workspace in the Geoserver
 
+Arguments:
+  WORKSPACE  [required]
+
 Options:
-  --request [sync|async]  [default: requestEnum._sync]
-  --workspace TEXT        Workspace name  [required]
-  --recurse / --no-recurse  Delete all stores,layers,styles,etc.  [default: no-recurse]
-  --url TEXT              Geoserver REST URL  [default:
-                          http://127.0.0.1:8080/geoserver/rest/]
-  --password TEXT         Geoserver Password  [default: geoserver]
-  --username TEXT         Geoserver username  [default: admin]
-  --help                  Show this message and exit.
+  --request [sync|async]    [default: requestEnum._sync]
+  --recurse / --no-recurse  Delete all stores,layers,styles,etc.  [default:
+                            no-recurse]
+  --url TEXT                Geoserver REST URL  [default:
+                            http://127.0.0.1:8080/geoserver/rest/]
+  --password TEXT           Geoserver Password  [default: geoserver]
+  --username TEXT           Geoserver username  [default: admin]
+  --help                    Show this message and exit.
 ```
+
 </div>
 
 As listed above, `delete-workspace` command accepts parameters as follows
@@ -186,9 +192,11 @@ Usage: gsx update-workspace [OPTIONS]
 
   Add workspace in the Geoserver
 
+Arguments:
+  CURRENT_NAME  [required]
+
 Options:
   --request [sync|async]      [default: requestEnum._sync]
-  --current-name TEXT         Current Workspace name  [required]
   --new-name TEXT             New Workspace name
   --isolated / --no-isolated  Make workspace isolated?  [default: no-isolated]
   --url TEXT                  Geoserver REST URL  [default:
@@ -197,6 +205,7 @@ Options:
   --username TEXT             Geoserver username  [default: admin]
   --help                      Show this message and exit.
 ```
+
 </div>
 
 As listed above, `update-workspace` command accepts parameters as follows
@@ -208,8 +217,10 @@ As listed above, `update-workspace` command accepts parameters as follows
 ## Update single workspaces
 
 <div class="termy">
+
 ```console
 gsx update-workspace d --new-name duster
 {"code":200,"response":"Executed successfully"}
 ```
+
 </div>

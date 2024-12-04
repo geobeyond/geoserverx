@@ -28,7 +28,7 @@ This command allows user to create new workspace.
 | ----------- | ----------- | ----------- |---- | ------------------------------------ |
 | Name | :white_check_mark: | | `str`      |  To define Name of the workspace  |
 | default | :negative_squared_cross_mark: | `False` | `bool`      |  To define whether to keep workspace as default or not |
-| Isolated | :negative_squared_cross_mark: | `False` |`bool`      |  To define whether to keep workspace as default or not |
+| isolated | :negative_squared_cross_mark: | `False` |`bool`      |  To define whether to keep workspace as default or not |
   
 ```Python
 #Create new workspace with name `my_wrkspc` , make it Default and Isolated
@@ -58,7 +58,7 @@ This command allows user to update existing workspace.
 | Parameter | Required |  Data type      | Description                          |
 | ----------- | ----------- | ----------- |  ------------------------------------ |
 | name | :white_check_mark: |   `str`      |  Name of the workspace to be updated  |
-| update | :negative_squared_cross_mark:  |  [`UpdateWorkspaceInfo`](https://github.com/geobeyond/geoserverx/blob/b7757c9f0130864b06c40c2faa17afc841fc705f/src/geoserverx/models/workspace.py#L42)      | To define body of the update request |
+| update | :white_check_mark:  |  [`UpdateWorkspaceInfo`](https://github.com/geobeyond/geoserverx/blob/b7757c9f0130864b06c40c2faa17afc841fc705f/src/geoserverx/models/workspace.py#L42)      | To define body of the update request |
   
 ```Python
 #Updating workspace with name `my_wrkspc` , make is Isolated and rename it to `my_new_wrkspc`

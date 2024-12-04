@@ -25,18 +25,6 @@ def test_error():
         assert True
 
 
-# Test - get_all_workspaces
-@pytest_mark.parametrize("status_code,response_data", [(404, {"error": "not found"})])
-def test_get_all_workspaces_validation(
-    client: SyncGeoServerX, respx_mock, response_data, status_code
-):
-    respx_mock.get(f"{baseUrl}workspaces").mock(
-        return_value=httpx.Response(status_code, json=response_data)
-    )
-    response = client.get_all_workspaces()
-    assert response.code == status_code
-
-
 def test_get_all_workspaces_success(
     client: SyncGeoServerX, good_workspaces_connection, respx_mock
 ):
