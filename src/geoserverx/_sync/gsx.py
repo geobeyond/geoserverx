@@ -98,7 +98,7 @@ class SyncGeoServerX:
             resp = GSResponseEnum._409.value
         elif r == 200:
             resp = GSResponseEnum._200.value
-        return GSResponse.model_validate(resp).model_dump_json()
+        return GSResponse.model_validate(resp)
 
     def exception_handler(func):
         def inner_function(*args, **kwargs):
