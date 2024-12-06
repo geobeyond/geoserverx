@@ -316,7 +316,7 @@ def test_get_style_ConnectError(client: SyncGeoServerX, respx_mock):
 def test_create_workspace_validation(
     client: SyncGeoServerX, invalid_new_workspace_connection, respx_mock
 ):
-    respx_mock.post(f"{baseUrl}workspaces?default=False").mock(
+    respx_mock.post(f"{baseUrl}workspaces", params={"default": False}).mock(
         return_value=httpx.Response(404, json=invalid_new_workspace_connection)
     )
     response = client.create_workspace("pydad", False, True)
@@ -326,7 +326,7 @@ def test_create_workspace_validation(
 def test_create_workspace_success(
     client: SyncGeoServerX, good_new_workspace_connection, respx_mock
 ):
-    respx_mock.post(f"{baseUrl}workspaces?default=False").mock(
+    respx_mock.post(f"{baseUrl}workspaces", params={"default": False}).mock(
         return_value=httpx.Response(201, json=good_new_workspace_connection)
     )
     response = client.create_workspace("pydad", False, True)
@@ -334,7 +334,7 @@ def test_create_workspace_success(
 
 
 def test_create_workspace_ConnectError(client: SyncGeoServerX, respx_mock):
-    respx_mock.post(f"{baseUrl}workspaces?default=False").mock(
+    respx_mock.post(f"{baseUrl}workspaces", params={"default": False}).mock(
         side_effect=httpx.ConnectError
     )
     response = client.create_workspace("pydad", False, True)

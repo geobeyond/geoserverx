@@ -271,7 +271,7 @@ def test_get_style_ConnectError(respx_mock):
 
 # Test - create_workspace
 def test_create_workspace_validation(invalid_new_workspace_connection, respx_mock):
-    respx_mock.post(f"{baseUrl}workspaces?default=False").mock(
+    respx_mock.post(f"{baseUrl}workspaces", params={"default": False}).mock(
         return_value=httpx.Response(404, json=invalid_new_workspace_connection)
     )
     result = runner.invoke(
@@ -282,7 +282,7 @@ def test_create_workspace_validation(invalid_new_workspace_connection, respx_moc
 
 
 def test_create_workspace_success(good_new_workspace_connection, respx_mock):
-    respx_mock.post(f"{baseUrl}workspaces?default=False").mock(
+    respx_mock.post(f"{baseUrl}workspaces", params={"default": False}).mock(
         return_value=httpx.Response(201, json=good_new_workspace_connection)
     )
     result = runner.invoke(
@@ -292,7 +292,7 @@ def test_create_workspace_success(good_new_workspace_connection, respx_mock):
 
 
 def test_create_workspace_ConnectError(respx_mock):
-    respx_mock.post(f"{baseUrl}workspaces?default=False").mock(
+    respx_mock.post(f"{baseUrl}workspaces", params={"default": False}).mock(
         side_effect=httpx.ConnectError
     )
     result = runner.invoke(

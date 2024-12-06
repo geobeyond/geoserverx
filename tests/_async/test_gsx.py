@@ -353,7 +353,7 @@ async def test_get_style_ConnectError(create_a_client, respx_mock):
 async def test_create_workspace_validation(
     create_a_client, invalid_new_workspace_connection, respx_mock
 ):
-    respx_mock.post(f"{baseUrl}workspaces?default=False").mock(
+    respx_mock.post(f"{baseUrl}workspaces", params={"default": False}).mock(
         return_value=httpx.Response(404, json=invalid_new_workspace_connection)
     )
     response = await create_a_client.create_workspace("pydad", False, True)
@@ -364,7 +364,7 @@ async def test_create_workspace_validation(
 async def test_create_workspace_success(
     create_a_client, good_new_workspace_connection, respx_mock
 ):
-    respx_mock.post(f"{baseUrl}workspaces?default=False").mock(
+    respx_mock.post(f"{baseUrl}workspaces", params={"default": False}).mock(
         return_value=httpx.Response(201, json=good_new_workspace_connection)
     )
     response = await create_a_client.create_workspace("pydad", False, True)
@@ -373,7 +373,7 @@ async def test_create_workspace_success(
 
 @pytest_mark.anyio
 async def test_create_workspace_ConnectError(create_a_client, respx_mock):
-    respx_mock.post(f"{baseUrl}workspaces?default=False").mock(
+    respx_mock.post(f"{baseUrl}workspaces", params={"default": False}).mock(
         side_effect=httpx.ConnectError
     )
     with pytest.raises(httpx.ConnectError):
