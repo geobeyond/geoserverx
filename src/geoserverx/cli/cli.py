@@ -5,11 +5,14 @@ from typing import Optional
 
 import typer
 from rich import print
+from rich.console import Console
+from rich.table import Table
 
 from geoserverx._sync.gsx import SyncGeoServerX
 from geoserverx.models.workspace import UpdateWorkspaceInfo
 
 app = typer.Typer()
+console = Console()
 
 
 @app.callback()
@@ -40,17 +43,28 @@ def workspaces(
     ),
     password: str = typer.Option("geoserver", help="Geoserver Password"),
     username: str = typer.Option("admin", help="Geoserver username"),
+    output: str = typer.Option("table", help="Output format - 'json' or 'table'"),
 ):
     """
     Get all workspaces in the Geoserver
+    looks like - gsx workspaces --url <url> --username <username> --password <password>
     """
     if request.value == "sync":
         client = SyncGeoServerX(username, password, url)
-        result = client.get_all_workspaces().model_dump_json()
+        result = client.get_all_workspaces()
         if "code" in result:
             typer.secho(result, fg=typer.colors.RED)
         else:
-            print(result)
+            if output == "json":
+                print(json.dumps(result.model_dump(), indent=2))
+            else:
+                try:
+                    table = Table("Name", "Link")
+                    for workspace in result.workspaces.workspace:
+                        table.add_row(workspace.name, workspace.href)
+                    console.print(table)
+                except AttributeError:
+                    typer.secho(result.response, fg=typer.colors.RED)
     else:
         typer.echo("Async support will be shortly")
 
@@ -65,17 +79,33 @@ def workspace(
     ),
     password: str = typer.Option("geoserver", help="Geoserver Password"),
     username: str = typer.Option("admin", help="Geoserver username"),
+    output: str = typer.Option("table", help="Output format - 'json' or 'table'"),
 ):
     """
     Get workspace in the Geoserver
+    looks like - gsx workspace  <workspacename> --url <url> --username <username> --password <password>
     """
     if request.value == "sync":
         client = SyncGeoServerX(username, password, url)
-        result = client.get_workspace(workspace).model_dump_json()
+        result = client.get_workspace(workspace)
         if "code" in result:
             typer.secho(result, fg=typer.colors.RED)
         else:
-            print(result)
+            if output == "json":
+                print(json.dumps(result.model_dump(), indent=2))
+            else:
+                try:
+                    table = Table("Column", "Value")
+                    table.add_row("name", result.workspace.name)
+                    table.add_row("isolated", str(result.workspace.isolated))
+                    table.add_row("dateCreated", result.workspace.dateCreated)
+                    table.add_row("dataStores", result.workspace.dataStores)
+                    table.add_row("coverageStores", result.workspace.coverageStores)
+                    table.add_row("wmsStores", result.workspace.wmsStores)
+                    table.add_row("wmtsStores", result.workspace.wmtsStores)
+                    console.print(table)
+                except AttributeError:
+                    typer.secho(result.response, fg=typer.colors.RED)
     else:
         typer.echo("Async support will be shortly")
 
@@ -94,14 +124,12 @@ def delete_workspace(
 ):
     """
     Delete workspace in the Geoserver
+    looks like - gsx delete-workspace  <workspacename> --recurse/--no-recurse --url <url> --username <username> --password <password>
     """
     if request.value == "sync":
         client = SyncGeoServerX(username, password, url)
-        result = client.delete_workspace(workspace, recurse).model_dump_json()
-        if "code" in result:
-            typer.secho(result, fg=typer.colors.RED)
-        else:
-            print(result)
+        result = client.delete_workspace(workspace, recurse)
+        print(result.response)
     else:
         typer.echo("Async support will be shortly")
 
@@ -121,15 +149,12 @@ def create_workspace(
 ):
     """
     Add workspace in the Geoserver
-    looks like - gsx create-workspace --workspace <workspacename> --default/--no-default  --isolated/--no-isolated --username <username> --password <password>
+    looks like - gsx create-workspace  <workspacename> --default/--no-default  --isolated/--no-isolated --url <url> --username <username> --password <password>
     """
     if request.value == "sync":
         client = SyncGeoServerX(username, password, url)
-        result = client.create_workspace(workspace, default, isolated).model_dump_json()
-        if json.loads(result)["code"] == 201:
-            typer.secho(result, fg=typer.colors.GREEN)
-        else:
-            typer.secho(result, fg=typer.colors.RED)
+        result = client.create_workspace(workspace, default, isolated)
+        print(result.response)
 
     else:
         typer.echo("Async support will be shortly")
@@ -150,18 +175,15 @@ def update_workspace(
 ):
     """
     Update existing workspace in the Geoserver
-    looks like - gsx create-workspace --workspace <workspacename> --default/--no-default  --isolated/--no-isolated --username <username> --password <password>
+    looks like - gsx update-workspace  <workspacename> --new-name <new-workspacename> --isolated/--no-isolated --username <username> --password <password>
     """
     if request.value == "sync":
         client = SyncGeoServerX(username, password, url)
         result = client.update_workspace(
             current_name,
             UpdateWorkspaceInfo(name=new_name, isolated=isolated),
-        ).model_dump()
-        if result["code"] == 200:
-            typer.secho(result, fg=typer.colors.GREEN)
-        else:
-            typer.secho(result, fg=typer.colors.RED)
+        )
+        print(result.response)
 
     else:
         typer.echo("Async support will be shortly")

@@ -1,3 +1,5 @@
+from typing import Any, Dict
+
 import httpx
 import pytest
 from typer.testing import CliRunner
@@ -7,14 +9,30 @@ from geoserverx.cli.cli import app
 runner = CliRunner()
 
 baseUrl = "http://127.0.0.1:8080/geoserver/rest/"
+# Test data
+WORKSPACE_TEST_CASES = [
+    {"name": "aa", "href": "http://127.0.0.1:8080/geoserver/rest/workspaces/aa.json"},
+    {
+        "name": "aaba",
+        "href": "http://127.0.0.1:8080/geoserver/rest/workspaces/aaba.json",
+    },
+]
 
 
-def test_get_all_workspaces_success(good_workspaces_connection, respx_mock):
+@pytest.fixture
+def workspace_response() -> Dict[str, Any]:
+    return {"workspaces": {"workspace": WORKSPACE_TEST_CASES}}
+
+
+def test_get_all_workspaces_success(workspace_response, respx_mock):
+    """Test getting all workspaces"""
     respx_mock.get(f"{baseUrl}workspaces").mock(
-        return_value=httpx.Response(200, json=good_workspaces_connection)
+        return_value=httpx.Response(200, json=workspace_response)
     )
-    result = runner.invoke(app, ["workspaces"])
-    assert "pydad" in result.stdout
+    result = runner.invoke(app, ["workspaces", "--output", "json"])
+    assert result.exit_code == 0
+    for workspace in WORKSPACE_TEST_CASES:
+        assert workspace["name"] in result.output
 
 
 def test_get_all_workspaces_NetworkError(respx_mock):
@@ -27,7 +45,12 @@ def test_get_all_workspaces_NetworkError(respx_mock):
 @pytest.mark.parametrize(
     "workspace_name,status_code,response_data,expected_response",
     [
-        ("sfsf", 404, {"error": "not found"}, "Result not found"),
+        (
+            "sfsf",
+            404,
+            {"code": 404, "response": "Result not found"},
+            "Result not found",
+        ),
     ],
 )
 def test_get_workspace_validation(
@@ -58,7 +81,12 @@ def test_get_workspace_ConnectError(respx_mock):
 @pytest.mark.parametrize(
     "workspace_name,status_code,response_data,expected_response",
     [
-        ("tiger", 404, {"error": "not found"}, "Result not found"),
+        (
+            "tiger",
+            404,
+            {"code": 404, "response": "Result not found"},
+            "Result not found",
+        ),
     ],
 )
 def test_update_workspace_validation(
@@ -78,7 +106,7 @@ def test_update_workspace_validation(
             "tiger",
             "--isolated",
             200,
-            {"workspace": {"isolated": True}},
+            "Executed successfully",
         )
     ],
 )
@@ -90,7 +118,7 @@ def test_update_workspace_success(
     )
     print(workspace_info)
     result = runner.invoke(app, ["update-workspace", workspace_name, workspace_info])
-    assert str(status_code) in result.stdout
+    assert response_data in result.stdout
 
 
 def test_update_workspace_ConnectError(respx_mock):
