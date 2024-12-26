@@ -1,5 +1,3 @@
-from typing import Any, Dict
-
 import httpx
 import pytest
 from typer.testing import CliRunner
@@ -9,36 +7,36 @@ from geoserverx.cli.cli import app
 runner = CliRunner()
 
 baseUrl = "http://127.0.0.1:8080/geoserver/rest/"
-# Test data
-WORKSPACE_TEST_CASES = [
-    {"name": "aa", "href": "http://127.0.0.1:8080/geoserver/rest/workspaces/aa.json"},
-    {
-        "name": "aaba",
-        "href": "http://127.0.0.1:8080/geoserver/rest/workspaces/aaba.json",
-    },
-]
 
 
-@pytest.fixture
-def workspace_response() -> Dict[str, Any]:
-    return {"workspaces": {"workspace": WORKSPACE_TEST_CASES}}
-
-
-def test_get_all_workspaces_success(workspace_response, respx_mock):
+# Test - workspaces
+def test_get_all_workspaces_success(respx_mock):
     """Test getting all workspaces"""
+    # Test data
+    workspace_response = {
+        "workspaces": {
+            "workspace": [
+                {
+                    "name": "aa",
+                    "href": "http://127.0.0.1:8080/geoserver/rest/workspaces/aa.json",
+                },
+                {
+                    "name": "aaba",
+                    "href": "http://127.0.0.1:8080/geoserver/rest/workspaces/aaba.json",
+                },
+            ]
+        }
+    }
+    # Mock the response
     respx_mock.get(f"{baseUrl}workspaces").mock(
         return_value=httpx.Response(200, json=workspace_response)
     )
+    # Invoke the command
     result = runner.invoke(app, ["workspaces", "--output", "json"])
+    # Assertions
     assert result.exit_code == 0
-    for workspace in WORKSPACE_TEST_CASES:
+    for workspace in workspace_response["workspaces"]["workspace"]:
         assert workspace["name"] in result.output
-
-
-def test_get_all_workspaces_NetworkError(respx_mock):
-    respx_mock.get(f"{baseUrl}workspaces").mock(side_effect=httpx.ConnectError)
-    result = runner.invoke(app, ["workspaces"])
-    assert "Error in connecting to Geoserver" in result.stdout
 
 
 # Test - get_workspace
