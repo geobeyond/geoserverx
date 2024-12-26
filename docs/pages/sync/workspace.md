@@ -26,9 +26,9 @@ This command allows user to create new workspace.
 
 | Parameter | Required | Default value | Data type      | Description                          |
 | ----------- | ----------- | ----------- |---- | ------------------------------------ |
-| Name | :white_check_mark: | | `str`      |  To define Name of the workspace  |
-| default | :negative_squared_cross_mark: | `False` | `bool`      |  To define whether to keep workspace as default or not |
-| isolated | :negative_squared_cross_mark: | `False` |`bool`      |  To define whether to keep workspace as default or not |
+| Name | :white_check_mark: | | `str`      |  workspace name  |
+| default | :negative_squared_cross_mark: | `False` | `bool`      |  whether to keep workspace as default |
+| isolated | :negative_squared_cross_mark: | `False` |`bool`      |  set workspace as being isolated |
   
 ```Python
 #Create new workspace with name `my_wrkspc` , make it Default and Isolated
