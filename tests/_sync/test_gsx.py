@@ -473,6 +473,60 @@ def test_get_all_layer_groups_ConnectError(client: SyncGeoServerX, respx_mock):
     assert response.response == "Error in connecting to Geoserver"
 
 
+# Test - reset_geoserver
+def test_reset_geoserver_validation(
+    client: SyncGeoServerX, bad_reset_geoserver_connection, respx_mock
+):
+    respx_mock.put(f"{baseUrl}reset").mock(
+        return_value=httpx.Response(404, json=bad_reset_geoserver_connection)
+    )
+    response = client.reset_geoserver()
+    assert response.response == "Result not found"
+
+
+def test_reset_geoserver_success(
+    client: SyncGeoServerX, good_reset_geoserver_connection, respx_mock
+):
+    respx_mock.put(f"{baseUrl}reset").mock(
+        return_value=httpx.Response(200, json=good_reset_geoserver_connection)
+    )
+    response = client.reset_geoserver()
+    assert response.response == "Executed successfully"
+
+
+def test_reset_geoserver_ConnectError(client: SyncGeoServerX, respx_mock):
+    respx_mock.put(f"{baseUrl}reset").mock(side_effect=httpx.ConnectError)
+    response = client.reset_geoserver()
+    assert response.response == "Error in connecting to Geoserver"
+
+
+# Test - reload_geoserver
+def test_reload_geoserver_validation(
+    client: SyncGeoServerX, bad_reload_geoserver_connection, respx_mock
+):
+    respx_mock.put(f"{baseUrl}reload").mock(
+        return_value=httpx.Response(404, json=bad_reload_geoserver_connection)
+    )
+    response = client.reload_geoserver()
+    assert response.response == "Result not found"
+
+
+def test_reload_geoserver_success(
+    client: SyncGeoServerX, good_reload_geoserver_connection, respx_mock
+):
+    respx_mock.put(f"{baseUrl}reload").mock(
+        return_value=httpx.Response(200, json=good_reload_geoserver_connection)
+    )
+    response = client.reload_geoserver()
+    assert response.response == "Executed successfully"
+
+
+def test_reload_geoserver_ConnectError(client: SyncGeoServerX, respx_mock):
+    respx_mock.put(f"{baseUrl}reload").mock(side_effect=httpx.ConnectError)
+    response = client.reload_geoserver()
+    assert response.response == "Error in connecting to Geoserver"
+
+
 # Test - all_geofence_rules
 def test_all_geofence_rules_validation(
     client: SyncGeoServerX, bad_all_geofence_rules_connection, respx_mock

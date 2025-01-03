@@ -446,6 +446,35 @@ class SyncGeoServerX:
         else:
             return self.response_recognise(response.status_code)
 
+    # Reset geoserver
+    @exception_handler
+    def reset_geoserver(self) -> GSResponse:
+        """
+        Resets all authentication, store, raster, and schema caches. This operation is used to force GeoServer to drop all caches and store connections and reconnect to each of them the next time they are needed by a request. This is useful in case the stores themselves cache some information about the data structures they manage that may have changed in the meantime.
+        """
+        Client = self.http_client
+        responses = Client.put(
+            "/reset",
+            headers=self.head,
+        )
+        results = self.response_recognise(responses.status_code)
+        return results
+
+    # Reload geoserver
+    @exception_handler
+    def reload_geoserver(self) -> GSResponse:
+        """
+        Reloads the GeoServer catalog and configuration from disk. This operation is used in cases where an external tool has modified the on-disk configuration. This operation will also force GeoServer to drop any internal caches and reconnect to all data stores.
+        """
+        Client = self.http_client
+        responses = Client.put(
+            "/reload",
+            headers=self.head,
+        )
+        results = self.response_recognise(responses.status_code)
+        return results
+
+    # Get all geofence rules
     @exception_handler
     def get_all_geofence_rules(self) -> Union[RulesResponse, GSResponse]:
         client = self.http_client

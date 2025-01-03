@@ -661,6 +661,12 @@ def networkbad_layer_groups_connection() -> dict:
 
 
 @pytest.fixture
+def good_reset_geoserver_connection() -> dict:
+    item = {"code": 200, "response": "Executed successfully'"}
+    return item
+
+
+@pytest.fixture
 def good_all_geofence_rules_connection() -> dict:
     item = {
         "count": 2,
@@ -798,7 +804,19 @@ def good_all_geofence_rules_connection() -> dict:
 
 
 @pytest.fixture
+def bad_reset_geoserver_connection() -> dict:
+    item = {"code": 404, "response": "Result not found"}
+    return item
+
+
+@pytest.fixture
 def bad_all_geofence_rules_connection() -> dict:
+    item = {"code": 404, "response": "Result not found"}
+    return item
+
+
+@pytest.fixture
+def invalid_reset_geoserver_connection() -> dict:
     item = {"code": 404, "response": "Result not found"}
     return item
 
@@ -806,6 +824,12 @@ def bad_all_geofence_rules_connection() -> dict:
 @pytest.fixture
 def networkbad_all_geofence_rules_connection() -> dict:
     item = {"code": 503, "response": "Geoserver unavailable"}
+    return item
+
+
+@pytest.fixture
+def good_reload_geoserver_connection() -> dict:
+    item = {"code": 200, "response": "Executed successfully'"}
     return item
 
 
@@ -831,8 +855,20 @@ def good_new_geofence_rule_connection() -> dict:
 
 
 @pytest.fixture
+def bad_reload_geoserver_connection() -> dict:
+    item = {"code": 404, "response": "Result not found"}
+    return item
+
+
+@pytest.fixture
 def bad_new_geofence_rule_connection() -> dict:
     item = {"Rule": ""}
+    return item
+
+
+@pytest.fixture
+def invalid_reload_geoserver_connection() -> dict:
+    item = {"code": 404, "response": "Result not found"}
     return item
 
 
