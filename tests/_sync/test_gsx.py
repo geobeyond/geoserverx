@@ -4,6 +4,7 @@ from pytest import mark as pytest_mark
 
 from geoserverx._sync.gsx import GeoServerXAuth, GeoServerXError, SyncGeoServerX
 from geoserverx.models.geofence import Rule
+from geoserverx.models.workspace import UpdateWorkspaceInfo
 
 baseUrl = "http://127.0.0.1:8080/geoserver/rest/"
 
@@ -24,17 +25,6 @@ def test_error():
         assert True
 
 
-# Test - get_all_workspaces
-def test_get_all_workspaces_validation(
-    client: SyncGeoServerX, bad_workspaces_connection, respx_mock
-):
-    respx_mock.get(f"{baseUrl}workspaces").mock(
-        return_value=httpx.Response(404, json=bad_workspaces_connection)
-    )
-    response = client.get_all_workspaces()
-    assert response.code == 404
-
-
 def test_get_all_workspaces_success(
     client: SyncGeoServerX, good_workspaces_connection, respx_mock
 ):
@@ -52,14 +42,26 @@ def test_get_all_workspaces_NetworkError(client: SyncGeoServerX, respx_mock):
 
 
 # Test - get_workspace
+@pytest_mark.parametrize(
+    "workspace_name,status_code,response_data,expected_response",
+    [
+        ("sfsf", 404, {"error": "not found"}, "Result not found"),
+    ],
+)
 def test_get_workspace_validation(
-    client: SyncGeoServerX, bad_workspace_connection, respx_mock
+    client: SyncGeoServerX,
+    respx_mock,
+    workspace_name,
+    status_code,
+    response_data,
+    expected_response,
 ):
-    respx_mock.get(f"{baseUrl}workspaces/sfsf").mock(
-        return_value=httpx.Response(404, json=bad_workspace_connection)
+    respx_mock.get(f"{baseUrl}workspaces/{workspace_name}").mock(
+        return_value=httpx.Response(status_code, json=response_data)
     )
-    response = client.get_workspace("sfsf")
-    assert response.response == "Result not found"
+
+    response = client.get_workspace(workspace_name)
+    assert response.response == expected_response
 
 
 def test_get_workspace_success(
@@ -75,6 +77,64 @@ def test_get_workspace_success(
 def test_get_workspace_ConnectError(client: SyncGeoServerX, respx_mock):
     respx_mock.get(f"{baseUrl}workspaces/pydad").mock(side_effect=httpx.ConnectError)
     response = client.get_workspace("pydad")
+    assert response.response == "Error in connecting to Geoserver"
+
+
+# Test - update_workspace
+@pytest_mark.parametrize(
+    "workspace_name,status_code,response_data,expected_response",
+    [
+        ("tiger", 404, {"error": "not found"}, "Result not found"),
+    ],
+)
+def test_update_workspace_validation(
+    client: SyncGeoServerX,
+    respx_mock,
+    workspace_name,
+    status_code,
+    response_data,
+    expected_response,
+):
+    respx_mock.put(f"{baseUrl}workspaces/{workspace_name}.json").mock(
+        return_value=httpx.Response(status_code, json=response_data)
+    )
+    response = client.update_workspace(
+        workspace_name, UpdateWorkspaceInfo(isolated=True)
+    )
+    assert response.response == expected_response
+
+
+@pytest_mark.parametrize(
+    "workspace_name,workspace_info,status_code,response_data",
+    [
+        (
+            "tiger",
+            UpdateWorkspaceInfo(isolated=True),
+            200,
+            {"workspace": {"isolated": True}},
+        )
+    ],
+)
+def test_update_workspace_success(
+    client: SyncGeoServerX,
+    respx_mock,
+    workspace_name,
+    workspace_info,
+    status_code,
+    response_data,
+):
+    respx_mock.put(f"{baseUrl}workspaces/{workspace_name}.json").mock(
+        return_value=httpx.Response(status_code, json=response_data)
+    )
+    response = client.update_workspace(workspace_name, workspace_info)
+    assert response.code == status_code
+
+
+def test_update_workspace_ConnectError(client: SyncGeoServerX, respx_mock):
+    respx_mock.put(f"{baseUrl}workspaces/tiger.json").mock(
+        side_effect=httpx.ConnectError
+    )
+    response = client.update_workspace("tiger", UpdateWorkspaceInfo(isolated=True))
     assert response.response == "Error in connecting to Geoserver"
 
 
@@ -256,7 +316,7 @@ def test_get_style_ConnectError(client: SyncGeoServerX, respx_mock):
 def test_create_workspace_validation(
     client: SyncGeoServerX, invalid_new_workspace_connection, respx_mock
 ):
-    respx_mock.post(f"{baseUrl}workspaces?default=False").mock(
+    respx_mock.post(f"{baseUrl}workspaces", params={"default": False}).mock(
         return_value=httpx.Response(404, json=invalid_new_workspace_connection)
     )
     response = client.create_workspace("pydad", False, True)
@@ -266,7 +326,7 @@ def test_create_workspace_validation(
 def test_create_workspace_success(
     client: SyncGeoServerX, good_new_workspace_connection, respx_mock
 ):
-    respx_mock.post(f"{baseUrl}workspaces?default=False").mock(
+    respx_mock.post(f"{baseUrl}workspaces", params={"default": False}).mock(
         return_value=httpx.Response(201, json=good_new_workspace_connection)
     )
     response = client.create_workspace("pydad", False, True)
@@ -274,7 +334,7 @@ def test_create_workspace_success(
 
 
 def test_create_workspace_ConnectError(client: SyncGeoServerX, respx_mock):
-    respx_mock.post(f"{baseUrl}workspaces?default=False").mock(
+    respx_mock.post(f"{baseUrl}workspaces", params={"default": False}).mock(
         side_effect=httpx.ConnectError
     )
     response = client.create_workspace("pydad", False, True)
