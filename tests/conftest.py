@@ -661,6 +661,37 @@ def networkbad_layer_groups_connection() -> dict:
 
 
 @pytest.fixture
+def good_system_status_connection() -> dict:
+    item = {
+        "metrics": {
+            "metric": [
+                {
+                    "available": False,
+                    "description": "Operating system",
+                    "name": "OPERATING_SYSTEM",
+                    "unit": "",
+                    "category": "SYSTEM",
+                    "identifier": "OPERATING_SYSTEM",
+                    "priority": 1,
+                    "value": "NOT AVAILABLE",
+                },
+                {
+                    "available": False,
+                    "description": "Uptime",
+                    "name": "SYSTEM_UPTIME",
+                    "unit": "sec",
+                    "category": "SYSTEM",
+                    "identifier": "SYSTEM_UPTIME",
+                    "priority": 2,
+                    "value": "NOT AVAILABLE",
+                },
+            ]
+        }
+    }
+    return item
+
+
+@pytest.fixture
 def good_all_geofence_rules_connection() -> dict:
     item = {
         "count": 2,
@@ -831,8 +862,20 @@ def good_new_geofence_rule_connection() -> dict:
 
 
 @pytest.fixture
+def bad_system_status_connection() -> dict:
+    item = {"code": 404, "response": "Result not found"}
+    return item
+
+
+@pytest.fixture
 def bad_new_geofence_rule_connection() -> dict:
     item = {"Rule": ""}
+    return item
+
+
+@pytest.fixture
+def networkbad_system_status_connection() -> dict:
+    item = {"code": 503, "response": "Geoserver unavailable"}
     return item
 
 

@@ -473,6 +473,33 @@ def test_get_all_layer_groups_ConnectError(client: SyncGeoServerX, respx_mock):
     assert response.response == "Error in connecting to Geoserver"
 
 
+# Test - system_status
+def test_system_status_validation(
+    client: SyncGeoServerX, bad_system_status_connection, respx_mock
+):
+    respx_mock.get(f"{baseUrl}about/system-status").mock(
+        return_value=httpx.Response(404, json=bad_system_status_connection)
+    )
+    response = client.system_status()
+    assert response.response == "Result not found"
+
+
+def test_system_status_success(
+    client: SyncGeoServerX, good_system_status_connection, respx_mock
+):
+    respx_mock.get(f"{baseUrl}about/system-status").mock(
+        return_value=httpx.Response(200, json=good_system_status_connection)
+    )
+    response = client.system_status()
+    assert not response.metrics.metric[0].available
+
+
+def test_system_status_ConnectError(client: SyncGeoServerX, respx_mock):
+    respx_mock.get(f"{baseUrl}about/system-status").mock(side_effect=httpx.ConnectError)
+    response = client.system_status()
+    assert response.response == "Error in connecting to Geoserver"
+
+
 # Test - all_geofence_rules
 def test_all_geofence_rules_validation(
     client: SyncGeoServerX, bad_all_geofence_rules_connection, respx_mock

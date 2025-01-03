@@ -16,6 +16,7 @@ from geoserverx.models.gs_response import GSResponse
 from geoserverx.models.layer_group import LayerGroupsModel
 from geoserverx.models.layers import LayerModel, LayersModel
 from geoserverx.models.style import AllStylesModel, StyleModel
+from geoserverx.models.system_status import MetricsDataModel
 from geoserverx.models.workspace import (
     NewWorkspace,
     NewWorkspaceInfo,
@@ -337,6 +338,20 @@ class AsyncGeoServerX:
         else:
             return self.response_recognise(response.status_code)
 
+    # Get system status info
+    async def system_status(self) -> Union[MetricsDataModel, GSResponse]:
+        """
+        Returns a list of system-level information. Major operating systems (Linux, Windows and MacOX) are supported out of the box.
+        """
+        Client = self.http_client
+        responses = await Client.get("about/system-status")
+        if responses.status_code == 200:
+            return MetricsDataModel.model_validate(responses.json())
+        else:
+            results = self.response_recognise(responses.status_code)
+            return results
+
+    # Get all geofence rules
     async def get_all_geofence_rules(self) -> Union[RulesResponse, GSResponse]:
         client = self.http_client
         # Check if the geofence plugin exists

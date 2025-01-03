@@ -461,6 +461,32 @@ def layer_groups(
         print("Async support will be shortly")
 
 
+# Get system status info
+@SyncGeoServerX.exception_handler
+@app.command(help="Get system status info of the Geoserver")
+def system_status(
+    request: requestEnum = requestEnum._sync,
+    url: str = typer.Option(
+        "http://127.0.0.1:8080/geoserver/rest/", help="Geoserver REST URL"
+    ),
+    password: str = typer.Option("geoserver", help="Geoserver Password"),
+    username: str = typer.Option("admin", help="Geoserver username"),
+):
+    """
+    Returns a list of system-level information. Major operating systems (Linux, Windows and MacOX) are supported out of the box.
+    """
+    if request.value == "sync":
+        client = SyncGeoServerX(username, password, url)
+        result = client.system_status().model_dump_json()
+        if "metrics" in result:
+            typer.secho(result, fg=typer.colors.RED)
+        else:
+            print(result)
+    else:
+        typer.echo("Async support will be shortly")
+
+
+# get all geofence rules
 @SyncGeoServerX.exception_handler
 @app.command(help="Get all geofence rules in the Geoserver")
 def geofence_rules(
@@ -472,6 +498,7 @@ def geofence_rules(
     username: str = typer.Option("admin", help="Geoserver username"),
 ):
     """
+
     Get all geofence rules in the Geoserver
     """
     if request.value == "sync":
