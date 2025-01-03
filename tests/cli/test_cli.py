@@ -1,4 +1,5 @@
 import httpx
+import pytest
 from typer.testing import CliRunner
 
 from geoserverx.cli.cli import app
@@ -8,49 +9,121 @@ runner = CliRunner()
 baseUrl = "http://127.0.0.1:8080/geoserver/rest/"
 
 
-# Test - get_all_workspaces
-def test_get_all_workspaces_validation(bad_workspaces_connection, respx_mock):
+# Test - workspaces
+def test_get_all_workspaces_success(respx_mock):
+    """Test getting all workspaces"""
+    # Test data
+    workspace_response = {
+        "workspaces": {
+            "workspace": [
+                {
+                    "name": "aa",
+                    "href": "http://127.0.0.1:8080/geoserver/rest/workspaces/aa.json",
+                },
+                {
+                    "name": "aaba",
+                    "href": "http://127.0.0.1:8080/geoserver/rest/workspaces/aaba.json",
+                },
+            ]
+        }
+    }
+    # Mock the response
     respx_mock.get(f"{baseUrl}workspaces").mock(
-        return_value=httpx.Response(404, json=bad_workspaces_connection)
+        return_value=httpx.Response(200, json=workspace_response)
     )
-    result = runner.invoke(app, ["workspaces"])
-    assert "404" in result.stdout
-
-
-def test_get_all_workspaces_success(good_workspaces_connection, respx_mock):
-    respx_mock.get(f"{baseUrl}workspaces").mock(
-        return_value=httpx.Response(200, json=good_workspaces_connection)
-    )
-    result = runner.invoke(app, ["workspaces"])
-    assert "pydad" in result.stdout
-
-
-def test_get_all_workspaces_NetworkError(respx_mock):
-    respx_mock.get(f"{baseUrl}workspaces").mock(side_effect=httpx.ConnectError)
-    result = runner.invoke(app, ["workspaces"])
-    assert "Error in connecting to Geoserver" in result.stdout
+    # Invoke the command
+    result = runner.invoke(app, ["workspaces", "--output", "json"])
+    # Assertions
+    assert result.exit_code == 0
+    for workspace in workspace_response["workspaces"]["workspace"]:
+        assert workspace["name"] in result.output
 
 
 # Test - get_workspace
-def test_get_workspace_validation(bad_workspace_connection, respx_mock):
-    respx_mock.get(f"{baseUrl}workspaces/sfsf").mock(
-        return_value=httpx.Response(404, json=bad_workspace_connection)
+@pytest.mark.parametrize(
+    "workspace_name,status_code,response_data,expected_response",
+    [
+        (
+            "sfsf",
+            404,
+            {"code": 404, "response": "Result not found"},
+            "Result not found",
+        ),
+    ],
+)
+def test_get_workspace_validation(
+    workspace_name, status_code, response_data, expected_response, respx_mock
+):
+    respx_mock.get(f"{baseUrl}workspaces/{workspace_name}").mock(
+        return_value=httpx.Response(status_code, json=response_data)
     )
-    result = runner.invoke(app, ["workspace", "--workspace", "sfsf"])
-    assert "Result not found" in result.stdout
+    result = runner.invoke(app, ["workspace", "sfsf"])
+    assert expected_response in result.stdout
 
 
 def test_get_workspace_success(good_workspace_connection, respx_mock):
     respx_mock.get(f"{baseUrl}workspaces/pydad").mock(
         return_value=httpx.Response(200, json=good_workspace_connection)
     )
-    result = runner.invoke(app, ["workspace", "--workspace", "pydad"])
+    result = runner.invoke(app, ["workspace", "pydad"])
     assert "pydad" in result.stdout
 
 
 def test_get_workspace_ConnectError(respx_mock):
     respx_mock.get(f"{baseUrl}workspaces/pydad").mock(side_effect=httpx.ConnectError)
-    result = runner.invoke(app, ["workspace", "--workspace", "pydad"])
+    result = runner.invoke(app, ["workspace", "pydad"])
+    assert "Error in connecting to Geoserver" in result.stdout
+
+
+# Test - update_workspace
+@pytest.mark.parametrize(
+    "workspace_name,status_code,response_data,expected_response",
+    [
+        (
+            "tiger",
+            404,
+            {"code": 404, "response": "Result not found"},
+            "Result not found",
+        ),
+    ],
+)
+def test_update_workspace_validation(
+    respx_mock, workspace_name, status_code, response_data, expected_response
+):
+    respx_mock.put(f"{baseUrl}workspaces/{workspace_name}.json").mock(
+        return_value=httpx.Response(status_code, json=response_data)
+    )
+    result = runner.invoke(app, ["update-workspace", workspace_name, "--isolated"])
+    assert expected_response in result.stdout
+
+
+@pytest.mark.parametrize(
+    "workspace_name,workspace_info,status_code,response_data",
+    [
+        (
+            "tiger",
+            "--isolated",
+            200,
+            "Executed successfully",
+        )
+    ],
+)
+def test_update_workspace_success(
+    respx_mock, workspace_name, workspace_info, status_code, response_data
+):
+    respx_mock.put(f"{baseUrl}workspaces/{workspace_name}.json").mock(
+        return_value=httpx.Response(status_code, json=response_data)
+    )
+    print(workspace_info)
+    result = runner.invoke(app, ["update-workspace", workspace_name, workspace_info])
+    assert response_data in result.stdout
+
+
+def test_update_workspace_ConnectError(respx_mock):
+    respx_mock.put(f"{baseUrl}workspaces/tiger.json").mock(
+        side_effect=httpx.ConnectError
+    )
+    result = runner.invoke(app, ["update-workspace", "tiger", "--isolated"])
     assert "Error in connecting to Geoserver" in result.stdout
 
 
@@ -224,32 +297,32 @@ def test_get_style_ConnectError(respx_mock):
 
 # Test - create_workspace
 def test_create_workspace_validation(invalid_new_workspace_connection, respx_mock):
-    respx_mock.post(f"{baseUrl}workspaces?default=False").mock(
+    respx_mock.post(f"{baseUrl}workspaces", params={"default": False}).mock(
         return_value=httpx.Response(404, json=invalid_new_workspace_connection)
     )
     result = runner.invoke(
         app,
-        ["create-workspace", "--workspace", "burg", "--no-default", "--no-isolated"],
+        ["create-workspace", "burg", "--no-default", "--no-isolated"],
     )
     assert "Result not found" in result.stdout
 
 
 def test_create_workspace_success(good_new_workspace_connection, respx_mock):
-    respx_mock.post(f"{baseUrl}workspaces?default=False").mock(
+    respx_mock.post(f"{baseUrl}workspaces", params={"default": False}).mock(
         return_value=httpx.Response(201, json=good_new_workspace_connection)
     )
     result = runner.invoke(
-        app, ["create-workspace", "--workspace", "pydad", "--no-default", "--isolated"]
+        app, ["create-workspace", "pydad", "--no-default", "--isolated"]
     )
     assert "Data added successfully" in result.stdout
 
 
 def test_create_workspace_ConnectError(respx_mock):
-    respx_mock.post(f"{baseUrl}workspaces?default=False").mock(
+    respx_mock.post(f"{baseUrl}workspaces", params={"default": False}).mock(
         side_effect=httpx.ConnectError
     )
     result = runner.invoke(
-        app, ["create-workspace", "--workspace", "pydad", "--no-default", "--isolated"]
+        app, ["create-workspace", "pydad", "--no-default", "--isolated"]
     )
     assert "Error in connecting to Geoserver" in result.stdout
 
@@ -355,7 +428,6 @@ def test_get_layer_success(good_layer_connection, respx_mock):
         return_value=httpx.Response(200, json=good_layer_connection)
     )
     result = runner.invoke(app, ["layer", "--workspace", "tiger", "--layer", "poi"])
-    print(result)
     assert "poi" in result.stdout
 
 

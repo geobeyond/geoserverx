@@ -25,12 +25,6 @@ def good_workspaces_connection() -> dict:
 
 
 @pytest.fixture
-def bad_workspaces_connection() -> dict:
-    item = {"code": 502}
-    return item
-
-
-@pytest.fixture
 def good_workspace_connection() -> dict:
     item = {
         "workspace": {
@@ -47,14 +41,8 @@ def good_workspace_connection() -> dict:
 
 
 @pytest.fixture
-def bad_workspace_connection() -> dict:
+def invalid_update_workspace_connection() -> dict:
     item = {"code": 404, "response": "Result not found"}
-    return item
-
-
-@pytest.fixture
-def networkbad_workspace_connection() -> dict:
-    item = {"code": 503, "response": "Geoserver unavailable"}
     return item
 
 
@@ -410,11 +398,11 @@ def good_all_styles_model_connection() -> dict:
             "style": [
                 {
                     "name": "CUSD 2020 Census Blocks",
-                    "href": "http://localhost:8080/geoserver/rest/styles/CUSD+2020+Census+Blocks.json",
+                    "href": "http://localhost:8080/geoserver/rest/styles/CUSD.json",
                 },
                 {
                     "name": "Default Styler",
-                    "href": "http://localhost:8080/geoserver/rest/styles/Default+Styler.json",
+                    "href": "http://localhost:8080/geoserver/rest/styles/Default.json",
                 },
             ]
         }

@@ -1,3 +1,11 @@
+---
+hide:
+  - navigation
+  - toc
+
+title : GeoServerX
+description: modern python and CLI package for communicating with GeoServer
+---
 # Welcome to geoserverx 
 
 `geoserverx` is a modern Python package that provides an efficient and scalable way to interact with Geoserver REST APIs. It leverages the asynchronous capabilities of Python to offer a high-performance and reliable solution for managing Geoserver data and services.
@@ -24,13 +32,22 @@ pip install geoserverx
 
 After which , It can be used in Python projects using <i>sync, async</i> methods or can ve used as Command Line tool
 
+## Architecture 
+
+`geoserverx` is built on top of `httpx` and `pydantic` libraries. It uses `httpx` for making HTTP requests and `pydantic` for data validation. The package is designed to be modular and extensible, allowing for easy integration with other libraries and frameworks.
+
+The package is structured into two main components: the `SyncGeoServerX` class and the `AsyncGeoServerX` class. The `SyncGeoServerX` class provides synchronous methods for interacting with Geoserver, while the `AsyncGeoServerX` class provides asynchronous methods using the `anyio` library
+
+![layout](./assets/images/layout.png){ align=left }
+
+
 ## For testing purpose
-If you don't have geoserver installed locally, feel free to use following command to quickly spin up Geoserver using [Docker](https://www.docker.com/)
+If you don't have GeoServer installed locally, feel free to use following command to quickly spin up Geoserver using [Docker](https://www.docker.com/)
 
 <div class="termy">
 ```console
-docker run -e GEOSERVER_ADMIN_USER=admin -e GEOSERVER_ADMIN_PASSWORD=geoserver -e SAMPLE_DATA=true -p 8080:8080 kartoza/geoserver
+docker run -e GEOSERVER_ADMIN_USER=admin -e GEOSERVER_ADMIN_PASSWORD=geoserver -e SAMPLE_DATA=true -p 8080:8080 kartoza/GeoServer
 ```
 </div>
 
-Please not that this will work on amd64 architecture machines.
+Please note that this will work on amd64 architecture machines.

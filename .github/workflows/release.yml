@@ -24,7 +24,7 @@ jobs:
 
       - name: Upgrade pip
         run: |
-          pip install --constraint=.github/workflows/constraints.txt pip
+          pip install --upgrade pip
           pip --version
       - name: Install Poetry
         uses: snok/install-poetry@v1

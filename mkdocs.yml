@@ -1,17 +1,23 @@
 site_name: geoserverx
 site_description: "geoserverx is a modern python and CLI package for communicating with Geoserver."
+site_url:  https://geobeyond.github.io/geoserverx/
 site_author: Geobeyond
-copyright: "&copy; 2023 Geobeyond"
+copyright: "&copy; 2024 Geobeyond"
 theme:
   name: material
-  # logo: assets/images/logo.png
+  icon:
+    logo: material/package-variant
+    favicon: material/package-variant
   palette:
-    primary: green
+    primary: white
   features:
     - content.code.copy
     - navigation.tabs
     - navigation.tabs.sticky
 repo_url: https://github.com/geobeyond/geoserverx
+plugins:
+  - social
+  - search
 nav:
     - Home: index.md
     - Sync : 
@@ -43,6 +49,10 @@ markdown_extensions:
   - footnotes # notes bottom of page
   - attr_list # used to size images
   - md_in_html # used to size images
+  - tables
+  - pymdownx.emoji:
+      emoji_index: !!python/name:material.extensions.emoji.twemoji
+      emoji_generator: !!python/name:material.extensions.emoji.to_svg
   - pymdownx.tabbed: 
       alternate_style: true
 
@@ -55,3 +65,6 @@ extra_css:
 extra_javascript:
     - assets/javascripts/termynal.js
     - assets/javascripts/custom.js
+
+extra:
+  generator: false
