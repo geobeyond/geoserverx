@@ -10,8 +10,7 @@ To start using `geoserverx` in Sync mode, create a new instance of `AsyncGeoServ
 This command fetches all workspaces available in GeoServer. No parameters are required to be passed.
 
 ```py
-# Get all workspaces in GeoServer
-await client.get_all_workspaces()
+
 ```
 
 ## Get single workspace
@@ -49,8 +48,7 @@ This command allows user to delete workspace.
 | recurse   | :negative_squared_cross_mark: | `False`       | `bool`    | This parameter recursively deletes all layers referenced by the specified workspace, including data stores, coverage stores, feature types, and so on |
 
 ```Python
-#Delete workspace with name `my_wrkspc`.
-await client.delete_workspace(workspace='my_wrkspc',recurse=True)
+
 ```
 
 ## Update workspace

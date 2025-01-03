@@ -1,6 +1,6 @@
 site_name: geoserverx
 site_description: "geoserverx is a modern python and CLI package for communicating with Geoserver."
-site_url:  https://geobeyond.github.io/geoserverx/
+site_url: https://geobeyond.github.io/geoserverx/
 site_author: Geobeyond
 copyright: "&copy; 2024 Geobeyond"
 theme:
@@ -19,28 +19,28 @@ plugins:
   - social
   - search
 nav:
-    - Home: index.md
-    - Sync : 
-      - pages/sync/index.md
-      - Workspaces : pages/sync/workspace.md
-      - Vector Data : pages/sync/vector-store.md
-      - Raster Data : pages/sync/raster-store.md
-      - Style : pages/sync/style.md
-      - Example : pages/sync/example.md
-    - Async : 
-      - pages/async/index.md
-      - Workspaces : pages/async/workspace.md
-      - Vector Data : pages/async/vector-store.md
-      - Raster Data : pages/async/raster-store.md
-      - Style : pages/async/style.md
-      - Example : pages/async/example.md
-    - Command Line : 
-      - pages/cli/index.md
-      - Workspaces : pages/cli/workspace.md
-      - Vector Data : pages/cli/vector-store.md
-      - Raster Data : pages/cli/raster-store.md
-      - Style : pages/cli/style.md
-      - Example : pages/cli/example.md
+  - Home: index.md
+  - Docs:
+      - pages/docs/index.md
+      - Workspaces: pages/docs/workspace.md
+      - Vector Data: pages/docs/vector-store.md
+      - Raster Data: pages/docs/raster-store.md
+      - Style: pages/docs/style.md
+      - Example: pages/docs/example.md
+  # - Async:
+  #     - pages/async/index.md
+  #     - Workspaces: pages/async/workspace.md
+  #     - Vector Data: pages/async/vector-store.md
+  #     - Raster Data: pages/async/raster-store.md
+  #     - Style: pages/async/style.md
+  #     - Example: pages/async/example.md
+  # - Command Line:
+  #     - pages/cli/index.md
+  #     - Workspaces: pages/cli/workspace.md
+  #     - Vector Data: pages/cli/vector-store.md
+  #     - Raster Data: pages/cli/raster-store.md
+  #     - Style: pages/cli/style.md
+  #     - Example: pages/cli/example.md
 markdown_extensions:
   - meta # option to add some meta tags on top, title, author, date, etc
   - admonition # adds the note, question, tip boxes, eg: !!! tip "my tip"
@@ -53,7 +53,7 @@ markdown_extensions:
   - pymdownx.emoji:
       emoji_index: !!python/name:material.extensions.emoji.twemoji
       emoji_generator: !!python/name:material.extensions.emoji.to_svg
-  - pymdownx.tabbed: 
+  - pymdownx.tabbed:
       alternate_style: true
 
 extra_css:
@@ -63,8 +63,8 @@ extra_css:
   - assets/stylesheets/custom.css
 
 extra_javascript:
-    - assets/javascripts/termynal.js
-    - assets/javascripts/custom.js
+  - assets/javascripts/termynal.js
+  - assets/javascripts/custom.js
 
 extra:
   generator: false

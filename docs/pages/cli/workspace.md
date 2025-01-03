@@ -1,38 +1,18 @@
-# Workspaces 
+# Workspaces
 
-`geoserverx` allows users to access all/one workspace from GeoServer, along with ability to add new workspaces. 
+`geoserverx` allows users to access all/one workspace from GeoServer, along with ability to add new workspaces.
 
 !!! get "Get started"
-    To start using `geoserverx` using command line, activate the Environment where package is installed and use `gsx` command
+To start using `geoserverx` using command line, activate the Environment where package is installed and use `gsx` command
 
 ## Paramters for all workspaces command
 
-<div class="termy">
+As listed above, `workspaces` command accepts four parameters.
 
-```console
-$ gsx workspaces --help
-
-Usage: gsx workspaces [OPTIONS]
-
-  Get all workspaces in the Geoserver
-
-Options:
-  --request [sync|async]  [default: requestEnum._sync]
-  --url TEXT              Geoserver REST URL  [default:
-                          http://127.0.0.1:8080/geoserver/rest/]
-  --password TEXT         Geoserver Password  [default: GeoServer]
-  --username TEXT         Geoserver username  [default: admin]
-  --help                  Show this message and exit.
-```
-
-</div>
-
-As listed above, `workspaces` command accepts four parameters. 
-
-* request type ( sync or async )
-* url - Geoserver REST URL
-* password - Password for GeoServer
-* username - Username for GeoServer
+- request type ( sync or async )
+- url - Geoserver REST URL
+- password - Password for GeoServer
+- username - Username for GeoServer
 
 All these parameters have default value setup which will work for local default installation
 
@@ -43,7 +23,7 @@ All these parameters have default value setup which will work for local default 
 ```console
 $ gsx workspaces
 
-{"workspaces": {"workspace": [{"name": "cesium", "href": 
+{"workspaces": {"workspace": [{"name": "cesium", "href":
 "http://127.0.0.1:8080/geoserver/rest/workspaces/cesium.json"}]}}
 ```
 
@@ -59,7 +39,6 @@ $ gsx workspaces --url http://locahost:8080/geoserver/rest --password myPassword
 ```
 
 </div>
-
 
 ## Paramters to get single workspace command
 
@@ -83,7 +62,7 @@ Options:
 
 </div>
 
-As listed above, `workspace` accepts `workspace` parameter as the name of workspace 
+As listed above, `workspace` accepts `workspace` parameter as the name of workspace
 
 ## Get single workspaces
 
@@ -91,12 +70,12 @@ As listed above, `workspace` accepts `workspace` parameter as the name of worksp
 
 ```console
 $ gsx workspace cesium
-{"workspace": {"name": "cesium", "isolated": false, "dateCreated": "2023-02-13 
-06:43:28.793 UTC", "dataStores": 
-"http://127.0.0.1:8080/geoserver/rest/workspaces/cesium/datastores.json", 
-"coverageStores": 
-"http://127.0.0.1:8080/geoserver/rest/workspaces/cesium/coveragestores.json", 
-"wmsStores": "http://127.0.0.1:8080/geoserver/rest/workspaces/cesium/wmsstores.json", 
+{"workspace": {"name": "cesium", "isolated": false, "dateCreated": "2023-02-13
+06:43:28.793 UTC", "dataStores":
+"http://127.0.0.1:8080/geoserver/rest/workspaces/cesium/datastores.json",
+"coverageStores":
+"http://127.0.0.1:8080/geoserver/rest/workspaces/cesium/coveragestores.json",
+"wmsStores": "http://127.0.0.1:8080/geoserver/rest/workspaces/cesium/wmsstores.json",
 "wmtsStores": "http://127.0.0.1:8080/geoserver/rest/workspaces/cesium/wmtsstores.json"}}
 ```
 
@@ -128,9 +107,9 @@ Options:
 
 As listed above, `create-workspace` command accepts parameters as follows
 
-* workspace - name of workspace
-* --default/--no-default - To keep workspace either default or not
-* --isolated/--no-isolated - To keep workspace either isolated or not
+- workspace - name of workspace
+- --default/--no-default - To keep workspace either default or not
+- --isolated/--no-isolated - To keep workspace either isolated or not
 
 ## Create single workspaces
 
@@ -169,8 +148,8 @@ Options:
 
 As listed above, `delete-workspace` command accepts parameters as follows
 
-* --current_name - name of workspace
-* --recurse / --no-recurse - This parameter recursively deletes all layers referenced by the specified workspace, including data stores, coverage stores, feature types, and so on
+- --current_name - name of workspace
+- --recurse / --no-recurse - This parameter recursively deletes all layers referenced by the specified workspace, including data stores, coverage stores, feature types, and so on
 
 ## Delete single workspaces
 
@@ -180,7 +159,6 @@ gsx delete-workspace my_wrkspace --recurse
 {"code":200,"response":"Executed successfully"}
 ```
 </div>
-
 
 ## Parameters for update workspace command
 
@@ -210,9 +188,9 @@ Options:
 
 As listed above, `update-workspace` command accepts parameters as follows
 
-* --current-name - name of current workspace
-* --new-name - name of new workspace
-* --isolated/--no-isolated - To keep workspace either isolated or not
+- --current-name - name of current workspace
+- --new-name - name of new workspace
+- --isolated/--no-isolated - To keep workspace either isolated or not
 
 ## Update single workspaces
 
