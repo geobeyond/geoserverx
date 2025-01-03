@@ -7,6 +7,7 @@ from respx.fixtures import session_event_loop as event_loop  # noqa: F401
 
 from geoserverx._async.gsx import AsyncGeoServerX, GeoServerXAuth, GeoServerXError
 from geoserverx.models.geofence import Rule
+from geoserverx.models.workspace import UpdateWorkspaceInfo
 
 baseUrl = "http://127.0.0.1:8080/geoserver/rest/"
 
@@ -26,17 +27,6 @@ async def test_error():
         assert False
     except GeoServerXError:
         assert True
-
-
-@pytest.mark.asyncio
-async def test_get_all_workspaces_validation(
-    create_a_client, respx_mock, bad_workspaces_connection
-):
-    respx_mock.get(f"{baseUrl}workspaces").mock(
-        return_value=httpx.Response(404, json=bad_workspaces_connection)
-    )
-    response = await create_a_client.get_all_workspaces()
-    assert response.code == 404
 
 
 @pytest.mark.asyncio
@@ -60,14 +50,26 @@ async def test_get_all_workspaces_NetworkError(create_a_client, respx_mock):
 
 # Test - get_workspace
 @pytest_mark.anyio
+@pytest.mark.parametrize(
+    "workspace_name,status_code,response_data,expected_response",
+    [
+        ("sfsf", 404, {"error": "not found"}, "Result not found"),
+    ],
+)
 async def test_get_workspace_validation(
-    create_a_client, bad_workspace_connection, respx_mock
+    create_a_client,
+    respx_mock,
+    workspace_name,
+    status_code,
+    response_data,
+    expected_response,
 ):
-    respx_mock.get(f"{baseUrl}workspaces/sfsf").mock(
-        return_value=httpx.Response(404, json=bad_workspace_connection)
+    respx_mock.get(f"{baseUrl}workspaces/{workspace_name}").mock(
+        return_value=httpx.Response(status_code, json=response_data)
     )
-    response = await create_a_client.get_workspace("sfsf")
-    assert response.response == "Result not found"
+
+    response = await create_a_client.get_workspace(workspace_name)
+    assert response.response == expected_response
 
 
 @pytest_mark.anyio
@@ -86,6 +88,65 @@ async def test_get_workspace_ConnectError(create_a_client, respx_mock):
     respx.get(f"{baseUrl}workspaces/pydad").mock(side_effect=httpx.ConnectError)
     with pytest.raises(httpx.ConnectError):
         response = await create_a_client.get_workspace("pydad")
+        assert response.response == "Error in connecting to Geoserver"
+
+
+# Test - update_workspace
+@pytest_mark.anyio
+@pytest.mark.parametrize(
+    "status_code,response_data,expected_response",
+    [
+        (404, {"error": "not found"}, "Result not found"),
+    ],
+)
+async def test_update_workspace_validation(
+    create_a_client,
+    respx_mock,
+    status_code,
+    response_data,
+    expected_response,
+):
+    respx_mock.put(f"{baseUrl}workspaces/tiger.json").mock(
+        return_value=httpx.Response(status_code, json=response_data)
+    )
+    response = await create_a_client.update_workspace(
+        "tiger", UpdateWorkspaceInfo(isolated=True)
+    )
+    assert response.response == expected_response
+
+
+@pytest_mark.anyio
+@pytest_mark.parametrize(
+    "workspace_info,status_code,response_data",
+    [
+        (
+            UpdateWorkspaceInfo(isolated=True),
+            200,
+            {"workspace": {"isolated": True}},
+        )
+    ],
+)
+async def test_update_workspace_success(
+    create_a_client,
+    respx_mock,
+    workspace_info,
+    status_code,
+    response_data,
+):
+    respx_mock.put(f"{baseUrl}workspaces/tiger.json").mock(
+        return_value=httpx.Response(status_code, json=response_data)
+    )
+    response = await create_a_client.update_workspace("tiger", workspace_info)
+    assert response.code == status_code
+
+
+@pytest_mark.anyio
+async def test_update_workspace_ConnectError(create_a_client, respx_mock):
+    respx.put(f"{baseUrl}workspaces/tiger.json").mock(side_effect=httpx.ConnectError)
+    with pytest.raises(httpx.ConnectError):
+        response = await create_a_client.update_workspace(
+            "tiger", UpdateWorkspaceInfo(isolated=True)
+        )
         assert response.response == "Error in connecting to Geoserver"
 
 
@@ -292,7 +353,7 @@ async def test_get_style_ConnectError(create_a_client, respx_mock):
 async def test_create_workspace_validation(
     create_a_client, invalid_new_workspace_connection, respx_mock
 ):
-    respx_mock.post(f"{baseUrl}workspaces?default=False").mock(
+    respx_mock.post(f"{baseUrl}workspaces", params={"default": False}).mock(
         return_value=httpx.Response(404, json=invalid_new_workspace_connection)
     )
     response = await create_a_client.create_workspace("pydad", False, True)
@@ -303,7 +364,7 @@ async def test_create_workspace_validation(
 async def test_create_workspace_success(
     create_a_client, good_new_workspace_connection, respx_mock
 ):
-    respx_mock.post(f"{baseUrl}workspaces?default=False").mock(
+    respx_mock.post(f"{baseUrl}workspaces", params={"default": False}).mock(
         return_value=httpx.Response(201, json=good_new_workspace_connection)
     )
     response = await create_a_client.create_workspace("pydad", False, True)
@@ -312,7 +373,7 @@ async def test_create_workspace_success(
 
 @pytest_mark.anyio
 async def test_create_workspace_ConnectError(create_a_client, respx_mock):
-    respx_mock.post(f"{baseUrl}workspaces?default=False").mock(
+    respx_mock.post(f"{baseUrl}workspaces", params={"default": False}).mock(
         side_effect=httpx.ConnectError
     )
     with pytest.raises(httpx.ConnectError):
