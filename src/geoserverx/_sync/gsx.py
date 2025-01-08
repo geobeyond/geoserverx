@@ -4,22 +4,22 @@ from typing import Optional, Union
 import httpx
 from pydantic import ValidationError
 
-from geoserverx.models.coverages_layer import CoverageModel
-from geoserverx.models.coverages_store import CoveragesStoreModel, CoveragesStoresModel
-from geoserverx.models.data_store import (
+from ..models.coverages_layer import CoverageModel
+from ..models.coverages_store import CoveragesStoreModel, CoveragesStoresModel
+from ..models.data_store import (
     CreateDataStoreModel,
     CreateStoreItem,
     DataStoreModel,
     DataStoresModel,
     MainCreateDataStoreModel,
 )
-from geoserverx.models.featuretypes_layer import FeatureTypesModel
-from geoserverx.models.geofence import GetRule, NewRule, Rule, RulesResponse
-from geoserverx.models.gs_response import GSResponse
-from geoserverx.models.layer_group import LayerGroupsModel
-from geoserverx.models.layers import LayerModel, LayersModel
-from geoserverx.models.style import AllStylesModel, StyleModel
-from geoserverx.models.workspace import (
+from ..models.featuretypes_layer import FeatureTypesModel
+from ..models.geofence import GetRule, NewRule, Rule, RulesResponse
+from ..models.gs_response import GSResponse
+from ..models.layer_group import LayerGroupsModel
+from ..models.layers import LayerModel, LayersModel
+from ..models.style import AllStylesModel, StyleModel
+from ..models.workspace import (
     NewWorkspace,
     NewWorkspaceInfo,
     UpdateWorkspace,
@@ -27,13 +27,13 @@ from geoserverx.models.workspace import (
     WorkspaceModel,
     WorkspacesModel,
 )
-from geoserverx.utils.auth import GeoServerXAuth
-from geoserverx.utils.custom_exceptions import GSModuleNotFound
-from geoserverx.utils.enums import GSResponseEnum
-from geoserverx.utils.errors import GeoServerXError
-from geoserverx.utils.http_client import SyncClient
-from geoserverx.utils.logger import std_out_logger
-from geoserverx.utils.services.datastore import (
+from ..utils.auth import GeoServerXAuth
+from ..utils.custom_exceptions import GSModuleNotFound
+from ..utils.enums import GSResponseEnum
+from ..utils.errors import GeoServerXError
+from ..utils.http_client import SyncClient
+from ..utils.logger import std_out_logger
+from ..utils.services.datastore import (
     AddDataStoreProtocol,
     CreateFileStore,
     GPKGfileStore,
