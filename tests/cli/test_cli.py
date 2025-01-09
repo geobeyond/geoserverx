@@ -32,7 +32,7 @@ def test_get_all_workspaces_success(respx_mock):
         return_value=httpx.Response(200, json=workspace_response)
     )
     # Invoke the command
-    result = runner.invoke(app, ["workspaces", "--output", "json"])
+    result = runner.invoke(app, ["workspaces", "list", "--output", "json"])
     # Assertions
     assert result.exit_code == 0
     for workspace in workspace_response["workspaces"]["workspace"]:
@@ -57,7 +57,7 @@ def test_get_workspace_validation(
     respx_mock.get(f"{baseUrl}workspaces/{workspace_name}").mock(
         return_value=httpx.Response(status_code, json=response_data)
     )
-    result = runner.invoke(app, ["workspace", "sfsf"])
+    result = runner.invoke(app, ["workspaces", "get", "sfsf"])
     assert expected_response in result.stdout
 
 
@@ -65,13 +65,13 @@ def test_get_workspace_success(good_workspace_connection, respx_mock):
     respx_mock.get(f"{baseUrl}workspaces/pydad").mock(
         return_value=httpx.Response(200, json=good_workspace_connection)
     )
-    result = runner.invoke(app, ["workspace", "pydad"])
+    result = runner.invoke(app, ["workspaces", "get", "pydad"])
     assert "pydad" in result.stdout
 
 
 def test_get_workspace_ConnectError(respx_mock):
     respx_mock.get(f"{baseUrl}workspaces/pydad").mock(side_effect=httpx.ConnectError)
-    result = runner.invoke(app, ["workspace", "pydad"])
+    result = runner.invoke(app, ["workspaces", "get", "pydad"])
     assert "Error in connecting to Geoserver" in result.stdout
 
 
@@ -93,7 +93,7 @@ def test_update_workspace_validation(
     respx_mock.put(f"{baseUrl}workspaces/{workspace_name}.json").mock(
         return_value=httpx.Response(status_code, json=response_data)
     )
-    result = runner.invoke(app, ["update-workspace", workspace_name, "--isolated"])
+    result = runner.invoke(app, ["workspaces", "update", workspace_name, "--isolated"])
     assert expected_response in result.stdout
 
 
@@ -115,7 +115,9 @@ def test_update_workspace_success(
         return_value=httpx.Response(status_code, json=response_data)
     )
     print(workspace_info)
-    result = runner.invoke(app, ["update-workspace", workspace_name, workspace_info])
+    result = runner.invoke(
+        app, ["workspaces", "update", workspace_name, workspace_info]
+    )
     assert response_data in result.stdout
 
 
@@ -123,7 +125,7 @@ def test_update_workspace_ConnectError(respx_mock):
     respx_mock.put(f"{baseUrl}workspaces/tiger.json").mock(
         side_effect=httpx.ConnectError
     )
-    result = runner.invoke(app, ["update-workspace", "tiger", "--isolated"])
+    result = runner.invoke(app, ["workspaces", "update", "tiger", "--isolated"])
     assert "Error in connecting to Geoserver" in result.stdout
 
 
@@ -134,7 +136,7 @@ def test_get_vector_stores_in_workspaces_validation(
     respx_mock.get(f"{baseUrl}workspaces/sfsf/datastores").mock(
         return_value=httpx.Response(404, json=invalid_datastores_model_connection)
     )
-    result = runner.invoke(app, ["vector-st-wp", "--workspace", "sfsf"])
+    result = runner.invoke(app, ["stores", "workspace-vector-stores", "sfsf"])
     assert "Result not found" in result.stdout
 
 
@@ -144,7 +146,7 @@ def test_get_vector_stores_in_workspaces_success(
     respx_mock.get(f"{baseUrl}workspaces/sfsf/datastores").mock(
         return_value=httpx.Response(200, json=good_datastores_model_connection)
     )
-    result = runner.invoke(app, ["vector-st-wp", "--workspace", "sfsf"])
+    result = runner.invoke(app, ["stores", "workspace-vector-stores", "sfsf"])
     assert "jumper" in result.stdout
 
 
@@ -152,7 +154,7 @@ def test_get_vector_stores_in_workspaces_ConnectError(respx_mock):
     respx_mock.get(f"{baseUrl}workspaces/sfsf/datastores").mock(
         side_effect=httpx.ConnectError
     )
-    result = runner.invoke(app, ["vector-st-wp", "--workspace", "sfsf"])
+    result = runner.invoke(app, ["stores", "workspace-vector-stores", "sfsf"])
     assert "Error in connecting to Geoserver" in result.stdout
 
 
@@ -163,7 +165,7 @@ def test_get_raster_stores_in_workspaces_validation(
     respx_mock.get(f"{baseUrl}workspaces/sfsf/coveragestores").mock(
         return_value=httpx.Response(404, json=invalid_coverages_stores_model_connection)
     )
-    result = runner.invoke(app, ["raster-st-wp", "--workspace", "sfsf"])
+    result = runner.invoke(app, ["stores", "workspace-raster-stores", "sfsf"])
     assert "Result not found" in result.stdout
 
 
@@ -173,7 +175,7 @@ def test_get_raster_stores_in_workspaces_success(
     respx_mock.get(f"{baseUrl}workspaces/sfsf/coveragestores").mock(
         return_value=httpx.Response(200, json=good_coverages_stores_model_connection)
     )
-    result = runner.invoke(app, ["raster-st-wp", "--workspace", "sfsf"])
+    result = runner.invoke(app, ["stores", "workspace-raster-stores", "sfsf"])
     assert "RGB_125" in result.stdout
 
 
@@ -181,7 +183,7 @@ def test_get_raster_stores_in_workspaces_ConnectError(respx_mock):
     respx_mock.get(f"{baseUrl}workspaces/sfsf/coveragestores").mock(
         side_effect=httpx.ConnectError
     )
-    result = runner.invoke(app, ["raster-st-wp", "--workspace", "sfsf"])
+    result = runner.invoke(app, ["stores", "workspace-raster-stores", "sfsf"])
     assert "Error in connecting to Geoserver" in result.stdout
 
 
@@ -190,9 +192,7 @@ def test_get_vector_store_validation(invalid_datastore_model_connection, respx_m
     respx_mock.get(f"{baseUrl}workspaces/sfsf/datastores/jumper.json").mock(
         return_value=httpx.Response(404, json=invalid_datastore_model_connection)
     )
-    result = runner.invoke(
-        app, ["vector-store", "--workspace", "sfsf", "--store", "jumper"]
-    )
+    result = runner.invoke(app, ["stores", "get-vector-store", "sfsf", "jumper"])
     assert "Result not found" in result.stdout
 
 
@@ -200,9 +200,7 @@ def test_get_vector_store_success(good_datastore_model_connection, respx_mock):
     respx_mock.get(f"{baseUrl}workspaces/sfsf/datastores/jumper.json").mock(
         return_value=httpx.Response(200, json=good_datastore_model_connection)
     )
-    result = runner.invoke(
-        app, ["vector-store", "--workspace", "sfsf", "--store", "jumper"]
-    )
+    result = runner.invoke(app, ["stores", "get-vector-store", "sfsf", "jumper"])
     assert "jumper" in result.stdout
 
 
@@ -210,9 +208,7 @@ def test_get_vector_store_ConnectError(respx_mock):
     respx_mock.get(f"{baseUrl}workspaces/sfsf/datastores/jumper.json").mock(
         side_effect=httpx.ConnectError
     )
-    result = runner.invoke(
-        app, ["vector-store", "--workspace", "sfsf", "--store", "jumper"]
-    )
+    result = runner.invoke(app, ["stores", "get-vector-store", "sfsf", "jumper"])
     assert "Error in connecting to Geoserver" in result.stdout
 
 
@@ -223,9 +219,7 @@ def test_get_raster_store_validation(
     respx_mock.get(f"{baseUrl}workspaces/cite/coveragestores/RGB_125.json").mock(
         return_value=httpx.Response(404, json=invalid_coverages_store_model_connection)
     )
-    result = runner.invoke(
-        app, ["raster-store", "--workspace", "cite", "--store", "RGB_125"]
-    )
+    result = runner.invoke(app, ["stores", "get-raster-store", "cite", "RGB_125"])
     assert "Result not found" in result.stdout
 
 
@@ -233,9 +227,7 @@ def test_get_raster_store_success(good_coverages_store_model_connection, respx_m
     respx_mock.get(f"{baseUrl}workspaces/cite/coveragestores/RGB_125.json").mock(
         return_value=httpx.Response(200, json=good_coverages_store_model_connection)
     )
-    result = runner.invoke(
-        app, ["raster-store", "--workspace", "cite", "--store", "RGB_125"]
-    )
+    result = runner.invoke(app, ["stores", "get-raster-store", "cite", "RGB_125"])
     assert "RGB_125" in result.stdout
 
 
@@ -243,9 +235,7 @@ def test_get_raster_store_ConnectError(respx_mock):
     respx_mock.get(f"{baseUrl}workspaces/cite/coveragestores/RGB_125.json").mock(
         side_effect=httpx.ConnectError
     )
-    result = runner.invoke(
-        app, ["raster-store", "--workspace", "cite", "--store", "RGB_125"]
-    )
+    result = runner.invoke(app, ["stores", "get-raster-store", "cite", "RGB_125"])
     assert "Error in connecting to Geoserver" in result.stdout
 
 
@@ -254,7 +244,7 @@ def test_get_all_styles_validation(invalid_all_styles_model_connection, respx_mo
     respx_mock.get(f"{baseUrl}styles").mock(
         return_value=httpx.Response(404, json=invalid_all_styles_model_connection)
     )
-    result = runner.invoke(app, ["styles"])
+    result = runner.invoke(app, ["styles", "list"])
     assert "Result not found" in result.stdout
 
 
@@ -262,13 +252,13 @@ def test_get_all_styles_success(good_all_styles_model_connection, respx_mock):
     respx_mock.get(f"{baseUrl}styles").mock(
         return_value=httpx.Response(200, json=good_all_styles_model_connection)
     )
-    result = runner.invoke(app, ["styles"])
+    result = runner.invoke(app, ["styles", "list"])
     assert "CUSD 2020 Census" in result.stdout
 
 
 def test_get_all_styles_ConnectError(respx_mock):
     respx_mock.get(f"{baseUrl}styles").mock(side_effect=httpx.ConnectError)
-    result = runner.invoke(app, ["styles"])
+    result = runner.invoke(app, ["styles", "list"])
     assert "Error in connecting to Geoserver" in result.stdout
 
 
@@ -277,7 +267,7 @@ def test_get_style_validation(invalid_style_model_connection, respx_mock):
     respx_mock.get(f"{baseUrl}styles/burg.json").mock(
         return_value=httpx.Response(404, json=invalid_style_model_connection)
     )
-    result = runner.invoke(app, ["style", "--style", "burg"])
+    result = runner.invoke(app, ["styles", "get", "burg"])
     assert "Result not found" in result.stdout
 
 
@@ -285,13 +275,13 @@ def test_get_style_success(good_style_model_connection, respx_mock):
     respx_mock.get(f"{baseUrl}styles/burg.json").mock(
         return_value=httpx.Response(200, json=good_style_model_connection)
     )
-    result = runner.invoke(app, ["style", "--style", "burg"])
+    result = runner.invoke(app, ["styles", "get", "burg"])
     assert "burg" in result.stdout
 
 
 def test_get_style_ConnectError(respx_mock):
     respx_mock.get(f"{baseUrl}styles/burg.json").mock(side_effect=httpx.ConnectError)
-    result = runner.invoke(app, ["style", "--style", "burg"])
+    result = runner.invoke(app, ["styles", "get", "burg"])
     assert "Error in connecting to Geoserver" in result.stdout
 
 
@@ -302,7 +292,7 @@ def test_create_workspace_validation(invalid_new_workspace_connection, respx_moc
     )
     result = runner.invoke(
         app,
-        ["create-workspace", "burg", "--no-default", "--no-isolated"],
+        ["workspaces", "create", "burg", "--no-default", "--no-isolated"],
     )
     assert "Result not found" in result.stdout
 
@@ -312,7 +302,7 @@ def test_create_workspace_success(good_new_workspace_connection, respx_mock):
         return_value=httpx.Response(201, json=good_new_workspace_connection)
     )
     result = runner.invoke(
-        app, ["create-workspace", "pydad", "--no-default", "--isolated"]
+        app, ["workspaces", "create", "pydad", "--no-default", "--isolated"]
     )
     assert "Data added successfully" in result.stdout
 
@@ -322,7 +312,7 @@ def test_create_workspace_ConnectError(respx_mock):
         side_effect=httpx.ConnectError
     )
     result = runner.invoke(
-        app, ["create-workspace", "pydad", "--no-default", "--isolated"]
+        app, ["workspaces", "create", "pydad", "--no-default", "--isolated"]
     )
     assert "Error in connecting to Geoserver" in result.stdout
 
@@ -335,6 +325,7 @@ def test_pg_store_validation(invalid_new_pg_store_connection, respx_mock):
     result = runner.invoke(
         app,
         [
+            "stores",
             "create-pg-store",
             "--name",
             "pgg",
@@ -356,6 +347,7 @@ def test_pg_store_success(good_new_workspace_connection, respx_mock):
     result = runner.invoke(
         app,
         [
+            "stores",
             "create-pg-store",
             "--name",
             "pgg",
@@ -377,6 +369,7 @@ def test_pg_store_ConnectError(respx_mock):
     result = runner.invoke(
         app,
         [
+            "stores",
             "create-pg-store",
             "--name",
             "pgg",
@@ -396,7 +389,7 @@ def test_get_all_layers_validation(bad_layers_connection, respx_mock):
     respx_mock.get(f"{baseUrl}layers").mock(
         return_value=httpx.Response(404, json=bad_layers_connection)
     )
-    result = runner.invoke(app, ["layers"])
+    result = runner.invoke(app, ["layers", "list"])
     assert "404" in result.stdout
 
 
@@ -404,13 +397,13 @@ def test_get_all_layers_success(good_layers_connection, respx_mock):
     respx_mock.get(f"{baseUrl}layers").mock(
         return_value=httpx.Response(200, json=good_layers_connection)
     )
-    result = runner.invoke(app, ["layers"])
+    result = runner.invoke(app, ["layers", "list"])
     assert "tiger:giant_polygon" in result.stdout
 
 
 def test_get_all_layers_NetworkError(respx_mock):
     respx_mock.get(f"{baseUrl}layers").mock(side_effect=httpx.ConnectError)
-    result = runner.invoke(app, ["layers"])
+    result = runner.invoke(app, ["layers", "list"])
     assert "Error in connecting to Geoserver" in result.stdout
 
 
@@ -419,7 +412,7 @@ def test_get_layer_validation(bad_layer_connection, respx_mock):
     respx_mock.get(f"{baseUrl}layers/tiger:poi").mock(
         return_value=httpx.Response(404, json=bad_layer_connection)
     )
-    result = runner.invoke(app, ["layer", "--workspace", "tiger", "--layer", "poi"])
+    result = runner.invoke(app, ["layers", "get", "tiger", "poi"])
     assert "404" in result.stdout
 
 
@@ -427,13 +420,13 @@ def test_get_layer_success(good_layer_connection, respx_mock):
     respx_mock.get(f"{baseUrl}layers/tiger:poi").mock(
         return_value=httpx.Response(200, json=good_layer_connection)
     )
-    result = runner.invoke(app, ["layer", "--workspace", "tiger", "--layer", "poi"])
+    result = runner.invoke(app, ["layers", "get", "tiger", "poi"])
     assert "poi" in result.stdout
 
 
 def test_get_layer_NetworkError(respx_mock):
     respx_mock.get(f"{baseUrl}layers/tiger:poi").mock(side_effect=httpx.ConnectError)
-    result = runner.invoke(app, ["layer", "--workspace", "tiger", "--layer", "poi"])
+    result = runner.invoke(app, ["layers", "get", "tiger", "poi"])
     assert "Error in connecting to Geoserver" in result.stdout
 
 
@@ -442,7 +435,7 @@ def test_get_all_layer_groups_validation(bad_layer_groups_connection, respx_mock
     respx_mock.get(f"{baseUrl}workspaces/ne/layergroups").mock(
         return_value=httpx.Response(404, json=bad_layer_groups_connection)
     )
-    result = runner.invoke(app, ["layer-groups", "--workspace", "ne"])
+    result = runner.invoke(app, ["layer-groups", "get", "ne"])
     assert "404" in result.stdout
 
 
@@ -450,7 +443,7 @@ def test_get_all_layer_groups_success(good_layer_groups_connection, respx_mock):
     respx_mock.get(f"{baseUrl}workspaces/ne/layergroups").mock(
         return_value=httpx.Response(200, json=good_layer_groups_connection)
     )
-    result = runner.invoke(app, ["layer-groups", "--workspace", "ne"])
+    result = runner.invoke(app, ["layer-groups", "get", "ne"])
     assert "tg" in result.stdout
 
 
@@ -458,7 +451,7 @@ def test_get_all_layer_groups_NetworkError(respx_mock):
     respx_mock.get(f"{baseUrl}workspaces/ne/layergroups").mock(
         side_effect=httpx.ConnectError
     )
-    result = runner.invoke(app, ["layer-groups", "--workspace", "ne"])
+    result = runner.invoke(app, ["layer-groups", "get", "ne"])
     assert "Error in connecting to Geoserver" in result.stdout
 
 
@@ -472,7 +465,7 @@ def test_all_geofence_rules_validation(bad_all_geofence_rules_connection, respx_
     respx_mock.get(
         f"{baseUrl}geofence/rules/", headers={"Accept": "application/json"}
     ).mock(return_value=httpx.Response(404, json=bad_all_geofence_rules_connection))
-    result = runner.invoke(app, ["geofence-rules"])
+    result = runner.invoke(app, ["geofence", "list-rules"])
     assert "404" in result.stdout
 
 
@@ -485,7 +478,7 @@ def test_all_geofence_rules_success(good_all_geofence_rules_connection, respx_mo
     respx_mock.get(
         f"{baseUrl}geofence/rules/", headers={"Accept": "application/json"}
     ).mock(return_value=httpx.Response(200, json=good_all_geofence_rules_connection))
-    result = runner.invoke(app, ["geofence-rules"])
+    result = runner.invoke(app, ["geofence", "list-rules"])
     assert "2" in result.stdout
 
 
@@ -498,5 +491,5 @@ def test_all_geofence_rules_NetworkError(respx_mock):
     respx_mock.get(
         f"{baseUrl}geofence/rules/", headers={"Accept": "application/json"}
     ).mock(side_effect=httpx.ConnectError)
-    result = runner.invoke(app, ["geofence-rules"])
+    result = runner.invoke(app, ["geofence", "list-rules"])
     assert "Error in connecting to Geoserver" in result.stdout
