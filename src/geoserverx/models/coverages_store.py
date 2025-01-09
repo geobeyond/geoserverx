@@ -2,7 +2,6 @@ from typing import Dict, List, Literal, Optional, Union
 
 from pydantic import BaseModel
 
-
 from ..models.workspace import WorkspaceInBulk
 
 
