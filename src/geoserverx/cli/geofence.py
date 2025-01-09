@@ -1,13 +1,12 @@
 import typer
 from rich import print
 
-from geoserverx._sync.gsx import SyncGeoServerX
+from .._sync.gsx import SyncGeoServerX
 
-geofence_app = typer.Typer()
+app = typer.Typer()
 
 
-@SyncGeoServerX.exception_handler
-@geofence_app.command(help="Get all geofence rules in the Geoserver")
+@app.command(help="Get all geofence rules in the Geoserver")
 def list_rules(
     url: str = typer.Option(
         "http://127.0.0.1:8080/geoserver/rest/", help="Geoserver REST URL"
@@ -23,8 +22,7 @@ def list_rules(
     print(result)
 
 
-@SyncGeoServerX.exception_handler
-@geofence_app.command(help="Get geofence rule in the Geoserver")
+@app.command(help="Get geofence rule in the Geoserver")
 def get_rule(
     id: int = typer.Option(..., help="Geofence rule id"),
     url: str = typer.Option(

@@ -1,11 +1,11 @@
 import typer
 
-from .geofence import geofence_app
-from .layer_groups import layer_groups_app
-from .layers import layers_app
-from .stores import stores_app
-from .styles import styles_app
-from .workspaces import workspaces_app
+from .geofence import app as geofence_app
+from .layer_groups import app as layer_groups_app
+from .layers import app as layers_app
+from .stores import app as stores_app
+from .styles import app as styles_app
+from .workspaces import app as workspaces_app
 
 app = typer.Typer()
 app.add_typer(workspaces_app, name="workspaces")

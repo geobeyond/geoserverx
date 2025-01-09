@@ -6,8 +6,9 @@ from rich import print
 from rich.console import Console
 from rich.table import Table
 
-from geoserverx._sync.gsx import SyncGeoServerX
 from geoserverx.models.workspace import UpdateWorkspaceInfo
+
+from .._sync.gsx import SyncGeoServerX
 
 console = Console()
 
@@ -17,11 +18,10 @@ class OutputFormats(str, Enum):
     table = "table"
 
 
-workspaces_app = typer.Typer()
+app = typer.Typer()
 
 
-@SyncGeoServerX.exception_handler
-@workspaces_app.command(help="Get all workspaces in the Geoserver")
+@app.command(help="Get all workspaces in the Geoserver")
 def list(
     url: str = typer.Option(
         "http://127.0.0.1:8080/geoserver/rest/", help="Geoserver REST URL"
@@ -51,8 +51,7 @@ def list(
                 print(result.response)
 
 
-@SyncGeoServerX.exception_handler
-@workspaces_app.command(help="Get workspace in the Geoserver")
+@app.command(help="Get workspace in the Geoserver")
 def get(
     workspace: str,
     url: str = typer.Option(
@@ -89,8 +88,7 @@ def get(
                 print(result.response)
 
 
-@SyncGeoServerX.exception_handler
-@workspaces_app.command(help="Delete workspace in the Geoserver")
+@app.command(help="Delete workspace in the Geoserver")
 def delete(
     workspace: str,
     recurse: bool = typer.Option(False, help="Delete all stores,layers,styles,etc."),
@@ -109,8 +107,7 @@ def delete(
     print(result.response)
 
 
-@SyncGeoServerX.exception_handler
-@workspaces_app.command(help="Add workspace in the Geoserver")
+@app.command(help="Add workspace in the Geoserver")
 def create(
     workspace: str,
     default: bool = typer.Option(False, help="Make workspace default?"),
@@ -131,8 +128,7 @@ def create(
     print(result.response)
 
 
-@SyncGeoServerX.exception_handler
-@workspaces_app.command(help="Update workspace in the Geoserver")
+@app.command(help="Update workspace in the Geoserver")
 def update(
     current_name: str,
     new_name: Optional[str] = typer.Option(None, help="New Workspace name"),

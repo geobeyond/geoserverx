@@ -4,7 +4,7 @@ from pathlib import Path
 import typer
 from rich import print
 
-from geoserverx._sync.gsx import SyncGeoServerX
+from .._sync.gsx import SyncGeoServerX
 
 
 # Enum for vector file type
@@ -13,11 +13,10 @@ class vectorFileEnum(str, Enum):
     gpkg = "gpkg"
 
 
-stores_app = typer.Typer()
+app = typer.Typer()
 
 
-@SyncGeoServerX.exception_handler
-@stores_app.command(help="Get vector stores in specific workspaces")
+@app.command(help="Get vector stores in specific workspaces")
 def workspace_vector_stores(
     workspace: str,
     url: str = typer.Option(
@@ -35,8 +34,7 @@ def workspace_vector_stores(
     print(result)
 
 
-@SyncGeoServerX.exception_handler
-@stores_app.command(help="Get raster stores in specific workspaces")
+@app.command(help="Get raster stores in specific workspaces")
 def workspace_raster_stores(
     workspace: str,
     url: str = typer.Option(
@@ -54,8 +52,7 @@ def workspace_raster_stores(
     print(result)
 
 
-@SyncGeoServerX.exception_handler
-@stores_app.command(help="Get vector store information in specific workspaces")
+@app.command(help="Get vector store information in specific workspaces")
 def get_vector_store(
     workspace: str,
     store: str,
@@ -73,8 +70,7 @@ def get_vector_store(
     print(result)
 
 
-@SyncGeoServerX.exception_handler
-@stores_app.command(help="Get raster store information in specific workspaces")
+@app.command(help="Get raster store information in specific workspaces")
 def get_raster_store(
     workspace: str,
     store: str,
@@ -92,8 +88,7 @@ def get_raster_store(
     print(result)
 
 
-@SyncGeoServerX.exception_handler
-@stores_app.command(help="Create Vector Layer in Geoserver")
+@app.command(help="Create Vector Layer in Geoserver")
 def create_vector_store(
     url: str = typer.Option(
         "http://127.0.0.1:8080/geoserver/rest/", help="Geoserver REST URL"
@@ -117,8 +112,7 @@ def create_vector_store(
         print("File path is incorrect")
 
 
-@SyncGeoServerX.exception_handler
-@stores_app.command(help="Create PostgreSQL store in Geoserver")
+@app.command(help="Create PostgreSQL store in Geoserver")
 def create_pg_store(
     url: str = typer.Option(
         "http://127.0.0.1:8080/geoserver/rest/", help="Geoserver REST URL"

@@ -1,13 +1,12 @@
 import typer
 from rich import print
 
-from geoserverx._sync.gsx import SyncGeoServerX
+from .._sync.gsx import SyncGeoServerX
 
-styles_app = typer.Typer()
+app = typer.Typer()
 
 
-@SyncGeoServerX.exception_handler
-@styles_app.command(help="Get all styles in Geoserver")
+@app.command(help="Get all styles in Geoserver")
 def list(
     url: str = typer.Option(
         "http://127.0.0.1:8080/geoserver/rest/", help="Geoserver REST URL"
@@ -23,8 +22,7 @@ def list(
     print(result)
 
 
-@SyncGeoServerX.exception_handler
-@styles_app.command(help="Get style in Geoserver")
+@app.command(help="Get style in Geoserver")
 def get(
     style: str,
     url: str = typer.Option(

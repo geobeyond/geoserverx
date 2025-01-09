@@ -1,13 +1,12 @@
 import typer
 from rich import print
 
-from geoserverx._sync.gsx import SyncGeoServerX
+from .._sync.gsx import SyncGeoServerX
 
-layer_groups_app = typer.Typer()
+app = typer.Typer()
 
 
-@SyncGeoServerX.exception_handler
-@layer_groups_app.command(help="Get All layer groups in the Geoserver")
+@app.command(help="Get All layer groups in the Geoserver")
 def get(
     workspace: str,
     url: str = typer.Option(

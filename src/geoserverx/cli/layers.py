@@ -1,13 +1,12 @@
 import typer
 from rich import print
 
-from geoserverx._sync.gsx import SyncGeoServerX
+from .._sync.gsx import SyncGeoServerX
 
-layers_app = typer.Typer()
+app = typer.Typer()
 
 
-@SyncGeoServerX.exception_handler
-@layers_app.command(help="Get all layers in the Geoserver")
+@app.command(help="Get all layers in the Geoserver")
 def list(
     url: str = typer.Option(
         "http://127.0.0.1:8080/geoserver/rest/", help="Geoserver REST URL"
@@ -24,8 +23,7 @@ def list(
     print(result)
 
 
-@SyncGeoServerX.exception_handler
-@layers_app.command(help="Get layer in the Geoserver")
+@app.command(help="Get layer in the Geoserver")
 def get(
     workspace: str,
     layer: str,
