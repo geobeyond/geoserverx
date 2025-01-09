@@ -1,6 +1,6 @@
 from dataclasses import dataclass
 
-from geoserverx.utils.errors import GeoServerXError
+from ..utils.errors import GeoServerXError
 
 
 @dataclass

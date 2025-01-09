@@ -2,7 +2,7 @@ from typing import Dict, List, Literal, Optional, Union
 
 from pydantic import BaseModel
 
-from geoserverx.models.workspace import WorkspaceInBulk
+from ..models.workspace import WorkspaceInBulk
 
 
 class CoveragesStoreInBulk(BaseModel):

@@ -7,8 +7,8 @@ from rich import print
 from rich.console import Console
 from rich.table import Table
 
-from geoserverx._sync.gsx import SyncGeoServerX
-from geoserverx.models.workspace import UpdateWorkspaceInfo
+from .._sync.gsx import SyncGeoServerX
+from ..models.workspace import UpdateWorkspaceInfo
 
 app = typer.Typer()
 console = Console()

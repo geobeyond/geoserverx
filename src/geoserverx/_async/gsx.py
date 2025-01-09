@@ -3,20 +3,20 @@ from typing import Optional, Union
 
 import httpx
 
-from geoserverx.models.coverages_store import CoveragesStoreModel, CoveragesStoresModel
-from geoserverx.models.data_store import (
+from ..models.coverages_store import CoveragesStoreModel, CoveragesStoresModel
+from ..models.data_store import (
     CreateDataStoreModel,
     CreateStoreItem,
     DataStoreModel,
     DataStoresModel,
     MainCreateDataStoreModel,
 )
-from geoserverx.models.geofence import NewRule, Rule, RulesResponse
-from geoserverx.models.gs_response import GSResponse
-from geoserverx.models.layer_group import LayerGroupsModel
-from geoserverx.models.layers import LayerModel, LayersModel
-from geoserverx.models.style import AllStylesModel, StyleModel
-from geoserverx.models.workspace import (
+from ..models.geofence import NewRule, Rule, RulesResponse
+from ..models.gs_response import GSResponse
+from ..models.layer_group import LayerGroupsModel
+from ..models.layers import LayerModel, LayersModel
+from ..models.style import AllStylesModel, StyleModel
+from ..models.workspace import (
     NewWorkspace,
     NewWorkspaceInfo,
     UpdateWorkspace,
@@ -24,13 +24,13 @@ from geoserverx.models.workspace import (
     WorkspaceModel,
     WorkspacesModel,
 )
-from geoserverx.utils.auth import GeoServerXAuth
-from geoserverx.utils.custom_exceptions import GSModuleNotFound
-from geoserverx.utils.enums import GSResponseEnum
-from geoserverx.utils.errors import GeoServerXError
-from geoserverx.utils.http_client import AsyncClient
-from geoserverx.utils.logger import std_out_logger
-from geoserverx.utils.services.async_datastore import (
+from ..utils.auth import GeoServerXAuth
+from ..utils.custom_exceptions import GSModuleNotFound
+from ..utils.enums import GSResponseEnum
+from ..utils.errors import GeoServerXError
+from ..utils.http_client import AsyncClient
+from ..utils.logger import std_out_logger
+from ..utils.services.async_datastore import (
     AddDataStoreProtocol,
     CreateFileStore,
     GPKGfileStore,
