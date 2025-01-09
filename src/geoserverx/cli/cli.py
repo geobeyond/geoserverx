@@ -26,12 +26,6 @@ def callback():
     """
 
 
-# Enum for request type
-class requestEnum(str, Enum):
-    _sync = "sync"
-    _async = "async"
-
-
 # Enum for vector file type
 class vectorFileEnum(str, Enum):
     shapefile = "shapefile"
