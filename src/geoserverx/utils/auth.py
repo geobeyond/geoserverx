@@ -7,7 +7,7 @@ from ..utils.errors import GeoServerXError
 class GeoServerXAuth:
     username: str = "admin"
     password: str = "geoserver"
-    url = "http://127.0.0.1:8080/geoserver/rest/"
+    url: str = "http://127.0.0.1:8080/geoserver/rest/"
 
     def __post_init__(self):
         if not self.username and not self.password and not self.url:
