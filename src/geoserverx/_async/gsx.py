@@ -1,5 +1,5 @@
-from dataclasses import dataclass
-from typing import Optional, Union
+from dataclasses import dataclass, field
+from typing import Dict, Optional, Union
 
 import httpx
 
@@ -51,11 +51,14 @@ class AsyncGeoServerX:
         password (str): GeoServer password.
     """
 
-    default_headers = {"Content-Type": "application/json"}
     username: str = "admin"
     password: str = "geoserver"
     url: str = "http://127.0.0.1:8080/geoserver/rest/"
-    headers: dict = default_headers
+    headers: Dict[str, str] = field(
+        default_factory=lambda: {
+            "Content-Type": "application/json",
+        }
+    )
 
     def __post_init__(self):
         if not self.username and not self.password and not self.url:
