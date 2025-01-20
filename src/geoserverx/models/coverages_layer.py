@@ -53,7 +53,7 @@ class NativeBoundingBox(BaseModel):
     maxx: Optional[float] = Field(None, description="The max x coordinate")
     miny: Optional[float] = Field(None, description="The min y coordinate")
     maxy: Optional[float] = Field(None, description="The max y coordinate")
-    crs: Optional[NativeCRS]
+    crs: Optional[Union[NativeCRS, str]]
 
 
 class LatLonBoundingBox(BaseModel):
@@ -76,7 +76,9 @@ class Store(BaseModel):
 
 
 class ResponseSRS(BaseModel):
-    string: Optional[List[str]] = Field(None, description="The value of the srs")
+    string: Optional[Union[List[str], str]] = Field(
+        None, description="The value of the srs"
+    )
 
 
 class AttributeItem(BaseModel):
@@ -180,7 +182,7 @@ class MetadataEntry(BaseModel):
 
     key: Optional[str] = Field(alias="@key")
     dollar: Optional[str] = Field(..., alias="$")
-    dimensionInfo: Optional[DimensionInfo]
+    dimensionInfo: Optional[DimensionInfo] = None
 
 
 class EntryParameters(BaseModel):
@@ -225,7 +227,8 @@ class CoverageInfo(BaseModel):
     dataLinks: Optional[DataLinks] = Field(
         None, description="Wraps a collection of data links for the resource."
     )
-    nativeCRS: Optional[NativeCRS]
+    nativeCRS: Optional[Union[NativeCRS, str]]
+
     srs: Optional[str] = Field(
         None,
         description="Returns the identifier of coordinate reference system of the resource.",
@@ -239,7 +242,7 @@ class CoverageInfo(BaseModel):
     )
     enabled: Optional[bool] = True
     advertised: Optional[bool] = True
-    projectionPolicy: Optional[str]
+    projectionPolicy: Optional[str] = None
     metadata: Optional[MetadataEntryList] = Field(
         None, description="A list of key/value metadata pairs."
     )
@@ -255,7 +258,7 @@ class CoverageInfo(BaseModel):
         None,
         description="The number of decimal places to use when encoding floating point numbers from data of this feature type.",
     )
-    responseSRS: Optional[ResponseSRS] = Field(
+    responseSRS: Optional[Union[ResponseSRS, str]] = Field(
         None,
         description="The SRSs that the WFS service will advertise in the capabilities document for this feature type (overriding the global WFS settings).",
     )

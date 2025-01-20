@@ -1,29 +1,25 @@
+import json
 from dataclasses import dataclass, field
+from enum import Enum
 from typing import Dict, Optional, Union
 
 import httpx
 
-from ..models.coverages_store import CoveragesStoreModel, CoveragesStoresModel
+from ..models.coverages_layer import CoverageModel
+from ..models.coverages_store import CoveragesStoreModelDetail, CoveragesStoresModel
 from ..models.data_store import (
     CreateDataStoreModel,
     CreateStoreItem,
-    DataStoreModel,
+    DataStoreModelDetails,
     DataStoresModel,
     MainCreateDataStoreModel,
 )
-from ..models.geofence import NewRule, Rule, RulesResponse
+from ..models.geofence import Rule, RulesResponse
 from ..models.gs_response import GSResponse
 from ..models.layer_group import LayerGroupsModel
-from ..models.layers import LayerModel, LayersModel
-from ..models.style import AllStylesModel, StyleModel
-from ..models.workspace import (
-    NewWorkspace,
-    NewWorkspaceInfo,
-    UpdateWorkspace,
-    UpdateWorkspaceInfo,
-    WorkspaceModel,
-    WorkspacesModel,
-)
+from ..models.layers import LayersModel, SingleLayer
+from ..models.style import AllStyleList, SingleStyle
+from ..models.workspace import UpdateWorkspaceInfo, WorkspaceModel, workspaceDict
 from ..utils.auth import GeoServerXAuth
 from ..utils.custom_exceptions import GSModuleNotFound
 from ..utils.enums import GSResponseEnum
@@ -36,6 +32,13 @@ from ..utils.services.async_datastore import (
     GpkgFileStore,
     ShapefileStore,
 )
+
+
+class StoreType(Enum):
+    """Enum for GeoServer store types"""
+
+    raster = "raster"
+    vector = "vector"
 
 
 @dataclass
@@ -142,19 +145,22 @@ class AsyncGeoServerX:
             # Handle Module not found exception
             return GSResponse(code=412, response=str(e))
 
-    async def get_all_workspaces(self) -> Union[WorkspacesModel, GSResponse]:
+    async def get_all_workspaces(self) -> Union[workspaceDict, GSResponse]:
         """
         Retrieve a list of all workspaces from GeoServer.
 
         Returns:
-            Union[WorkspacesModel, GSResponse]: A WorkspacesModel containing the list of workspaces if successful,
+            Union[workspaceDict, GSResponse]: A list of WorkspaceInBulk objects if successful,
             or a GSResponse object containing error details if the request fails.
         """
         client = self.http_client
-        response = await client.get("workspaces")
-        if response.status_code == 200:
-            return WorkspacesModel.model_validate(response.json())
-        return self.recognize_response(response.status_code)
+        complete_response = await client.get("workspaces")
+        if complete_response.status_code == 200:
+            response_json = complete_response.json()
+            workspaces_data = response_json.get("workspaces", response_json)
+            return workspaceDict(**workspaces_data)
+
+        return self.recognize_response(complete_response.status_code)
 
     async def get_workspace(self, workspace: str) -> Union[WorkspaceModel, GSResponse]:
         """
@@ -208,12 +214,10 @@ class AsyncGeoServerX:
             GSResponse: Response object indicating success or failure.
         """
         client = self.http_client
-        payload: NewWorkspace = NewWorkspace(
-            workspace=NewWorkspaceInfo(name=name, isolated=isolated)
-        )
+        new_ws = json.dumps({"workspace": {"name": name, "isolated": isolated}})
         response = await client.post(
             "workspaces",
-            data=payload.model_dump_json(),
+            data=new_ws,
             headers=self.headers,
             params={"default": default},
         )
@@ -233,10 +237,10 @@ class AsyncGeoServerX:
             GSResponse: Response object indicating success or failure:
         """
         client = self.http_client
-        update_ws = UpdateWorkspace(workspace=update)
+        update_ws = json.dumps({"workspace": update.model_dump(exclude_none=True)})
         response = await client.put(
             f"workspaces/{name}.json",
-            data=update_ws.model_dump_json(exclude_none=True),
+            data=update_ws,
             headers=self.headers,
         )
         return self.recognize_response(response.status_code)
@@ -254,7 +258,7 @@ class AsyncGeoServerX:
         client = self.http_client
         response = await client.get(f"workspaces/{workspace}/datastores")
         if response.status_code == 200:
-            return DataStoresModel.model_validate(response.json())
+            return DataStoresModel(**response.json())
         return self.recognize_response(response.status_code)
 
     async def get_raster_stores_in_workspaces(
@@ -273,10 +277,12 @@ class AsyncGeoServerX:
         client = self.http_client
         response = await client.get(f"workspaces/{workspace}/coveragestores")
         if response.status_code == 200:
-            return CoveragesStoresModel.model_validate(response.json())
+            return CoveragesStoresModel(**response.json())
         return self.recognize_response(response.status_code)
 
-    async def get_vector_store(self, workspace: str, store: str) -> DataStoreModel:
+    async def get_vector_store(
+        self, workspace: str, store: str
+    ) -> DataStoreModelDetails:
         """
         Retrieve details of a specific vector data store from a workspace.
 
@@ -285,17 +291,21 @@ class AsyncGeoServerX:
             store (str): Name of the vector data store to retrieve
 
         Returns:
-            DataStoreModel: Details of the requested vector store if successful
+            DataStoreModelDetails: Details of the requested vector store if successful
             GSResponse: Error response if the request fails
         """
         url = f"workspaces/{workspace}/datastores/{store}.json"
         client = self.http_client
         response = await client.get(url)
         if response.status_code == 200:
-            return DataStoreModel.model_validate(response.json())
+            response_json = response.json()
+            datastord_data = response_json.get("dataStore", response_json)
+            return DataStoreModelDetails(**datastord_data)
         return self.recognize_response(response.status_code)
 
-    async def get_raster_store(self, workspace: str, store: str) -> CoveragesStoreModel:
+    async def get_raster_store(
+        self, workspace: str, store: str
+    ) -> CoveragesStoreModelDetail:
         """
         Retrieve details of a specific raster (coverage) store from a workspace.
 
@@ -304,31 +314,71 @@ class AsyncGeoServerX:
             store (str): Name of the raster store to retrieve
 
         Returns:
-            CoveragesStoreModel: Details of the requested raster store if successful
+            CoveragesStoreModelDetail: Details of the requested raster store if successful
             GSResponse: Error response if the request fails
         """
         url = f"workspaces/{workspace}/coveragestores/{store}.json"
         client = self.http_client
         response = await client.get(url)
         if response.status_code == 200:
-            return CoveragesStoreModel.model_validate(response.json())
+            response_json = response.json()
+            datastord_data = response_json.get("coverageStore", response_json)
+            return CoveragesStoreModelDetail(**datastord_data)
         return self.recognize_response(response.status_code)
 
-    async def get_all_styles(self) -> AllStylesModel:
+    async def delete_store(
+        self, workspace: str, store: str, type: StoreType, recurse: bool = False
+    ) -> GSResponse:
+        """
+        Create a new data store (vector) or coverage store (raster) in a specified workspace.
+
+        Args:
+            workspace (str): Name of the workspace where the store will be created
+            store (Union[CoverageStoreModel, DataStoreModelDetails]): Store configuration model
+                - CoverageStoreModel: For raster data stores
+                - DataStoreModelDetails: For vector data stores
+            type (StoreType): Type of store to create, either "raster" or "vector"
+                - "raster": Creates a coverage store for raster data
+                - "vector": Creates a data store for vector data
+            recurse (bool, optional): If True, recursively deletes all resources
+                contained within the store. Defaults to False.
+
+        Returns:
+            GSResponse: Response object indicating success or failure
+        """
+
+        client = self.http_client
+        if type == "raster":
+            response = await client.delete(
+                f"/workspaces/{workspace}/coveragestores/{store}",
+                params={"recurse": recurse},
+                headers=self.headers,
+            )
+        elif type == "vector":
+            response = await client.delete(
+                f"/workspaces/{workspace}/datastores/{store}",
+                params={"recurse": recurse},
+                headers=self.headers,
+            )
+        return self.recognize_response(response.status_code)
+
+    async def get_all_styles(self) -> AllStyleList:
         """
         Retrieve all styles configured in GeoServer.
 
         Returns:
-            AllStylesModel: List of all available styles and their configurations
+            AllStyleList: List of all available styles and their configurations
             GSResponse: Response object indicating failure
         """
         client = self.http_client
-        response = await client.get("styles")
-        if response.status_code == 200:
-            return AllStylesModel.model_validate(response.json())
-        return self.recognize_response(response.status_code)
+        complete_response = await client.get("styles")
+        if complete_response.status_code == 200:
+            response_json = complete_response.json()
+            style_data = response_json.get("styles", response_json)
+            return AllStyleList(**style_data)
+        return self.recognize_response(complete_response.status_code)
 
-    async def get_style(self, style: str) -> StyleModel:
+    async def get_style(self, style: str) -> SingleStyle:
         """
         Retrieve a specific style configuration from GeoServer.
 
@@ -336,14 +386,17 @@ class AsyncGeoServerX:
             style (str): Name of the style to retrieve
 
         Returns:
-            StyleModel: Configuration details of the requested style
+            SingleStyle: Configuration details of the requested style
             GSResponse: Response object indicating failure
         """
         client = self.http_client
-        response = await client.get(f"styles/{style}.json")
-        if response.status_code == 200:
-            return StyleModel.model_validate(response.json())
-        return self.recognize_response(response.status_code)
+        complete_response = await client.get(f"styles/{style}.json")
+        if complete_response.status_code == 200:
+            response_json = complete_response.json()
+            style_data = response_json.get("style", response_json)
+            return SingleStyle(**style_data)
+
+        return self.recognize_response(complete_response.status_code)
 
     async def create_pg_store(
         self,
@@ -445,12 +498,12 @@ class AsyncGeoServerX:
         else:
             response = await client.get("layers")
         if response.status_code == 200:
-            return LayersModel.model_validate(response.json())
+            return LayersModel(**response.json())
         return self.recognize_response(response.status_code)
 
     async def get_layer(
-        self, workspace: str, layer: str
-    ) -> Union[LayerModel, GSResponse]:
+        self, workspace: str, layer: str, detail: bool = False
+    ) -> Union[SingleLayer, CoverageModel, GSResponse]:
         """
         Retrieve layer information from GeoServer, with optional detailed information.
 
@@ -461,17 +514,37 @@ class AsyncGeoServerX:
                 specific vector or raster properties. Defaults to False.
 
         Returns:
-            Union[LayerModel, FeatureTypesModel, GSResponse]: One of the following:
+            Union[SingleLayer, GSResponse]: One of the following:
                 - LayerModel: Basic layer information if detail=False
-                - FeatureTypesModel: Detailed vector layer information if detail=True and layer is vector
                 - CoverageModel: Detailed raster layer information if detail=True and layer is raster
                 - GSResponse: Error response if the request fails
         """
         client = self.http_client
         response = await client.get(f"layers/{workspace}:{layer}")
         if response.status_code == 200:
-            return LayerModel.model_validate(response.json())
-        return self.recognize_response(response.status_code)
+            response_json = response.json()
+            if detail:
+
+                if response_json["layer"]["type"] == "VECTOR":
+                    result = self.get_vector_layer(
+                        workspace,
+                        response_json["layer"]["resource"]["href"].split("/")[-3],
+                        layer,
+                    )
+                    return result
+                elif response_json["layer"]["type"] == "RASTER":
+                    result = self.get_raster_layer(
+                        workspace,
+                        response_json["layer"]["resource"]["name"].split(":")[1],
+                        layer,
+                    )
+                    return result
+            else:
+
+                layer_data = response_json.get("layer", response_json)
+                return SingleLayer(**layer_data)
+        else:
+            return self.recognize_response(response.status_code)
 
     async def delete_layer(self, workspace: str, layer: str) -> GSResponse:
         """
@@ -509,7 +582,7 @@ class AsyncGeoServerX:
         else:
             response = await client.get("layergroups")
         if response.status_code == 200:
-            return LayerGroupsModel.model_validate(response.json())
+            return LayerGroupsModel(**response.json())
         return self.recognize_response(response.status_code)
 
     async def get_all_geofence_rules(self) -> Union[RulesResponse, GSResponse]:
@@ -531,7 +604,7 @@ class AsyncGeoServerX:
             "geofence/rules/", headers={"Accept": "application/json"}
         )
         if response.status_code == 200:
-            return RulesResponse.model_validate(response.json())
+            return RulesResponse(**response.json())
         return self.recognize_response(response.status_code)
 
     async def get_geofence_rule(self, id: int) -> Union[Rule, GSResponse]:
@@ -542,8 +615,8 @@ class AsyncGeoServerX:
             id (int): The unique identifier of the GeoFence rule to retrieve
 
         Returns:
-            Union[GetRule, GSResponse]: Either the requested rule or an error response
-                - GetRule: The rule details if found
+            Union[Rule, GSResponse]: Either the requested rule or an error response
+                - Rule: The rule details if found
                 - GSResponse: Error response if the request fails
         """
         client = self.http_client
@@ -552,11 +625,9 @@ class AsyncGeoServerX:
         # If the module check fails, return the GSResponse directly
         if isinstance(module_check, GSResponse):
             return module_check
-        response = await client.get(
-            f"geofence/rules/id/{id}", headers={"Accept": "application/json"}
-        )
+        response = await client.get(f"geofence/rules/id/{id}", headers=self.headers)
         if response.status_code == 200:
-            return Rule.model_validate(response.json())
+            return Rule(**response.json())
         return self.recognize_response(response.status_code)
 
     async def create_geofence(self, rule: Rule) -> GSResponse:
@@ -576,7 +647,7 @@ class AsyncGeoServerX:
         Returns:
             GSResponse: Response object indicating success or failure
         """
-        PostingRule = NewRule(Rule=rule)
+        PostingRule = json.dumps({"Rule": rule.model_dump(exclude_none=True)})
         # Check if the geofence plugin exists
         module_check = await self.check_modules("geofence")
         # If the module check fails, return the GSResponse directly
@@ -585,7 +656,7 @@ class AsyncGeoServerX:
         client = self.http_client
         response = await client.post(
             "geofence/rules",
-            content=PostingRule.model_dump_json(),
+            content=PostingRule,
             headers=self.headers,
         )
         return self.recognize_response(response.status_code)

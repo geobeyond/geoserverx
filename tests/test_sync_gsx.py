@@ -32,7 +32,7 @@ def test_get_all_workspaces_success(
         return_value=httpx.Response(200, json=good_workspaces_connection)
     )
     response = client.get_all_workspaces()
-    assert response.workspaces.workspace[0].name == "pydad"
+    assert response.workspace[0].name == "pydad"
 
 
 def test_get_all_workspaces_NetworkError(client: SyncGeoServerX, respx_mock):
@@ -218,7 +218,7 @@ def test_get_vector_store_success(
         return_value=httpx.Response(200, json=good_datastore_model_connection)
     )
     response = client.get_vector_store("sfsf", "jumper")
-    assert response.dataStore.name == "jumper"
+    assert response.name == "jumper"
 
 
 def test_get_vector_store_ConnectError(client: SyncGeoServerX, respx_mock):
@@ -247,7 +247,7 @@ def test_get_raster_store_success(
         return_value=httpx.Response(200, json=good_coverages_store_model_connection)
     )
     response = client.get_raster_store("cite", "RGB_125")
-    assert response.coverageStore.name == "RGB_125"
+    assert response.name == "RGB_125"
 
 
 def test_get_raster_store_ConnectError(client: SyncGeoServerX, respx_mock):
@@ -276,7 +276,7 @@ def test_get_all_styles_success(
         return_value=httpx.Response(200, json=good_all_styles_model_connection)
     )
     response = client.get_all_styles()
-    assert response.styles.style[0].name == "CUSD 2020 Census Blocks"
+    assert response.style[0].name == "CUSD 2020 Census Blocks"
 
 
 def test_get_all_styles_ConnectError(client: SyncGeoServerX, respx_mock):
@@ -303,7 +303,7 @@ def test_get_style_success(
         return_value=httpx.Response(200, json=good_style_model_connection)
     )
     response = client.get_style("burg")
-    assert response.style.name == "burg"
+    assert response.name == "burg"
 
 
 def test_get_style_ConnectError(client: SyncGeoServerX, respx_mock):
@@ -435,7 +435,7 @@ def test_get_layer_success(client: SyncGeoServerX, good_layer_connection, respx_
         return_value=httpx.Response(200, json=good_layer_connection)
     )
     response = client.get_layer(workspace="tiger", layer="poi")
-    assert response.layer.name == "poi"
+    assert response.name == "poi"
 
 
 def test_get_layer_ConnectError(client: SyncGeoServerX, respx_mock):

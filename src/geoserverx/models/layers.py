@@ -46,12 +46,8 @@ class SingleLayer(BaseModel):
     resource: LayerResource = ...
     attribution: LayerAttribution
     dateCreated: Optional[str] = None
-    opaque: Optional[bool]
-    queryable: Optional[bool]
-
-
-class LayerModel(BaseModel):
-    layer: SingleLayer = ...
+    opaque: Optional[bool] = None
+    queryable: Optional[bool] = None
 
 
 # class NewWorkspaceInfo(BaseModel):

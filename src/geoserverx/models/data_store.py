@@ -43,7 +43,7 @@ class DataStoreModelDetails(BaseModel):
     connectionParameters: EntryItem = ...
     _default: bool = ...
     dateCreated: Optional[str]
-    dateModified: Optional[str]
+    dateModified: Optional[str] = None
     featureTypes: str
 
 
