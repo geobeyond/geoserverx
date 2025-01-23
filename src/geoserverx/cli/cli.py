@@ -27,7 +27,7 @@ def callback():
 
 
 # Enum for vector file type
-class vectorFileEnum(str, Enum):
+class VectorFileEnum(str, Enum):
     shapefile = "shapefile"
     gpkg = "gpkg"
 
@@ -287,7 +287,7 @@ def create_file(
     ),
     workspace: str = typer.Option(..., help="Workspace name"),
     store: str = typer.Option(..., help="Store name"),
-    service_type: vectorFileEnum = typer.Option(..., help="Vector file type"),
+    service_type: VectorFileEnum = typer.Option(..., help="Vector file type"),
     file: Path = typer.Option(..., help="File path"),
     password: str = typer.Option("geoserver", help="Geoserver Password"),
     username: str = typer.Option("admin", help="Geoserver username"),
