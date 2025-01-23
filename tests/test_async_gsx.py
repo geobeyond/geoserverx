@@ -37,7 +37,7 @@ async def test_get_all_workspaces_success(
         return_value=httpx.Response(200, json=good_workspaces_connection)
     )
     response = await create_a_client.get_all_workspaces()
-    assert response.workspaces.workspace[0].name == "pydad"
+    assert response.workspace[0].name == "pydad"
 
 
 @pytest.mark.asyncio
@@ -240,7 +240,7 @@ async def test_get_vector_store_success(
         return_value=httpx.Response(200, json=good_datastore_model_connection)
     )
     response = await create_a_client.get_vector_store("sfsf", "jumper")
-    assert response.dataStore.name == "jumper"
+    assert response.name == "jumper"
 
 
 @pytest_mark.anyio
@@ -273,7 +273,7 @@ async def test_get_raster_store_success(
         return_value=httpx.Response(200, json=good_coverages_store_model_connection)
     )
     response = await create_a_client.get_raster_store("cite", "RGB_125")
-    assert response.coverageStore.name == "RGB_125"
+    assert response.name == "RGB_125"
 
 
 @pytest_mark.anyio
@@ -306,7 +306,7 @@ async def test_get_all_styles_success(
         return_value=httpx.Response(200, json=good_all_styles_model_connection)
     )
     response = await create_a_client.get_all_styles()
-    assert response.styles.style[0].name == "CUSD 2020 Census Blocks"
+    assert response.style[0].name == "CUSD 2020 Census Blocks"
 
 
 @pytest_mark.anyio
@@ -337,7 +337,7 @@ async def test_get_style_success(
         return_value=httpx.Response(200, json=good_style_model_connection)
     )
     response = await create_a_client.get_style("burg")
-    assert response.style.name == "burg"
+    assert response.name == "burg"
 
 
 @pytest_mark.anyio
@@ -485,7 +485,7 @@ async def test_get_layer_success(create_a_client, respx_mock, good_layer_connect
         return_value=httpx.Response(200, json=good_layer_connection)
     )
     response = await create_a_client.get_layer(workspace="tiger", layer="poi")
-    assert response.layer.name == "poi"
+    assert response.name == "poi"
 
 
 @pytest.mark.asyncio

@@ -331,12 +331,10 @@ def bad_single_style_dict_connection() -> dict:
 @pytest.fixture
 def good_style_model_connection() -> dict:
     item = {
-        "style": {
-            "name": "burg",
-            "format": "sld",
-            "languageVersion": {"version": "1.0.0"},
-            "filename": "burg.sld",
-        }
+        "name": "burg",
+        "format": "sld",
+        "languageVersion": {"version": "1.0.0"},
+        "filename": "burg.sld",
     }
     return item
 

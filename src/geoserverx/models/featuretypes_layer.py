@@ -48,10 +48,6 @@ class CRSentry(BaseModel):
     dollar: Optional[str] = Field(..., alias="$")
 
 
-class CRSetnryDict(BaseModel):
-    entry: CRSentry
-
-
 class NativeBoundingBox(BaseModel):
     minx: Optional[float] = Field(None, description="The min x coordinate")
     maxx: Optional[float] = Field(None, description="The max x coordinate")
@@ -100,7 +96,7 @@ class AttributeItem(BaseModel):
     binding: Optional[str] = Field(
         None, description="The java class that values of this attribute are bound to."
     )
-    length: Optional[int]
+    length: Optional[int] = None
 
 
 class Attributes(BaseModel):
@@ -149,8 +145,8 @@ class FeatureTypeInfo(BaseModel):
         None,
         description="Returns the identifier of coordinate reference system of the resource.",
     )
-    metadatalinks: Optional[Metadatalinks]
-    dataLinks: Optional[DataLinks]
+    metadatalinks: Optional[Metadatalinks] = None
+    dataLinks: Optional[DataLinks] = None
 
     nativeBoundingBox: Optional[NativeBoundingBox] = Field(
         None, description="Returns the bounds of the resource in its declared CRS."
@@ -202,16 +198,15 @@ class FeatureTypeInfo(BaseModel):
         description="Wrapper for the derived set of attributes for the feature type.",
     )
     enabled: Optional[bool]
-    advertised: Optional[bool]
+    advertised: Optional[bool] = None
     serviceConfiguration: Optional[bool]
-    simpleConversionEnabled: Optional[bool]
+    simpleConversionEnabled: Optional[bool] = None
     padWithZeros: Optional[bool]
     forcedDecimal: Optional[bool]
     overridingServiceSRS: Optional[bool]
     skipNumberMatched: Optional[bool]
     circularArcPresent: Optional[bool]
-    encodeMeasures: Optional[bool]
+    encodeMeasures: Optional[bool] = None
 
-
-class FeatureTypesModel(BaseModel):
-    featureType: FeatureTypeInfo
+    class Config:
+        extra = "ignore"

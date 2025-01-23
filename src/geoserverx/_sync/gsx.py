@@ -1,3 +1,4 @@
+import json
 from dataclasses import dataclass, field
 from enum import Enum
 from typing import Dict, Optional, Union
@@ -5,29 +6,26 @@ from typing import Dict, Optional, Union
 import httpx
 from pydantic import ValidationError
 
-from ..models.coverages_layer import CoverageModel
-from ..models.coverages_store import CoveragesStoreModel, CoveragesStoresModel
+from ..models.coverages_layer import CoverageInfo, CoverageModel
+from ..models.coverages_store import (
+    CoveragesStoreModel,
+    CoveragesStoreModelDetail,
+    CoveragesStoresModel,
+)
 from ..models.data_store import (
     CreateDataStoreModel,
     CreateStoreItem,
-    DataStoreModel,
+    DataStoreModelDetails,
     DataStoresModel,
     MainCreateDataStoreModel,
 )
-from ..models.featuretypes_layer import FeatureTypesModel
-from ..models.geofence import GetRule, NewRule, Rule, RulesResponse
+from ..models.featuretypes_layer import FeatureTypeInfo
+from ..models.geofence import Rule, RulesResponse
 from ..models.gs_response import GSResponse
 from ..models.layer_group import LayerGroupsModel
-from ..models.layers import LayerModel, LayersModel
-from ..models.style import AllStylesModel, StyleModel
-from ..models.workspace import (
-    NewWorkspace,
-    NewWorkspaceInfo,
-    UpdateWorkspace,
-    UpdateWorkspaceInfo,
-    WorkspaceModel,
-    WorkspacesModel,
-)
+from ..models.layers import LayersModel, SingleLayer
+from ..models.style import AllStyleList, SingleStyle
+from ..models.workspace import UpdateWorkspaceInfo, WorkspaceModel, workspaceDict
 from ..utils.auth import GeoServerXAuth
 from ..utils.custom_exceptions import GSModuleNotFound
 from ..utils.enums import GSResponseEnum
@@ -166,19 +164,21 @@ class SyncGeoServerX:
             return GSResponse(code=412, response=str(e))
 
     @exception_handler
-    def get_all_workspaces(self) -> Union[WorkspacesModel, GSResponse]:
+    def get_all_workspaces(self) -> Union[workspaceDict, GSResponse]:
         """
         Retrieve a list of all workspaces from GeoServer.
 
         Returns:
-            Union[WorkspacesModel, GSResponse]: A WorkspacesModel containing the list of workspaces if successful,
+            Union[workspaceDict, GSResponse]: A workspaceDict containing the list of workspaces if successful,
             or a GSResponse object containing error details if the request fails.
         """
         client = self.http_client
-        response = client.get("workspaces")
-        if response.status_code == 200:
-            return WorkspacesModel.model_validate(response.json())
-        return self.recognize_response(response.status_code)
+        complete_response = client.get("workspaces")
+        if complete_response.status_code == 200:
+            response_json = complete_response.json()
+            workspaces_data = response_json.get("workspaces", response_json)
+            return workspaceDict(**workspaces_data)
+        return self.recognize_response(complete_response.status_code)
 
     @exception_handler
     def get_workspace(self, workspace: str) -> Union[WorkspaceModel, GSResponse]:
@@ -196,7 +196,7 @@ class SyncGeoServerX:
         client = self.http_client
         response = client.get(f"workspaces/{workspace}")
         if response.status_code == 200:
-            return WorkspaceModel.model_validate(response.json())
+            return WorkspaceModel(**response.json())
         return self.recognize_response(response.status_code)
 
     @exception_handler
@@ -230,13 +230,12 @@ class SyncGeoServerX:
         Returns:
             GSResponse: Response object indicating success or failure.
         """
-        payload: NewWorkspace = NewWorkspace(
-            workspace=NewWorkspaceInfo(name=name, isolated=isolated)
-        )
+        new_ws = json.dumps({"workspace": {"name": name, "isolated": isolated}})
+
         client = self.http_client
         response = client.post(
             "workspaces",
-            content=payload.model_dump_json(),
+            content=new_ws,
             params={"default": default},
             headers=self.headers,
         )
@@ -255,10 +254,10 @@ class SyncGeoServerX:
             GSResponse: Response object indicating success or failure:
         """
         client = self.http_client
-        update_ws = UpdateWorkspace(workspace=update)
+        update_ws = json.dumps({"workspace": update.model_dump(exclude_none=True)})
         response = client.put(
             f"workspaces/{name}.json",
-            data=update_ws.model_dump_json(exclude_none=True),
+            data=update_ws,
             headers=self.headers,
         )
         return self.recognize_response(response.status_code)
@@ -277,7 +276,7 @@ class SyncGeoServerX:
         client = self.http_client
         response = client.get(f"workspaces/{workspace}/datastores")
         if response.status_code == 200:
-            return DataStoresModel.model_validate(response.json())
+            return DataStoresModel(**response.json())
         return self.recognize_response(response.status_code)
 
     @exception_handler
@@ -295,11 +294,11 @@ class SyncGeoServerX:
         client = self.http_client
         response = client.get(f"workspaces/{workspace}/coveragestores")
         if response.status_code == 200:
-            return CoveragesStoresModel.model_validate(response.json())
+            return CoveragesStoresModel(**response.json())
         return self.recognize_response(response.status_code)
 
     @exception_handler
-    def get_vector_store(self, workspace: str, store: str) -> DataStoreModel:
+    def get_vector_store(self, workspace: str, store: str) -> DataStoreModelDetails:
         """
         Retrieve details of a specific vector data store from a workspace.
 
@@ -308,14 +307,16 @@ class SyncGeoServerX:
             store (str): Name of the vector data store to retrieve
 
         Returns:
-            DataStoreModel: Details of the requested vector store if successful
+            DataStoreModelDetails: Details of the requested vector store if successful
             GSResponse: Error response if the request fails
         """
         url = f"workspaces/{workspace}/datastores/{store}.json"
         client = self.http_client
         response = client.get(url)
         if response.status_code == 200:
-            return DataStoreModel.model_validate(response.json())
+            response_json = response.json()
+            datastord_data = response_json.get("dataStore", response_json)
+            return DataStoreModelDetails(**datastord_data)
         return self.recognize_response(response.status_code)
 
     @exception_handler
@@ -340,7 +341,7 @@ class SyncGeoServerX:
         return self.recognize_response(response.status_code)
 
     @exception_handler
-    def get_raster_store(self, workspace: str, store: str) -> CoveragesStoreModel:
+    def get_raster_store(self, workspace: str, store: str) -> CoveragesStoreModelDetail:
         """
         Retrieve details of a specific raster (coverage) store from a workspace.
 
@@ -349,7 +350,7 @@ class SyncGeoServerX:
             store (str): Name of the raster store to retrieve
 
         Returns:
-            CoveragesStoreModel: Details of the requested raster store if successful
+            CoveragesStoreModelDetail: Details of the requested raster store if successful
             GSResponse: Error response if the request fails
         """
 
@@ -357,7 +358,9 @@ class SyncGeoServerX:
         client = self.http_client
         response = client.get(url)
         if response.status_code == 200:
-            return CoveragesStoreModel.model_validate(response.json())
+            response_json = response.json()
+            datastord_data = response_json.get("coverageStore", response_json)
+            return CoveragesStoreModelDetail(**datastord_data)
         return self.recognize_response(response.status_code)
 
     @exception_handler
@@ -384,18 +387,22 @@ class SyncGeoServerX:
         return self.recognize_response(response.status_code)
 
     @exception_handler
-    def delete_store(self, workspace: str, store: str, type: StoreType) -> GSResponse:
+    def delete_store(
+        self, workspace: str, store: str, type: StoreType, recurse: bool = False
+    ) -> GSResponse:
         """
         Create a new data store (vector) or coverage store (raster) in a specified workspace.
 
         Args:
             workspace (str): Name of the workspace where the store will be created
-            store (Union[CoverageStoreModel, DataStoreModel]): Store configuration model
+            store (Union[CoverageStoreModel, DataStoreModelDetails]): Store configuration model
                 - CoverageStoreModel: For raster data stores
-                - DataStoreModel: For vector data stores
+                - DataStoreModelDetails: For vector data stores
             type (StoreType): Type of store to create, either "raster" or "vector"
-                - "raster": Creates a coverage store for raster data
-                - "vector": Creates a data store for vector data
+                - "raster": Delete a coverage store for raster data
+                - "vector": Delete a data store for vector data
+            recurse (bool, optional): If True, recursively deletes all resources
+                contained within the store. Defaults to False.
 
         Returns:
             GSResponse: Response object indicating success or failure
@@ -404,32 +411,38 @@ class SyncGeoServerX:
         client = self.http_client
         if type == "raster":
             response = client.delete(
-                f"/workspaces/{workspace}/coveragestores/{store}", headers=self.headers
+                f"/workspaces/{workspace}/coveragestores/{store}",
+                params={"recurse": recurse},
+                headers=self.headers,
             )
         elif type == "vector":
             response = client.delete(
-                f"/workspaces/{workspace}/datastores/{store}", headers=self.headers
+                f"/workspaces/{workspace}/datastores/{store}",
+                params={"recurse": recurse},
+                headers=self.headers,
             )
         return self.recognize_response(response.status_code)
 
     @exception_handler
-    def get_all_styles(self) -> AllStylesModel:
+    def get_all_styles(self) -> AllStyleList:
         """
         Retrieve all styles configured in GeoServer.
 
         Returns:
-            AllStylesModel: List of all available styles and their configurations
+            AllStyleList: List of all available styles and their configurations
             GSResponse: Response object indicating failure
         """
 
         client = self.http_client
-        response = client.get("styles")
-        if response.status_code == 200:
-            return AllStylesModel.model_validate(response.json())
-        return self.recognize_response(response.status_code)
+        complete_response = client.get("styles")
+        if complete_response.status_code == 200:
+            response_json = complete_response.json()
+            style_data = response_json.get("styles", response_json)
+            return AllStyleList(**style_data)
+        return self.recognize_response(complete_response.status_code)
 
     @exception_handler
-    def get_style(self, style: str) -> StyleModel:
+    def get_style(self, style: str) -> SingleStyle:
         """
         Retrieve a specific style configuration from GeoServer.
 
@@ -437,15 +450,17 @@ class SyncGeoServerX:
             style (str): Name of the style to retrieve
 
         Returns:
-            StyleModel: Configuration details of the requested style
+            SingleStyle: Configuration details of the requested style
             GSResponse: Response object indicating failure
         """
 
         client = self.http_client
-        response = client.get(f"styles/{style}.json")
-        if response.status_code == 200:
-            return StyleModel.model_validate(response.json())
-        return self.recognize_response(response.status_code)
+        complete_response = client.get(f"styles/{style}.json")
+        if complete_response.status_code == 200:
+            response_json = complete_response.json()
+            style_data = response_json.get("style", response_json)
+            return SingleStyle(**style_data)
+        return self.recognize_response(complete_response.status_code)
 
     @exception_handler
     def create_file_store(
@@ -549,13 +564,13 @@ class SyncGeoServerX:
         else:
             response = client.get("layers")
         if response.status_code == 200:
-            return LayersModel.model_validate(response.json())
+            return LayersModel(**response.json())
         return self.recognize_response(response.status_code)
 
     @exception_handler
     def get_vector_layer(
         self, workspace: str, store: str, layer: str
-    ) -> Union[FeatureTypesModel, GSResponse]:
+    ) -> Union[FeatureTypeInfo, GSResponse]:
         """
         Retrieve configuration details of a vector layer from GeoServer.
 
@@ -565,7 +580,7 @@ class SyncGeoServerX:
             layer (str): Name of the vector layer to retrieve
 
         Returns:
-            FeatureTypesModel: Configuration details of the vector layer
+            FeatureTypeInfo: Configuration details of the vector layer
             GSResponse: Response object indicating failure
         """
 
@@ -575,7 +590,9 @@ class SyncGeoServerX:
         )
         if response.status_code == 200:
             try:
-                return FeatureTypesModel.parse_obj(response.json())
+                response_json = response.json()
+                feature_data = response_json.get("featureType", response_json)
+                return FeatureTypeInfo(**feature_data)
             except ValidationError as validation_error:
                 print("Pydantic Validation Error:")
                 print(validation_error)
@@ -584,7 +601,7 @@ class SyncGeoServerX:
     @exception_handler
     def get_raster_layer(
         self, workspace: str, store: str, layer: str
-    ) -> Union[CoverageModel, GSResponse]:
+    ) -> Union[CoverageInfo, GSResponse]:
         """
         Retrieve configuration details of a raster layer from GeoServer.
 
@@ -594,7 +611,7 @@ class SyncGeoServerX:
             layer (str): Name of the raster layer to retrieve
 
         Returns:
-            CoverageModel: Configuration details of the raster layer
+            CoverageInfo: Configuration details of the raster layer
             GSResponse: Response object indicating failure
         """
 
@@ -603,13 +620,15 @@ class SyncGeoServerX:
             f"/workspaces/{workspace}/coveragestores/{store}/coverages/{layer}.json"
         )
         if response.status_code == 200:
-            return CoverageModel.parse_obj(response.json())
+            response_json = response.json()
+            layer_data = response_json.get("coverage", response_json)
+            return CoverageInfo(**layer_data)
         return self.recognize_response(response.status_code)
 
     @exception_handler
     def get_layer(
         self, workspace: str, layer: str, detail: bool = False
-    ) -> Union[LayerModel, FeatureTypesModel, GSResponse]:
+    ) -> Union[SingleLayer, CoverageModel, GSResponse]:
         """
         Retrieve layer information from GeoServer, with optional detailed information.
 
@@ -620,9 +639,8 @@ class SyncGeoServerX:
                 specific vector or raster properties. Defaults to False.
 
         Returns:
-            Union[LayerModel, FeatureTypesModel, GSResponse]: One of the following:
-                - LayerModel: Basic layer information if detail=False
-                - FeatureTypesModel: Detailed vector layer information if detail=True and layer is vector
+            Union[SingleLayer, GSResponse]: One of the following:
+                - SingleLayer: Basic layer information if detail=False
                 - CoverageModel: Detailed raster layer information if detail=True and layer is raster
                 - GSResponse: Error response if the request fails
         """
@@ -630,35 +648,38 @@ class SyncGeoServerX:
         client = self.http_client
         response = client.get(f"layers/{workspace}:{layer}")
         if response.status_code == 200:
+            response_json = response.json()
             if detail:
-                res = response.json()
-                if res["layer"]["type"] == "VECTOR":
+
+                if response_json["layer"]["type"] == "VECTOR":
                     result = self.get_vector_layer(
                         workspace,
-                        res["layer"]["resource"]["href"].split("/")[-3],
+                        response_json["layer"]["resource"]["href"].split("/")[-3],
                         layer,
                     )
-                    return FeatureTypesModel.parse_obj(result.dict())
-                elif res["layer"]["type"] == "RASTER":
+                    return result
+                elif response_json["layer"]["type"] == "RASTER":
                     result = self.get_raster_layer(
-                        workspace, res["layer"]["resource"]["name"].split(":")[1], layer
+                        workspace,
+                        response_json["layer"]["resource"]["name"].split(":")[1],
+                        layer,
                     )
-                    return CoverageModel.parse_obj(result.dict())
+                    return result
             else:
-                return LayerModel.parse_obj(response.json())
+
+                layer_data = response_json.get("layer", response_json)
+                return SingleLayer(**layer_data)
         else:
             return self.recognize_response(response.status_code)
 
     @exception_handler
-    def create_vector_layer(
-        self, workspace: str, layer: FeatureTypesModel
-    ) -> GSResponse:
+    def create_vector_layer(self, workspace: str, layer: FeatureTypeInfo) -> GSResponse:
         """
         Create a new vector layer (feature type) in a specified workspace.
 
         Args:
             workspace (str): Name of the workspace where the layer will be created
-            layer (FeatureTypesModel): Model containing the vector layer configuration details,
+            layer (FeatureTypeInfo): Model containing the vector layer configuration details,
                 including metadata, attribute information, and other feature type parameters
 
         Returns:
@@ -734,7 +755,7 @@ class SyncGeoServerX:
         else:
             response = client.get("layergroups")
         if response.status_code == 200:
-            return LayerGroupsModel.model_validate(response.json())
+            return LayerGroupsModel(**response.json())
         return self.recognize_response(response.status_code)
 
     @exception_handler
@@ -757,11 +778,11 @@ class SyncGeoServerX:
         # Make the HTTP request to fetch geofence rules
         response = client.get("geofence/rules/", headers={"Accept": "application/json"})
         if response.status_code == 200:
-            return RulesResponse.model_validate(response.json())
+            return RulesResponse(**response.json())
         return self.recognize_response(response.status_code)
 
     @exception_handler
-    def get_geofence_rule(self, id: int) -> Union[GetRule, GSResponse]:
+    def get_geofence_rule(self, id: int) -> Union[Rule, GSResponse]:
         """
         Retrieve a specific GeoFence rule by its ID from GeoServer.
 
@@ -769,8 +790,8 @@ class SyncGeoServerX:
             id (int): The unique identifier of the GeoFence rule to retrieve
 
         Returns:
-            Union[GetRule, GSResponse]: Either the requested rule or an error response
-                - GetRule: The rule details if found
+            Union[Rule, GSResponse]: Either the requested rule or an error response
+                - Rule: The rule details if found
                 - GSResponse: Error response if the request fails
         """
 
@@ -780,11 +801,9 @@ class SyncGeoServerX:
         # If the module check fails, return the GSResponse directly
         if isinstance(module_check, GSResponse):
             return module_check
-        response = client.get(
-            f"geofence/rules/id/{id}", headers={"Accept": "application/json"}
-        )
+        response = client.get(f"geofence/rules/id/{id}", headers=self.headers)
         if response.status_code == 200:
-            return Rule.model_validate(response.json())
+            return Rule(**response.json())
         return self.recognize_response(response.status_code)
 
     @exception_handler
@@ -806,7 +825,7 @@ class SyncGeoServerX:
             GSResponse: Response object indicating success or failure
         """
 
-        PostingRule = NewRule(Rule=rule)
+        PostingRule = json.dumps({"Rule": rule.model_dump(exclude_none=True)})
         # Check if the geofence plugin exists
         module_check = self.check_modules("geofence")
         # If the module check fails, return the GSResponse directly
@@ -815,7 +834,7 @@ class SyncGeoServerX:
         client = self.http_client
         response = client.post(
             "geofence/rules",
-            content=PostingRule.model_dump_json(),
+            content=PostingRule,
             headers=self.headers,
         )
         return self.recognize_response(response.status_code)

@@ -18,20 +18,8 @@ from geoserverx.models.data_store import (
 )
 from geoserverx.models.geofence import RulesResponse
 from geoserverx.models.layer_group import LayerGroupsModel
-from geoserverx.models.style import (
-    AllStylesModel,
-    SingleStyle,
-    StyleModel,
-    allStyle,
-    allStyleList,
-)
-from geoserverx.models.workspace import (
-    NewWorkspace,
-    WorkspaceInBulk,
-    WorkspaceModel,
-    WorkspacesModel,
-    workspaceDict,
-)
+from geoserverx.models.style import AllStyleList, SingleStyle, SingleStyleInList
+from geoserverx.models.workspace import WorkspaceInBulk, WorkspaceModel, workspaceDict
 
 
 # Testing DataStoreInBulk
@@ -168,48 +156,26 @@ def test_singlestyle_failure(bad_single_style_dict_connection):
         SingleStyle(**bad_single_style_dict_connection)
 
 
-# Testing StyleModel
-def test_stylemodel_connection(good_style_model_connection):
-    ds_connection = StyleModel(**good_style_model_connection)
-    assert ds_connection.style.name == "burg"
-
-
-def test_stylemodel_failure(bad_style_model_connection):
-    with pytest.raises(ValidationError):
-        StyleModel(**bad_style_model_connection)
-
-
-# Testing allStyleList
+# Testing SingleStyleInList
 def test_allstylelist_connection(good_all_style_list_connection):
-    ds_connection = allStyleList(**good_all_style_list_connection)
+    ds_connection = SingleStyleInList(**good_all_style_list_connection)
     assert ds_connection.name == "CUSD 2020 Census Blocks"
 
 
 def test_allstylelist_failure(bad_all_style_list_connection):
     with pytest.raises(ValidationError):
-        allStyleList(**bad_all_style_list_connection)
+        SingleStyleInList(**bad_all_style_list_connection)
 
 
-# Testing allStyle
+# Testing AllStyleList
 def test_allstyle_connection(good_all_style_dict_connection):
-    ds_connection = allStyle(**good_all_style_dict_connection)
+    ds_connection = AllStyleList(**good_all_style_dict_connection)
     assert ds_connection.style[0].name == "CUSD 2020 Census Blocks"
 
 
 def test_allstyle_failure(bad_all_style_dict_connection):
     with pytest.raises(ValidationError):
-        allStyle(**bad_all_style_dict_connection)
-
-
-# Testing AllStylesModel
-def test_allstylesmodel_connection(good_all_styles_model_connection):
-    ds_connection = AllStylesModel(**good_all_styles_model_connection)
-    assert ds_connection.styles.style[0].name == "CUSD 2020 Census Blocks"
-
-
-def test_allstylesmodel_failure(bad_all_styles_model_connection):
-    with pytest.raises(ValidationError):
-        AllStylesModel(**bad_all_styles_model_connection)
+        AllStyleList(**bad_all_style_dict_connection)
 
 
 # Testing WorkspaceInBulk
@@ -234,17 +200,6 @@ def test_workspacedict_failure(bad_workspace_dict_connection):
         workspaceDict(**bad_workspace_dict_connection)
 
 
-# Testing WorkspacesModel
-def test_workspacesmodel_connection(good_workspaces_model_connection):
-    ds_connection = WorkspacesModel(**good_workspaces_model_connection)
-    assert ds_connection.workspaces.workspace[0].name == "pydad"
-
-
-def test_workspacesmodel_failure(bad_workspaces_model_connection):
-    with pytest.raises(ValidationError):
-        WorkspacesModel(**bad_workspaces_model_connection)
-
-
 # Testing WorkspaceModel
 def test_workspacemodel_connection(good_workspace_model_connection):
     ds_connection = WorkspaceModel(**good_workspace_model_connection)
@@ -254,17 +209,6 @@ def test_workspacemodel_connection(good_workspace_model_connection):
 def test_workspacemodel_failure(bad_workspace_model_connection):
     with pytest.raises(ValidationError):
         WorkspaceModel(**bad_workspace_model_connection)
-
-
-# Testing NewWorkspace
-def test_newworkspace_connection(good_new_workspace_connection):
-    ds_connection = NewWorkspace(**good_new_workspace_connection)
-    assert ds_connection.workspace.name == "pydad"
-
-
-def test_newworkspace_failure(bad_new_workspace_connection):
-    with pytest.raises(ValidationError):
-        NewWorkspace(**bad_new_workspace_connection)
 
 
 # Testing LayerGroupsModel

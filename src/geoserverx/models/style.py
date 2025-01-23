@@ -14,18 +14,10 @@ class SingleStyle(BaseModel):
     filename: str = ...
 
 
-class StyleModel(BaseModel):
-    style: SingleStyle
-
-
-class allStyleList(BaseModel):
+class SingleStyleInList(BaseModel):
     name: str
     href: str
 
 
-class allStyle(BaseModel):
-    style: List[allStyleList]
-
-
-class AllStylesModel(BaseModel):
-    styles: allStyle
+class AllStyleList(BaseModel):
+    style: List[SingleStyleInList]

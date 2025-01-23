@@ -12,10 +12,6 @@ class workspaceDict(BaseModel):
     workspace: List[WorkspaceInBulk]
 
 
-class WorkspacesModel(BaseModel):
-    workspaces: workspaceDict = ""
-
-
 class SingleWorkspace(BaseModel):
     name: str = ...
     isolated: bool = ...
@@ -30,19 +26,6 @@ class WorkspaceModel(BaseModel):
     workspace: SingleWorkspace = ...
 
 
-class NewWorkspaceInfo(BaseModel):
-    name: str = ...
-    isolated: bool = None
-
-
-class NewWorkspace(BaseModel):
-    workspace: NewWorkspaceInfo = ...
-
-
 class UpdateWorkspaceInfo(BaseModel):
     name: Optional[str] = None
     isolated: Optional[bool] = None
-
-
-class UpdateWorkspace(BaseModel):
-    workspace: UpdateWorkspaceInfo = ...
