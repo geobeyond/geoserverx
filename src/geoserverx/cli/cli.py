@@ -1,13 +1,22 @@
-import json
 from enum import Enum
 from pathlib import Path
+from typing import Optional
 
 import typer
 from rich import print
+from rich.console import Console
+from rich.table import Table
 
-from geoserverx._sync.gsx import SyncGeoServerX
+from .._sync.gsx import SyncGeoServerX
+from ..models.workspace import UpdateWorkspaceInfo
 
 app = typer.Typer()
+console = Console()
+
+
+class OutputFormats(str, Enum):
+    json = "json"
+    table = "table"
 
 
 @app.callback()
@@ -17,49 +26,86 @@ def callback():
     """
 
 
-# Enum for request type
-class requestEnum(str, Enum):
-    _sync = "sync"
-    _async = "async"
-
-
 # Enum for vector file type
-class vectorFileEnum(str, Enum):
+class VectorFileEnum(str, Enum):
     shapefile = "shapefile"
     gpkg = "gpkg"
 
 
-# get all workspaces
 @SyncGeoServerX.exception_handler
 @app.command(help="Get all workspaces in the Geoserver")
 def workspaces(
-    request: requestEnum = requestEnum._sync,
     url: str = typer.Option(
         "http://127.0.0.1:8080/geoserver/rest/", help="Geoserver REST URL"
     ),
     password: str = typer.Option("geoserver", help="Geoserver Password"),
     username: str = typer.Option("admin", help="Geoserver username"),
+    output: OutputFormats = typer.Option(OutputFormats.table),
 ):
     """
     Get all workspaces in the Geoserver
+    looks like - gsx workspaces --url <url> --username <username> --password <password>
     """
-    if request.value == "sync":
-        client = SyncGeoServerX(username, password, url)
-        result = client.get_all_workspaces().model_dump_json()
-        if "code" in result:
-            typer.secho(result, fg=typer.colors.RED)
-        else:
-            print(result)
+    client = SyncGeoServerX(username, password, url)
+    result = client.get_all_workspaces()
+    if "code" in result:
+        print(result)
     else:
-        typer.echo("Async support will be shortly")
+        if output == "json":
+            print(result.model_dump_json(indent=2))
+        else:
+            try:
+                table = Table("Name", "Link")
+                for workspace in result.workspaces.workspace:
+                    table.add_row(workspace.name, workspace.href)
+                console.print(table)
+            except AttributeError:
+                print(result.response)
 
 
-# get workspace
 @SyncGeoServerX.exception_handler
 @app.command(help="Get workspace in the Geoserver")
 def workspace(
-    request: requestEnum = requestEnum._sync,
-    workspace: str = typer.Option(..., help="Workspace name"),
+    workspace: str,
+    url: str = typer.Option(
+        "http://127.0.0.1:8080/geoserver/rest/", help="Geoserver REST URL"
+    ),
+    password: str = typer.Option("geoserver", help="Geoserver Password"),
+    username: str = typer.Option("admin", help="Geoserver username"),
+    output: OutputFormats = typer.Option(OutputFormats.table),
+):
+    """
+    Get workspace in the Geoserver
+    looks like - gsx workspace  <workspacename> --url <url> --username <username> --password <password>
+    """
+
+    client = SyncGeoServerX(username, password, url)
+    result = client.get_workspace(workspace)
+    if "code" in result:
+        print(result)
+    else:
+        if output == "json":
+            print(result.model_dump_json(indent=2))
+        else:
+            try:
+                table = Table("Column", "Value")
+                table.add_row("name", result.workspace.name)
+                table.add_row("isolated", str(result.workspace.isolated))
+                table.add_row("dateCreated", result.workspace.dateCreated)
+                table.add_row("dataStores", result.workspace.dataStores)
+                table.add_row("coverageStores", result.workspace.coverageStores)
+                table.add_row("wmsStores", result.workspace.wmsStores)
+                table.add_row("wmtsStores", result.workspace.wmtsStores)
+                console.print(table)
+            except AttributeError:
+                print(result.response)
+
+
+@SyncGeoServerX.exception_handler
+@app.command(help="Delete workspace in the Geoserver")
+def delete_workspace(
+    workspace: str,
+    recurse: bool = typer.Option(False, help="Delete all stores,layers,styles,etc."),
     url: str = typer.Option(
         "http://127.0.0.1:8080/geoserver/rest/", help="Geoserver REST URL"
     ),
@@ -67,25 +113,18 @@ def workspace(
     username: str = typer.Option("admin", help="Geoserver username"),
 ):
     """
-    Get workspace in the Geoserver
+    Delete workspace in the Geoserver
+    looks like - gsx delete-workspace  <workspacename> --recurse/--no-recurse --url <url> --username <username> --password <password>
     """
-    if request.value == "sync":
-        client = SyncGeoServerX(username, password, url)
-        result = client.get_workspace(workspace).model_dump_json()
-        if "code" in result:
-            typer.secho(result, fg=typer.colors.RED)
-        else:
-            print(result)
-    else:
-        typer.echo("Async support will be shortly")
+    client = SyncGeoServerX(username, password, url)
+    result = client.delete_workspace(workspace, recurse)
+    print(result.response)
 
 
-# create workspace
 @SyncGeoServerX.exception_handler
 @app.command(help="Add workspace in the Geoserver")
 def create_workspace(
-    request: requestEnum = requestEnum._sync,
-    workspace: str = typer.Option(..., help="Workspace name"),
+    workspace: str,
     default: bool = typer.Option(False, help="Make workspace default?"),
     isolated: bool = typer.Option(False, help="Make workspace isolated?"),
     url: str = typer.Option(
@@ -96,25 +135,42 @@ def create_workspace(
 ):
     """
     Add workspace in the Geoserver
-    looks like - gsx create-workspace --workspace <workspacename> --default/--no-default  --isolated/--no-isolated --username <username> --password <password>
+    looks like - gsx create-workspace  <workspacename> --default/--no-default  --isolated/--no-isolated --url <url> --username <username> --password <password>
     """
-    if request.value == "sync":
-        client = SyncGeoServerX(username, password, url)
-        result = client.create_workspace(workspace, default, isolated).model_dump_json()
-        if json.loads(result)["code"] == 201:
-            typer.secho(result, fg=typer.colors.GREEN)
-        else:
-            typer.secho(result, fg=typer.colors.RED)
 
-    else:
-        typer.echo("Async support will be shortly")
+    client = SyncGeoServerX(username, password, url)
+    result = client.create_workspace(workspace, default, isolated)
+    print(result.response)
 
 
-# Get vector stores in specific workspaces
+@SyncGeoServerX.exception_handler
+@app.command(help="Add workspace in the Geoserver")
+def update_workspace(
+    current_name: str,
+    new_name: Optional[str] = typer.Option(None, help="New Workspace name"),
+    isolated: Optional[bool] = typer.Option(False, help="Make workspace isolated?"),
+    url: str = typer.Option(
+        "http://127.0.0.1:8080/geoserver/rest/", help="Geoserver REST URL"
+    ),
+    password: str = typer.Option("geoserver", help="Geoserver Password"),
+    username: str = typer.Option("admin", help="Geoserver username"),
+):
+    """
+    Update existing workspace in the Geoserver
+    looks like - gsx update-workspace  <workspacename> --new-name <new-workspacename> --isolated/--no-isolated --username <username> --password <password>
+    """
+
+    client = SyncGeoServerX(username, password, url)
+    result = client.update_workspace(
+        current_name,
+        UpdateWorkspaceInfo(name=new_name, isolated=isolated),
+    )
+    print(result.response)
+
+
 @SyncGeoServerX.exception_handler
 @app.command(help="Get vector stores in specific workspaces")
 def vector_st_wp(
-    request: requestEnum = requestEnum._sync,
     workspace: str = typer.Option(..., help="Workspace name"),
     url: str = typer.Option(
         "http://127.0.0.1:8080/geoserver/rest/", help="Geoserver REST URL"
@@ -125,22 +181,15 @@ def vector_st_wp(
     """
     Get vector stores in specific workspaces
     """
-    if request.value == "sync":
-        client = SyncGeoServerX(username, password, url)
-        result = client.get_vector_stores_in_workspaces(workspace).model_dump_json()
-        if "code" in result:
-            typer.secho(result, fg=typer.colors.RED)
-        else:
-            print(result)
-    else:
-        typer.echo("Async support will be shortly")
+
+    client = SyncGeoServerX(username, password, url)
+    result = client.get_vector_stores_in_workspaces(workspace).model_dump_json()
+    print(result)
 
 
-# Get raster stores in specific workspaces
 @SyncGeoServerX.exception_handler
 @app.command(help="Get raster stores in specific workspaces")
 def raster_st_wp(
-    request: requestEnum = requestEnum._sync,
     workspace: str = typer.Option(..., help="Workspace name"),
     url: str = typer.Option(
         "http://127.0.0.1:8080/geoserver/rest/", help="Geoserver REST URL"
@@ -151,22 +200,15 @@ def raster_st_wp(
     """
     Get raster stores in specific workspaces
     """
-    if request.value == "sync":
-        client = SyncGeoServerX(username, password, url)
-        result = client.get_raster_stores_in_workspaces(workspace).model_dump_json()
-        if "code" in result:
-            typer.secho(result, fg=typer.colors.RED)
-        else:
-            print(result)
-    else:
-        typer.echo("Async support will be shortly")
+
+    client = SyncGeoServerX(username, password, url)
+    result = client.get_raster_stores_in_workspaces(workspace).model_dump_json()
+    print(result)
 
 
-# Get vector store information in specific workspaces
 @SyncGeoServerX.exception_handler
 @app.command(help="Get vector store information in specific workspaces")
 def vector_store(
-    request: requestEnum = requestEnum._sync,
     workspace: str = typer.Option(..., help="Workspace name"),
     store: str = typer.Option(..., help="Store name"),
     url: str = typer.Option(
@@ -178,22 +220,14 @@ def vector_store(
     """
     Get vector store information in specific workspaces
     """
-    if request.value == "sync":
-        client = SyncGeoServerX(username, password, url)
-        result = client.get_vector_store(workspace, store).model_dump_json()
-        if "code" in result:
-            typer.secho(result, fg=typer.colors.RED)
-        else:
-            print(result)
-    else:
-        typer.echo("Async support will be shortly")
+    client = SyncGeoServerX(username, password, url)
+    result = client.get_vector_store(workspace, store).model_dump_json()
+    print(result)
 
 
-# Get raster store information in specific workspaces
 @SyncGeoServerX.exception_handler
 @app.command(help="Get raster store information in specific workspaces")
 def raster_store(
-    request: requestEnum = requestEnum._sync,
     workspace: str = typer.Option(..., help="Workspace name"),
     store: str = typer.Option(..., help="Store name"),
     url: str = typer.Option(
@@ -205,22 +239,14 @@ def raster_store(
     """
     Get raster store information in specific workspaces
     """
-    if request.value == "sync":
-        client = SyncGeoServerX(username, password, url)
-        result = client.get_raster_store(workspace, store).model_dump_json()
-        if "code" in result:
-            typer.secho(result, fg=typer.colors.RED)
-        else:
-            print(result)
-    else:
-        typer.echo("Async support will be shortly")
+    client = SyncGeoServerX(username, password, url)
+    result = client.get_raster_store(workspace, store).model_dump_json()
+    print(result)
 
 
-# Get all styles in Geoserver
 @SyncGeoServerX.exception_handler
 @app.command(help="Get all styles in Geoserver")
 def styles(
-    request: requestEnum = requestEnum._sync,
     url: str = typer.Option(
         "http://127.0.0.1:8080/geoserver/rest/", help="Geoserver REST URL"
     ),
@@ -230,22 +256,14 @@ def styles(
     """
     Get all styles in Geoserver
     """
-    if request.value == "sync":
-        client = SyncGeoServerX(username, password, url)
-        result = client.get_all_styles().model_dump_json()
-        if "code" in result:
-            typer.secho(result, fg=typer.colors.RED)
-        else:
-            print(result)
-    else:
-        typer.echo("Async support will be shortly")
+    client = SyncGeoServerX(username, password, url)
+    result = client.get_all_styles().model_dump_json()
+    print(result)
 
 
-# Get style in Geoserver
 @SyncGeoServerX.exception_handler
 @app.command(help="Get style in Geoserver")
 def style(
-    request: requestEnum = requestEnum._sync,
     url: str = typer.Option(
         "http://127.0.0.1:8080/geoserver/rest/", help="Geoserver REST URL"
     ),
@@ -256,28 +274,20 @@ def style(
     """
     Get style in Geoserver
     """
-    if request.value == "sync":
-        client = SyncGeoServerX(username, password, url)
-        result = client.get_style(style).model_dump_json()
-        if "code" in result:
-            typer.secho(result, fg=typer.colors.RED)
-        else:
-            print(result)
-    else:
-        typer.echo("Async support will be shortly")
+    client = SyncGeoServerX(username, password, url)
+    result = client.get_style(style).model_dump_json()
+    print(result)
 
 
-# Create Vector Layer in Geoserver
 @SyncGeoServerX.exception_handler
 @app.command(help="Create Vector Layer in Geoserver")
 def create_file(
-    request: requestEnum = requestEnum._sync,
     url: str = typer.Option(
         "http://127.0.0.1:8080/geoserver/rest/", help="Geoserver REST URL"
     ),
     workspace: str = typer.Option(..., help="Workspace name"),
     store: str = typer.Option(..., help="Store name"),
-    service_type: vectorFileEnum = typer.Option(..., help="Vector file type"),
+    service_type: VectorFileEnum = typer.Option(..., help="Vector file type"),
     file: Path = typer.Option(..., help="File path"),
     password: str = typer.Option("geoserver", help="Geoserver Password"),
     username: str = typer.Option("admin", help="Geoserver username"),
@@ -285,28 +295,18 @@ def create_file(
     """
     Create Vector Layer in Geoserver
     """
-    if request.value == "sync":
-        client = SyncGeoServerX(username, password, url)
-        try:
-            files = open(file, "rb")
-            result = client.create_file_store(
-                workspace, store, files.read(), service_type
-            )
-            if result.code == 201:
-                typer.secho(result, fg=typer.colors.GREEN)
-            else:
-                typer.secho(result, fg=typer.colors.RED)
-        except Exception:
-            typer.secho("File path is incorrect", fg=typer.colors.YELLOW)
-    else:
-        typer.echo("Async support will be shortly")
+    client = SyncGeoServerX(username, password, url)
+    try:
+        files = open(file, "rb")
+        result = client.create_file_store(workspace, store, files.read(), service_type)
+        print(result)
+    except Exception:
+        print("File path is incorrect")
 
 
-# Create PostgreSQL store in Geoserver
 @SyncGeoServerX.exception_handler
 @app.command(help="Create PostgreSQL store in Geoserver")
 def create_pg_store(
-    request: requestEnum = requestEnum._sync,
     url: str = typer.Option(
         "http://127.0.0.1:8080/geoserver/rest/", help="Geoserver REST URL"
     ),
@@ -323,30 +323,22 @@ def create_pg_store(
     """
     Create PostgreSQL store in Geoserver
     """
-    if request.value == "sync":
-        client = SyncGeoServerX(username, password, url)
-        result = client.create_pg_store(
-            name=name,
-            workspace=workspace,
-            host=host,
-            port=port,
-            username=dbuser,
-            password=dbpwd,
-            database=dbname,
-        )
-        if result.code == 201:
-            typer.secho(result, fg=typer.colors.GREEN)
-        else:
-            typer.secho(result, fg=typer.colors.RED)
-    else:
-        typer.echo("Async support will be shortly")
+    client = SyncGeoServerX(username, password, url)
+    result = client.create_pg_store(
+        name=name,
+        workspace=workspace,
+        host=host,
+        port=port,
+        username=dbuser,
+        password=dbpwd,
+        database=dbname,
+    )
+    print(result)
 
 
-# get all layers
 @SyncGeoServerX.exception_handler
 @app.command(help="Get all layers in the Geoserver")
 def layers(
-    request: requestEnum = requestEnum._sync,
     url: str = typer.Option(
         "http://127.0.0.1:8080/geoserver/rest/", help="Geoserver REST URL"
     ),
@@ -357,22 +349,14 @@ def layers(
     """
     Get all layers in the Geoserver
     """
-    if request.value == "sync":
-        client = SyncGeoServerX(username, password, url)
-        result = client.get_all_layers(workspace).model_dump_json()
-        if "code" in result:
-            typer.secho(result, fg=typer.colors.RED)
-        else:
-            print(result)
-    else:
-        typer.echo("Async support will be shortly")
+    client = SyncGeoServerX(username, password, url)
+    result = client.get_all_layers(workspace).model_dump_json()
+    print(result)
 
 
-# get layer
 @SyncGeoServerX.exception_handler
 @app.command(help="Get layer in the Geoserver")
 def layer(
-    request: requestEnum = requestEnum._sync,
     workspace: str = typer.Option(..., help="Workspace name"),
     layer: str = typer.Option(..., help="Layer name"),
     detail: bool = typer.Option(False, help="Detail Info"),
@@ -385,22 +369,14 @@ def layer(
     """
     Get workspace in the Geoserver
     """
-    if request.value == "sync":
-        client = SyncGeoServerX(username, password, url)
-        result = client.get_layer(workspace, layer, detail).model_dump_json()
-        if "code" in result:
-            typer.secho(result, fg=typer.colors.RED)
-        else:
-            print(result)
-    else:
-        typer.echo("Async support will be shortly")
+    client = SyncGeoServerX(username, password, url)
+    result = client.get_layer(workspace, layer, detail).model_dump_json()
+    print(result)
 
 
-# get layer groups
 @SyncGeoServerX.exception_handler
 @app.command(help="Get layer groups in the Geoserver")
 def layer_groups(
-    request: requestEnum = requestEnum._sync,
     workspace: str = typer.Option(default=None, help="Workspace name"),
     url: str = typer.Option(
         "http://127.0.0.1:8080/geoserver/rest/", help="Geoserver REST URL"
@@ -411,22 +387,14 @@ def layer_groups(
     """
     Get layer groups in the Geoserver
     """
-    if request.value == "sync":
-        client = SyncGeoServerX(username, password, url)
-        result = client.get_all_layer_groups(workspace).json()
-        if "layerGroups" in result:
-            typer.secho(result, fg=typer.colors.RED)
-        else:
-            print(result)
-    else:
-        typer.echo("Async support will be shortly")
+    client = SyncGeoServerX(username, password, url)
+    result = client.get_all_layer_groups(workspace).json()
+    print(result)
 
 
-# get all geofence rules
 @SyncGeoServerX.exception_handler
 @app.command(help="Get all geofence rules in the Geoserver")
 def geofence_rules(
-    request: requestEnum = requestEnum._sync,
     url: str = typer.Option(
         "http://127.0.0.1:8080/geoserver/rest/", help="Geoserver REST URL"
     ),
@@ -436,22 +404,14 @@ def geofence_rules(
     """
     Get all geofence rules in the Geoserver
     """
-    if request.value == "sync":
-        client = SyncGeoServerX(username, password, url)
-        result = client.get_all_geofence_rules().model_dump_json()
-        if "rules" in result:
-            typer.secho(result, fg=typer.colors.RED)
-        else:
-            print(result)
-    else:
-        typer.echo("Async support will be shortly")
+    client = SyncGeoServerX(username, password, url)
+    result = client.get_all_geofence_rules().model_dump_json()
+    print(result)
 
 
-# get geofence rule
 @SyncGeoServerX.exception_handler
 @app.command(help="Get geofence rule in the Geoserver")
 def geofence_rule(
-    request: requestEnum = requestEnum._sync,
     id: int = typer.Option(..., help="Geofence rule id"),
     url: str = typer.Option(
         "http://127.0.0.1:8080/geoserver/rest/", help="Geoserver REST URL"
@@ -462,12 +422,6 @@ def geofence_rule(
     """
     Get geofence rule in the Geoserver
     """
-    if request.value == "sync":
-        client = SyncGeoServerX(username, password, url)
-        result = client.get_geofence_rule(id).model_dump_json()
-        if "rule" in result:
-            typer.secho(result, fg=typer.colors.RED)
-        else:
-            print(result)
-    else:
-        typer.echo("Async support will be shortly")
+    client = SyncGeoServerX(username, password, url)
+    result = client.get_geofence_rule(id).model_dump_json()
+    print(result)

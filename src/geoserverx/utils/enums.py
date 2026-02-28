@@ -1,6 +1,6 @@
 from enum import Enum
 
-from geoserverx.models.gs_response import GSResponse
+from ..models.gs_response import GSResponse
 
 
 class GSResponseEnum(Enum):

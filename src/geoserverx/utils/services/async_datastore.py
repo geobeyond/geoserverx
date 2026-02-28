@@ -8,7 +8,7 @@ class AddDataStoreProtocol(Protocol):
     Represents functionality of sending a file to the server.
     """
 
-    async def addFile(
+    async def add_file(
         self,
         client,
         workspace,
@@ -22,7 +22,7 @@ class AddDataStoreProtocol(Protocol):
 
 
 class CreateFileStore:
-    async def addFile(
+    async def add_file(
         self,
         client,
         workspace,
@@ -61,7 +61,7 @@ class ShapefileStore:
         self.file = file
         self.client = client
 
-    async def addFile(self, client, workspace, store):
+    async def add_file(self, client, workspace, store):
         store_payload: str = json.dumps(
             {
                 "dataStore": {
@@ -73,7 +73,7 @@ class ShapefileStore:
             }
         )
         # self.logger.debug(f"Shapefile store payload: {store_payload}")
-        result = await self.inner.addFile(
+        result = await self.inner.add_file(
             self.client,
             workspace,
             store,
@@ -85,7 +85,7 @@ class ShapefileStore:
         return result
 
 
-class GPKGfileStore:
+class GpkgFileStore:
     def __init__(
         self, service: AddDataStoreProtocol, logger: Logger, file, client
     ) -> None:
@@ -94,7 +94,7 @@ class GPKGfileStore:
         self.file = file
         self.client = client
 
-    async def addFile(self, client, workspace, store):
+    async def add_file(self, client, workspace, store):
         store_payload: str = json.dumps(
             {
                 "dataStore": {
@@ -109,7 +109,7 @@ class GPKGfileStore:
             }
         )
         # self.logger.debug(f"GeoPackage store payload: {store_payload}")
-        result = await self.inner.addFile(
+        result = await self.inner.add_file(
             self.client,
             workspace,
             store,

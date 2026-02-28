@@ -22,15 +22,15 @@ from geoserverx.models.style import (
     AllStylesModel,
     SingleStyle,
     StyleModel,
-    AllStyle,
-    AllStyleList,
+    allStyle,
+    allStyleList,
 )
 from geoserverx.models.workspace import (
     NewWorkspace,
     WorkspaceInBulk,
     WorkspaceModel,
     WorkspacesModel,
-    WorkspaceDict,
+    workspaceDict,
 )
 
 
@@ -179,26 +179,26 @@ def test_stylemodel_failure(bad_style_model_connection):
         StyleModel(**bad_style_model_connection)
 
 
-# Testing AllStyleList
+# Testing allStyleList
 def test_allstylelist_connection(good_all_style_list_connection):
-    ds_connection = AllStyleList(**good_all_style_list_connection)
+    ds_connection = allStyleList(**good_all_style_list_connection)
     assert ds_connection.name == "CUSD 2020 Census Blocks"
 
 
 def test_allstylelist_failure(bad_all_style_list_connection):
     with pytest.raises(ValidationError):
-        AllStyleList(**bad_all_style_list_connection)
+        allStyleList(**bad_all_style_list_connection)
 
 
-# Testing AllStyle
+# Testing allStyle
 def test_allstyle_connection(good_all_style_dict_connection):
-    ds_connection = AllStyle(**good_all_style_dict_connection)
+    ds_connection = allStyle(**good_all_style_dict_connection)
     assert ds_connection.style[0].name == "CUSD 2020 Census Blocks"
 
 
 def test_allstyle_failure(bad_all_style_dict_connection):
     with pytest.raises(ValidationError):
-        AllStyle(**bad_all_style_dict_connection)
+        allStyle(**bad_all_style_dict_connection)
 
 
 # Testing AllStylesModel
@@ -223,15 +223,15 @@ def test_workspaceinbulk_failure(bad_workspace_in_bulk_connection):
         WorkspaceInBulk(**bad_workspace_in_bulk_connection)
 
 
-# Testing WorkspaceDict
+# Testing workspaceDict
 def test_workspacedict_connection(good_workspace_dict_connection):
-    ds_connection = WorkspaceDict(**good_workspace_dict_connection)
+    ds_connection = workspaceDict(**good_workspace_dict_connection)
     assert ds_connection.workspace[0].name == "pydad"
 
 
 def test_workspacedict_failure(bad_workspace_dict_connection):
     with pytest.raises(ValidationError):
-        WorkspaceDict(**bad_workspace_dict_connection)
+        workspaceDict(**bad_workspace_dict_connection)
 
 
 # Testing WorkspacesModel
