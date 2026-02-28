@@ -8,12 +8,12 @@ class WorkspaceInBulk(BaseModel):
     href: str = ...
 
 
-class workspaceDict(BaseModel):
+class WorkspaceDict(BaseModel):
     workspace: List[WorkspaceInBulk]
 
 
 class WorkspacesModel(BaseModel):
-    workspaces: workspaceDict = ""
+    workspaces: WorkspaceDict = ""
 
 
 class SingleWorkspace(BaseModel):

@@ -162,10 +162,10 @@ class SyncGeoServerX:
     # Create workspace on geoserver
     @exception_handler
     def create_workspace(
-        self, name: str, default: bool = False, Isolated: bool = False
+        self, name: str, default: bool = False, isolated: bool = False
     ) -> GSResponse:
         payload: NewWorkspace = NewWorkspace(
-            workspace=NewWorkspaceInfo(name=name, isolated=Isolated)
+            workspace=NewWorkspaceInfo(name=name, isolated=isolated)
         )
         Client = self.http_client
         responses = Client.post(
@@ -504,7 +504,7 @@ class SyncGeoServerX:
     # Create geofence on geoserver
     @exception_handler
     def create_geofence(self, rule: Rule) -> GSResponse:
-        PostingRule = NewRule(Rule=rule)
+        posting_rule = NewRule(Rule=rule)
         # Check if the geofence plugin exists
         module_check = self.check_modules("geofence")
         # If the module check fails, return the GSResponse directly
@@ -513,7 +513,7 @@ class SyncGeoServerX:
         Client = self.http_client
         responses = Client.post(
             "geofence/rules",
-            content=PostingRule.model_dump_json(),
+            content=posting_rule.model_dump_json(),
             headers=self.head,
         )
         results = self.response_recognise(responses.status_code)

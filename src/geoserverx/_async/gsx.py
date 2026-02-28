@@ -144,11 +144,11 @@ class AsyncGeoServerX:
 
     # Create workspace
     async def create_workspace(
-        self, name: str, default: bool = False, Isolated: bool = False
+        self, name: str, default: bool = False, isolated: bool = False
     ) -> GSResponse:
         Client = self.http_client
         payload: NewWorkspace = NewWorkspace(
-            workspace=NewWorkspaceInfo(name=name, isolated=Isolated)
+            workspace=NewWorkspaceInfo(name=name, isolated=isolated)
         )
         responses = await Client.post(
             f"workspaces?default={default}",
@@ -377,7 +377,7 @@ class AsyncGeoServerX:
 
     # Create geofence on geoserver
     async def create_geofence(self, rule: Rule) -> GSResponse:
-        PostingRule = NewRule(Rule=rule)
+        posting_rule = NewRule(Rule=rule)
         # Check if the geofence plugin exists
         module_check = await self.check_modules("geofence")
         # If the module check fails, return the GSResponse directly
@@ -386,7 +386,7 @@ class AsyncGeoServerX:
         Client = self.http_client
         responses = await Client.post(
             "geofence/rules",
-            content=PostingRule.model_dump_json(),
+            content=posting_rule.model_dump_json(),
             headers=self.head,
         )
         results = self.response_recognise(responses.status_code)
