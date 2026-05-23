@@ -576,7 +576,7 @@ class AsyncGeoServerX:
         Returns:
             GSResponse: Response object indicating success or failure
         """
-        PostingRule = NewRule(Rule=rule)
+        posting_rule = NewRule(Rule=rule)
         # Check if the geofence plugin exists
         module_check = await self.check_modules("geofence")
         # If the module check fails, return the GSResponse directly
@@ -585,7 +585,7 @@ class AsyncGeoServerX:
         client = self.http_client
         response = await client.post(
             "geofence/rules",
-            content=PostingRule.model_dump_json(),
+            content=posting_rule.model_dump_json(),
             headers=self.headers,
         )
         return self.recognize_response(response.status_code)

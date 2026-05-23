@@ -3,14 +3,14 @@ from typing import List
 from pydantic import BaseModel
 
 
-class langVersion(BaseModel):
+class LangVersion(BaseModel):
     version: str = ...
 
 
 class SingleStyle(BaseModel):
     name: str = ...
     format: str = ...
-    languageVersion: langVersion = ...
+    languageVersion: LangVersion = ...
     filename: str = ...
 
 
@@ -18,14 +18,14 @@ class StyleModel(BaseModel):
     style: SingleStyle
 
 
-class allStyleList(BaseModel):
+class AllStyleList(BaseModel):
     name: str
     href: str
 
 
-class allStyle(BaseModel):
-    style: List[allStyleList]
+class AllStyle(BaseModel):
+    style: List[AllStyleList]
 
 
 class AllStylesModel(BaseModel):
-    styles: allStyle
+    styles: AllStyle
